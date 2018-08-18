@@ -19,8 +19,13 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 The lecture slides will be here. 
 
-## Predictions using a linear model
+## Tools you may find useful during the course
+- [R](http://www.cran.r-project.org/)
+- [RStudio](https://www.rstudio.com/products/RStudio/)
+- [Jupyter Notebooks](https://www.datacamp.com/community/blog/jupyter-notebook-r)
 
+
+## Predictions using a linear model
 In this document we will explore (rather superficially)
 some difficulties found when trying to estimate the forecasting 
 properties (e.g. the mean squared prediction 

@@ -1,7 +1,7 @@
 STAT406 - Lecture 1 notes
 ================
 Matias Salibian-Barrera
-2018-08-17
+2018-08-18
 
 #### LICENSE
 
@@ -11,6 +11,13 @@ Lecture slides
 --------------
 
 The lecture slides will be here.
+
+Tools you may find useful during the course
+-------------------------------------------
+
+-   [R](http://www.cran.r-project.org/)
+-   [RStudio](https://www.rstudio.com/products/RStudio/)
+-   [Jupyter Notebooks](https://www.datacamp.com/community/blog/jupyter-notebook-r)
 
 Predictions using a linear model
 --------------------------------
