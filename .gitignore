@@ -17,6 +17,7 @@
 # RStudio files
 .Rproj.user/
 *.Rproj
+.ipynb_checkpoints/
 
 # produced vignettes
 vignettes/*.html
