@@ -1,0 +1,171 @@
+---
+title: "STAT406 - Lecture 1 notes"
+author: "Matias Salibian-Barrera"
+date: "`r format(Sys.Date())`"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### LICENSE
+These notes are released under the 
+"Creative Commons Attribution-ShareAlike 4.0 International" license. 
+See the **human-readable version** [here](https://creativecommons.org/licenses/by-sa/4.0/)
+and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/legalcode). 
+
+## Lecture slides 
+
+The lecture slides will be here. 
+
+## Predictions using a linear model
+
+In this document we will explore (rather superficially)
+some difficulties found when trying to estimate the forecasting 
+properties (e.g. the mean squared prediction 
+error) of a (linear) predictor. We will
+use the air-pollution data set, which
+has been split into a training
+set and a test set. 
+
+If you are interested in how these sets were 
+constructed, I ran the following script (you
+do not need to do this, as I am providing both
+of them to you, but you can if you want to):
+```{r construct, fig.width=5, fig.height=5, echo=TRUE}
+x <- read.csv('rutgers-lib-30861_CSV-1.csv')
+set.seed(123)
+ii <- sample(rep(1:4, each=15))
+# this is the training set `pollution-train.dat`
+x.tr <- x[ii != 2, ]
+# this is the test set `pollution-test.dat`
+x.te <- x[ii == 2, ]
+# then I saved them to disk:
+# write.csv(x.tr, file='pollution-train.dat', row.names=FALSE, quote=FALSE)
+# write.csv(x.te, file='pollution-test.dat', row.names=FALSE, quote=FALSE)
+```
+
+We now read the **training** data set from the file `pollution-train.dat`,
+which is 
+available [here](pollution-train.dat), and check 
+that it was read properly:
+```{r readtrain}
+x.tr <- read.table('pollution-train.dat', header=TRUE, sep=',')
+# sanity check
+head(x.tr)
+```
+The response variable is `MORT`. 
+Our first step is to fit a 
+linear regression model with all available
+predictors and look at a few diagnostic plots
+where everything looks fine:
+```{r full, fig.width=5, fig.height=5, echo=TRUE}
+full <- lm(MORT ~ . , data=x.tr)
+plot(full, which=1)
+plot(full, which=2)
+```
+
+We also take a look at the estimated coeficients: 
+```{r diag, fig.width=5, fig.height=5, echo=TRUE}
+summary(full)
+```
+
+In the rest of this note we will compare the quality of this model's predictions with those of a simpler (smaller) linear model with only 5 predictors. For this illustrative example, we will not
+worry about how these 5 explanatory variables were selected, however, this will play a **critical** role later in the course).
+
+We now fit this **reduced** model and look at the estimated parameters and diagnostic plots
+```{r reduced, fig.width=5, fig.height=5, echo=TRUE}
+reduced <- lm(MORT ~ POOR + HC + NOX + HOUS + NONW, data=x.tr)
+summary(reduced)
+plot(reduced, which=1)
+plot(reduced, which=2)
+```
+
+Although the reduced linear model (with 5 predictors)
+does not seem to provide a fit  
+as good as the one we get with full model, 
+it is still acceptable. 
+```{r gofs}
+sum( resid(reduced)^2 )
+sum( resid(full)^2 )
+```
+This observation should be obvious to you, since, 
+as you already now, a model will **always** yield
+a better fit to the data in terms of 
+residual sum of squares than any of its submodels 
+(i.e. any model using a subset of the explanatory
+variables). I expect you to be able to formally 
+prove the last satement. 
+
+Our question of interest here is:
+"Which model produces better predictions?" In many cases one is 
+interested in predicting future observations, i.e. 
+predicting the response variable for data
+that was not available when the model / predictor was 
+*fit* or *trained*. As we discussed in class, a reasonably
+fair comparison can be obtined by 
+comparing the mean squared predictions
+of these two linear models on the test set, which we
+read into `R` as follows:
+```{r pred1}
+x.te <- read.table('pollution-test.dat', header=TRUE, sep=',')
+head(x.te)
+```
+Now compute the predicted values for the test set
+with both the **full** and **reduced** models:
+```{r pred2}
+x.te$pr.full <- predict(full, newdata=x.te)  
+x.te$pr.reduced <- predict(reduced, newdata=x.te)  
+```
+and compute the corresponding mean squared prediction errors:
+```{r mspe}
+with(x.te, mean( (MORT - pr.full)^2 ))
+with(x.te, mean( (MORT - pr.reduced)^2 ))
+```
+
+Note that the reduced model (that did not fit the data
+as well as the full model) nevertheless produced
+better predictions (smaller mean squared prediction
+errors) on the test set. 
+
+At this point you should put on your critical / skeptical 
+hat and wonder if this did not happen *by chance*, i.e.
+if this may be just 
+an artifact of the specific training/test partition
+we used. The following simple experiment shows that
+this is not the case. It would be a **very good exercise** 
+for you to repeat it many times (100, say) to verify
+my claim.
+
+First, read the whole data and create a new
+training / test random split.
+```{r cvexperiment1}
+# repeat with different partitions
+x <- read.csv('rutgers-lib-30861_CSV-1.csv')
+set.seed(456)
+ii <- sample(rep(1:4, each=15))
+x.tr <- x[ii != 2, ]
+x.te <- x[ii == 2, ]
+```
+In the above code chunk, I used `x.tr` to denote the 
+training set and `x.te` for the test set. 
+Now, fit the full and reduced models 
+on this new training set:
+```{r cvexperiment2}
+full <- lm(MORT ~ . , data=x.tr)
+reduced <- lm(MORT ~ POOR + HC + NOX + HOUS + NONW, data=x.tr)
+```
+Finally, estimate the mean squared prediction
+error of these models with their squared prediction
+error on the test set:
+```{r cvexperiment3}
+x.te$pr.full <- predict(full, newdata=x.te)
+x.te$pr.reduced <- predict(reduced, newdata=x.te)
+with(x.te, mean( (MORT - pr.full)^2 ))
+with(x.te, mean( (MORT - pr.reduced)^2 ))
+```
+Note that the estimated mean squared prediction error
+of the reduced model is again considerably smaller
+than that of the full model (even though the latter always fits the 
+training set better than the reduced one).
