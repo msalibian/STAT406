@@ -23,6 +23,7 @@ The lecture slides will be here.
 - [R](http://www.cran.r-project.org/): This is the software we will use in the course. I will assume that you are familiar with it (in particular, that you know how to write **your own functions** and **loops**). If needed, there are plenty of resources on line to learn R.
 - [RStudio](https://www.rstudio.com/products/RStudio/): The IDE (integrated development environment) of choice for R. Not necessary, but helpful.
 - [Jupyter Notebooks](https://www.datacamp.com/community/blog/jupyter-notebook-r): With these you will be able to reproduce (and play with) all the examples I use in class. Not necessary, but helpful.
+- [syzygy](https://ubc.syzygy.ca/):  Interactive computing notebooks (Julia, Python 2, Python 3, R). Hosted by Compute Canada. Sign in with your UBC CWL.
 
 ## Predictions using a linear model
 In this document we will explore (rather superficially)
