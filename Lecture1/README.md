@@ -15,16 +15,16 @@ The lecture slides will be here.
 Tools you may find useful during the course
 -------------------------------------------
 
--   [R](http://www.cran.r-project.org/)
--   [RStudio](https://www.rstudio.com/products/RStudio/)
--   [Jupyter Notebooks](https://www.datacamp.com/community/blog/jupyter-notebook-r)
+-   [R](http://www.cran.r-project.org/): This is the software we will use in the course. I will assume that you are familiar with it (in particular, that you know how to write **your own functions** and **loops**). If needed, there are plenty of resources on line to learn R.
+-   [RStudio](https://www.rstudio.com/products/RStudio/): The IDE (integrated development environment) of choice for R. Not necessary, but helpful.
+-   [Jupyter Notebooks](https://www.datacamp.com/community/blog/jupyter-notebook-r): With these you will be able to reproduce (and play with) all the examples I use in class. Not necessary, but helpful.
 
 Predictions using a linear model
 --------------------------------
 
-In this document we will explore (rather superficially) some difficulties found when trying to estimate the forecasting properties (e.g. the mean squared prediction error) of a (linear) predictor. We will use the air-pollution data set, which has been split into a training set and a test set.
+In this document we will explore (rather superficially) some challenges found when trying to estimate the forecasting properties (e.g. the mean squared prediction error) of a (linear) predictor. We will use the air-pollution data set, which I have split into a *training set* and a *test set*. The test set will be ignored when **training** our model (in the case of a linear model, "**training**" simply means "**when estimating the vector of linear regression parameters**").
 
-If you are interested in how these sets were constructed, I ran the following script (you do not need to do this, as I am providing both of them to you, but you can if you want to):
+If you are interested in how these sets (*training* and *test*) were constructed: I ran the following script (you do not need to do this, as I am providing both data sets to you, but you can re-create them yourself if you want to):
 
 ``` r
 x <- read.csv('rutgers-lib-30861_CSV-1.csv')
@@ -116,7 +116,13 @@ summary(full)
     ## Multiple R-squared:  0.8603, Adjusted R-squared:  0.788 
     ## F-statistic:  11.9 on 15 and 29 DF,  p-value: 1.328e-08
 
-In the rest of this note we will compare the quality of this model's predictions with those of a simpler (smaller) linear model with only 5 predictors. For this illustrative example, we will not worry about how these 5 explanatory variables were selected, however, this will play a **critical** role later in the course).
+The fit appears to be routine, and reasonable (why? what did I check to come to this conclusion?).
+
+### A new focus: prediction
+
+This course will be primarily concerned with making (good) predictions for cases (data points) that we may have not observed yet (future predictions). This is a bit different from the focus of other Statistics courses you may have taken. You will see later in the course that what you learned in other Statistics courses (e.g. trade-offs between flexibility and stability of different models, uncertainty and standard techniques to reduce it, etc.) will prove to be critical for building good predictions.
+
+As a simple example, in the rest of this note we will compare the quality of this model's predictions with those of a simpler (smaller) linear model with only 5 predictors. For this illustrative example, we will not worry about how these 5 explanatory variables were selected, however, this will play a **critical** role later in the course).
 
 We now fit this **reduced** model and look at the estimated parameters and diagnostic plots
 
@@ -160,8 +166,7 @@ plot(reduced, which=2)
 
 ![](README_files/figure-markdown_github/reduced-2.png)
 
-Although the reduced linear model (with 5 predictors) does not seem to provide a fit
-as good as the one we get with full model, it is still acceptable.
+Although the reduced linear model (with 5 predictors) does not seem to provide a fit as good as the one we get with full model, it is still acceptable.
 
 ``` r
 sum( resid(reduced)^2 )
