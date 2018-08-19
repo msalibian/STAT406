@@ -1,7 +1,7 @@
 STAT406 - Lecture 1 notes
 ================
 Matias Salibian-Barrera
-2018-08-18
+2018-08-19
 
 #### LICENSE
 
