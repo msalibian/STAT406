@@ -4,15 +4,20 @@ Public repository for STAT406 @ UBC - "Elements of Statistical Learning".
 
 
 #### LICENSE
-
 The notes in this repository are released under the "Creative Commons Attribution-ShareAlike 4.0 International" license. See the **human-readable version** [here](https://creativecommons.org/licenses/by-sa/4.0/) and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/legalcode).
 
 ## Course outline
 The course outline is available [here](STAT406-18-19-MSB.pdf).
 
-## Weekly reading and other resources
+## Tentative weekly schedule (including Quizzes and Midterms)
+The tentative week-by-week schedule is [here](Weekly-schedule-18-19-detailed-2.pdf).
 
-This is a list of strongly recommended **pre-class** reading. **[JWHT13]**
+## PIAZZA
+You can register in the course's [PIAZZA](https://www.piazza.com) page via 
+[Canvas](https://canvas.ubc.ca).
+
+## Weekly reading and other resources
+This is a list of **strongly** recommended **pre-class** reading. **[JWHT13]**
 and **[HTF09]** indicate two of the reference books listed below.
 
 * Week 1 (L1): Review of Linear Regression
