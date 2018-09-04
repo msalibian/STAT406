@@ -13,7 +13,7 @@ The course outline is available [here](STAT406-18-19-MSB.pdf).
 The tentative week-by-week schedule is [here](Weekly-schedule-18-19-detailed-2.pdf).
 
 ## PIAZZA
-You can register in the course's [PIAZZA](https://www.piazza.com) page via 
+You can register in the course's [PIAZZA](https://www.piazza.com) page via
 [Canvas](https://canvas.ubc.ca).
 
 ## Weekly reading and other resources
@@ -67,3 +67,13 @@ The Elements of Statistical Learning. 2009. Second Edition. Springer-Verlag New 
 * **[MASS]**: Venables, W.N. and Ripley, B.D.
 Modern Applied Statistics with S. 2002. Fourth edition, Springer, New York.
 	* [Book page](https://www.stats.ox.ac.uk/pub/MASS4/), [Publisher page](http://link.springer.com/book/10.1007%2F978-0-387-21706-2)
+
+
+## Useful tools
+- [R](http://www.cran.r-project.org/): This is the software we will use in the course. I will assume that you are familiar with it (in particular, that you know how to write **your own functions** and **loops**). If needed, there are plenty of resources on line to learn R.
+- [RStudio](https://www.rstudio.com/products/RStudio/): The IDE (integrated development environment) of choice for R. Not necessary, but helpful.
+- [Jupyter Notebooks](https://jupyter.org). "The Jupyter Notebook is an open-source web application that allows you to create and share documents that contain live code, equations, visualizations and narrative text."
+You can use these to interactively run and play with the lecture notes and the code to reproduce all the examples I use in class. This is not necessary, but may be helpful. There are two options to run notebooks: locally on your own computer or use a remote server:
+  1. Follow the instructions
+[here](https://jupyter.org/install.html) to install Jupyter on your laptop. You will also need to follow [these instructions](https://www.datacamp.com/community/blog/jupyter-notebook-r) to install the `R kernel` for Jupyter.
+  2. Alternatively, you can run the notebooks on the [syzygy](https://ubc.syzygy.ca/) server. There are Julia, Python 2, Python 3, and R kernels available (although we will only use the R one). Sign in with your UBC CWL. Use [this link](https://ubc.syzygy.ca/jupyter/user-redirect/git-pull?repo=https://github.com/msalibian/STAT406) to clone this repository (STAT406) (including all notebooks) directly onto your [syzygy](https://ubc.syzygy.ca/) home directory.
