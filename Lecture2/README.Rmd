@@ -44,11 +44,16 @@ full <- lm(MORT ~ . , data=x.tr)
 reduced <- lm(MORT ~ POOR + HC + NOX + HOUS + NONW, data=x.tr)
 ```
 Although the **full** model fits the data better than the
-reduced one (see Lecture 1), its predictions on the test set are better:
+reduced one (see Lecture 1), its predictions on the test set are better.
+First, compute the two vectors of test set predictions:
 ```{r pred1}
 x.te <- read.table('../Lecture1/pollution-test.dat', header=TRUE, sep=',')
 pr.full <- predict(full, newdata=x.te)
 pr.reduced <- predict(reduced, newdata=x.te)
+```
+And now, use them to estimate the mean squared prediction error of 
+each model:
+```{r pred1.2}
 with(x.te, mean( (MORT - pr.full)^2 ))
 with(x.te, mean( (MORT - pr.reduced)^2 ))
 ```
@@ -58,14 +63,14 @@ training / test split of the data. The **reduced**
 model generally produces better predictions, 
 regardless of the specific training / test
 split we use. We can verify this repeating 
-the procedure many times (50, say) and looking
+the procedure many times (100, say) and looking
 at the estimated mean squared prediction errors
 obtained each time for each model. 
 
 ```{r testrain, fig.width=5, fig.height=5, echo=FALSE}
 x <- read.csv('../Lecture1/rutgers-lib-30861_CSV-1.csv')
 set.seed(123)
-Nsplits <- 50
+Nsplits <- 100
 mspe.full <- mspe.red <- vector('numeric', Nsplits)
 for(j in 1:Nsplits) {
   g <- sample(rep(1:4, each=15))
@@ -106,9 +111,16 @@ for(i in 1:n) {
   pr.full[i] <- predict(full, newdata = x[i, ])
   pr.reduced[i] <- predict(reduced, newdata = x[i, ])
 }
+```
+Now we have the leave-one-out predictions for each model
+and can compute the corresponding estimated mean squared
+prediction errors:
+```{r loocv2}
 mean( (x$MORT - pr.full)^2 )
 mean( (x$MORT - pr.reduced)^2 )
 ```
+Note that here again the reduced model seems to yield better
+prediction errors. 
 
 ### K-fold cross-validation
 
@@ -143,7 +155,10 @@ for(j in 1:k) {
   pr.full[ inds== j] <- predict(full, newdata=x.te)
   pr.reduced[ inds==j ] <- predict(reduced, newdata=x.te)
 }
-# compare predictions
+```
+We now compute the estimated mean squared prediction
+error of each model:
+```{r kfold2}
 mean( (xs$MORT - pr.full)^2 )
 mean( (xs$MORT - pr.reduced)^2 )
 ```

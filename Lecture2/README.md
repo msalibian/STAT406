@@ -1,7 +1,7 @@
 STAT406 - Lecture 2 notes
 ================
 Matias Salibian-Barrera
-2018-08-20
+2018-09-05
 
 #### LICENSE
 
@@ -29,12 +29,17 @@ full <- lm(MORT ~ . , data=x.tr)
 reduced <- lm(MORT ~ POOR + HC + NOX + HOUS + NONW, data=x.tr)
 ```
 
-Although the **full** model fits the data better than the reduced one (see Lecture 1), its predictions on the test set are better:
+Although the **full** model fits the data better than the reduced one (see Lecture 1), its predictions on the test set are better. First, compute the two vectors of test set predictions:
 
 ``` r
 x.te <- read.table('../Lecture1/pollution-test.dat', header=TRUE, sep=',')
 pr.full <- predict(full, newdata=x.te)
 pr.reduced <- predict(reduced, newdata=x.te)
+```
+
+And now, use them to estimate the mean squared prediction error of each model:
+
+``` r
 with(x.te, mean( (MORT - pr.full)^2 ))
 ```
 
@@ -46,7 +51,7 @@ with(x.te, mean( (MORT - pr.reduced)^2 ))
 
     ## [1] 1401.571
 
-In Lecture 1 we also saw that this is not just an artifact of the specific training / test split of the data. The **reduced** model generally produces better predictions, regardless of the specific training / test split we use. We can verify this repeating the procedure many times (50, say) and looking at the estimated mean squared prediction errors obtained each time for each model.
+In Lecture 1 we also saw that this is not just an artifact of the specific training / test split of the data. The **reduced** model generally produces better predictions, regardless of the specific training / test split we use. We can verify this repeating the procedure many times (100, say) and looking at the estimated mean squared prediction errors obtained each time for each model.
 
 ![](README_files/figure-markdown_github/testrain-1.png)
 
@@ -64,6 +69,11 @@ for(i in 1:n) {
   pr.full[i] <- predict(full, newdata = x[i, ])
   pr.reduced[i] <- predict(reduced, newdata = x[i, ])
 }
+```
+
+Now we have the leave-one-out predictions for each model and can compute the corresponding estimated mean squared prediction errors:
+
+``` r
 mean( (x$MORT - pr.full)^2 )
 ```
 
@@ -74,6 +84,8 @@ mean( (x$MORT - pr.reduced)^2 )
 ```
 
     ## [1] 1848.375
+
+Note that here again the reduced model seems to yield better prediction errors.
 
 ### K-fold cross-validation
 
@@ -97,7 +109,11 @@ for(j in 1:k) {
   pr.full[ inds== j] <- predict(full, newdata=x.te)
   pr.reduced[ inds==j ] <- predict(reduced, newdata=x.te)
 }
-# compare predictions
+```
+
+We now compute the estimated mean squared prediction error of each model:
+
+``` r
 mean( (xs$MORT - pr.full)^2 )
 ```
 
