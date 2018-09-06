@@ -1,7 +1,7 @@
 STAT406 - Lecture 1 notes
 ================
 Matias Salibian-Barrera
-2018-09-04
+2018-09-06
 
 #### LICENSE
 
@@ -10,7 +10,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-The lecture slides will be here.
+The lecture slides are [here](STAT406-18-lecture-1.pdf).
 
 Predictions using a linear model
 --------------------------------
