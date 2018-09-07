@@ -1,7 +1,7 @@
 STAT406 - Lecture 3 notes
 ================
 Matias Salibian-Barrera
-2017-10-04
+2018-09-07
 
 #### LICENSE
 
@@ -10,8 +10,8 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
--   A preliminary version of the lecture slides is [here](STAT406-17-lecture-3.pdf).
--   The activity hand-out is [here](lecture3-activity.pdf).
+-   A preliminary version of the lecture slides is [here](STAT406-18-lecture-3-preliminary.pdf).
+-   The activity hand-out will be here.
 
 Cross-validation when the model is chosen using the data
 --------------------------------------------------------
@@ -54,7 +54,7 @@ for(i in 1:N) {
 boxplot(mspe.st, mspe.n, names=c('Stepwise', 'NULL'), col=c('gray60', 'hotpink'), main='Wrong')
 ```
 
-![](README_files/figure-markdown_github-ascii_identifiers/wrong-1.png)
+![](README_files/figure-markdown_github/wrong-1.png)
 
 ``` r
 summary(mspe.st)
