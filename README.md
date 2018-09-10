@@ -32,9 +32,9 @@ and **[HTF09]** indicate two of the reference books listed below.
 * Week 2 (L2/3): Goodness of Fit vs Prediction error, Cross Validation
 	* Section 5.1, 5.1.1, 5.1.2, 5.1.3 from [JWHT13]
 	* Section 7.1, 7.2, 7.3, 7.10 from [HTF09].
-<!-- * Week 3 (L4/5): Correlated predictors, Feature selection, AIC
+* Week 3 (L4/5): Correlated predictors, Feature selection, AIC
 	* Section 6.1, 6.1.1, 6.1.2, 6.1.3, 6.2 and 6.2.1 from [JWHT13]
-	* Section 7.4, 7.5 from [HTF09]. -->
+	* Section 7.4, 7.5 from [HTF09].
 <!-- * Week 4 (L6/7): Ridge regression, LASSO, Elastic Net
 	* Section 6.2 (complete) from [JWHT13]
 	* Section 3.4, 3.8, 3.8.1, 3.8.2 from [HTF09]
