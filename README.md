@@ -20,7 +20,8 @@ You can register in the course's [PIAZZA](https://www.piazza.com) page via
 In order to complete the WebWork quizzes you need to register via
 [Canvas](https://canvas.ubc.ca): go to the course Canvas page, click on
 *Assignments*, then on *WebWork Link*, and finally click on *Load WebWork Link on a new window*.
-This is a **necessary** step (don't shoot the messenger!)
+This is a **necessary** step (don't shoot the messenger!) but you only
+need to do this **once**.
 
 ## Weekly reading and other resources
 This is a list of **strongly** recommended **pre-class** reading. **[JWHT13]**
