@@ -1,7 +1,7 @@
 STAT406 - Lecture 3 notes
 ================
 Matias Salibian-Barrera
-2018-09-07
+2018-09-13
 
 #### LICENSE
 
@@ -11,7 +11,7 @@ Lecture slides
 --------------
 
 -   A preliminary version of the lecture slides is [here](STAT406-18-lecture-3-preliminary.pdf).
--   The activity hand-out will be here.
+-   The activity hand-out is [here](lecture3-activity.pdf).
 
 Cross-validation when the model is chosen using the data
 --------------------------------------------------------
