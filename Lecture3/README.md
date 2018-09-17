@@ -1,7 +1,7 @@
 STAT406 - Lecture 3 notes
 ================
 Matias Salibian-Barrera
-2018-09-13
+2018-09-17
 
 #### LICENSE
 
@@ -10,7 +10,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
--   A preliminary version of the lecture slides is [here](STAT406-18-lecture-3-preliminary.pdf).
+-   The lecture slides are [here](STAT406-18-lecture-3.pdf).
 -   The activity hand-out is [here](lecture3-activity.pdf).
 
 Cross-validation when the model is chosen using the data
