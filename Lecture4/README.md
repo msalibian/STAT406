@@ -1,7 +1,7 @@
 STAT406 - Lecture 4 notes
 ================
 Matias Salibian-Barrera
-2018-09-17
+2018-09-18
 
 #### LICENSE
 
@@ -10,7 +10,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
--   A preliminary set of lecture slides are [here](STAT406-18-lecture-4-preliminary.pdf).
+-   The lecture slides are [here](STAT406-18-lecture-4.pdf).
 -   A reference paper for a formal derivation of AIC: Cavanaugh, J.E. (1997). Unifying the derivations for the Akaike and corrected Akaike information criteria. *Statistics & Probability Letters*, **33**(2), 201-208. [DOI: 10.1016/S0167-7152(96)00128-9](https://doi.org/10.1016/S0167-7152(96)00128-9)
 
 Estimating MSPE with CV when the model was built using the data
