@@ -1,7 +1,7 @@
 STAT406 - Lecture 5 notes
 ================
 Matias Salibian-Barrera
-2018-09-17
+2018-09-20
 
 #### LICENSE
 
@@ -10,7 +10,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-Preliminary lecture slides are [here](STAT406-18-lecture-5-preliminary.pdf).
+Preliminary lecture slides are [here](STAT406-18-lecture-5.pdf).
 
 Ridge regression
 ----------------
