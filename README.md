@@ -41,8 +41,7 @@ and **[HTF09]** indicate two of the reference books listed below.
 	* Sections 3.4, 3.8, 3.8.1, 3.8.2 from [HTF09]
 * Week 5 (L7/8): Elastic Net, Smoothers (Local regression, Splines)
 	* Sections 7.1, 7.3, 7.4, 7.5, 7.6 from [JWHT13]
-	<!--
-* Week 6 (L10/11): Curse of dimensionality, Regression Trees
+<!-- * Week 6 (L10/11): Curse of dimensionality, Regression Trees
 	* Sections 8.1, 8.1.1, 8.1.3, 8.1.4 from [JWHT13]
 * Week 7 (L12/13): Bagging, Classification, LDA, Logistic Regression
 	* Sections 8.2, 8.2.1, 4.1, 4.2 from [JWHT13]
