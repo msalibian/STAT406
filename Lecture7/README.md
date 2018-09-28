@@ -1,7 +1,7 @@
 STAT406 - Lecture 7 notes
 ================
 Matias Salibian-Barrera
-2018-09-20
+2018-09-28
 
 #### LICENSE
 
