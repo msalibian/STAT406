@@ -1,7 +1,7 @@
 STAT406 - Lecture 7 notes
 ================
 Matias Salibian-Barrera
-2018-09-28
+2018-10-02
 
 #### LICENSE
 
@@ -10,7 +10,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-Preliminary lecture slides are [here](STAT406-18-lecture-7-preliminary.pdf).
+The lecture slides are [here](STAT406-18-lecture-7.pdf).
 
 LASSO
 -----
@@ -203,33 +203,37 @@ We now use 50 runs of 5-fold cross-validation to estimate (and compare) the MSPE
 library(MASS)
 n <- nrow(xm)
 k <- 5
-ii <- (1:n) %% k + 1
+ii <- (1:n)%%k + 1
 set.seed(123)
 N <- 50
 mspe.la <- mspe.st <- mspe.ri <- mspe.f <- rep(0, N)
-for(i in 1:N) {
-  ii <- sample(ii)
-  pr.la <- pr.f <- pr.ri <- pr.st <- rep(0, n)
-  for(j in 1:k) {
-    tmp.ri <- cv.glmnet(x=xm[ii != j, ], y=y[ii != j], lambda=lambdas, 
-                        nfolds=5, alpha=0, family='gaussian') 
-    tmp.la <- cv.glmnet(x=xm[ii != j, ], y=y[ii != j], lambda=lambdas, 
-                        nfolds=5, alpha=1, family='gaussian')
-    null <- lm(Balance ~ 1, data=x[ii != j, ])
-    full <- lm(Balance ~ ., data=x[ii != j, ])
-    tmp.st <- stepAIC(null, scope=list(lower=null, upper=full), trace=0)
-    pr.ri[ ii == j ] <- predict(tmp.ri, s='lambda.min', newx=xm[ii==j,])
-    pr.la[ ii == j ] <- predict(tmp.la, s='lambda.min', newx=xm[ii==j,])
-    pr.st[ ii == j ] <- predict(tmp.st, newdata=x[ii==j,])
-    pr.f[ ii == j ] <- predict(full, newdata=x[ii==j,])
-  }
-  mspe.ri[i] <- mean( (x$Balance - pr.ri)^2 )
-  mspe.la[i] <- mean( (x$Balance - pr.la)^2 )
-  mspe.st[i] <- mean( (x$Balance - pr.st)^2 )
-  mspe.f[i] <- mean( (x$Balance - pr.f)^2 )
+for (i in 1:N) {
+    ii <- sample(ii)
+    pr.la <- pr.f <- pr.ri <- pr.st <- rep(0, n)
+    for (j in 1:k) {
+        tmp.ri <- cv.glmnet(x = xm[ii != j, ], y = y[ii != j], lambda = lambdas, 
+            nfolds = 5, alpha = 0, family = "gaussian")
+        tmp.la <- cv.glmnet(x = xm[ii != j, ], y = y[ii != j], lambda = lambdas, 
+            nfolds = 5, alpha = 1, family = "gaussian")
+        null <- lm(Balance ~ 1, data = x[ii != j, ])
+        full <- lm(Balance ~ ., data = x[ii != j, ])
+        tmp.st <- stepAIC(null, scope = list(lower = null, upper = full), trace = 0)
+        pr.ri[ii == j] <- predict(tmp.ri, s = "lambda.min", newx = xm[ii == 
+            j, ])
+        pr.la[ii == j] <- predict(tmp.la, s = "lambda.min", newx = xm[ii == 
+            j, ])
+        pr.st[ii == j] <- predict(tmp.st, newdata = x[ii == j, ])
+        pr.f[ii == j] <- predict(full, newdata = x[ii == j, ])
+    }
+    mspe.ri[i] <- mean((x$Balance - pr.ri)^2)
+    mspe.la[i] <- mean((x$Balance - pr.la)^2)
+    mspe.st[i] <- mean((x$Balance - pr.st)^2)
+    mspe.f[i] <- mean((x$Balance - pr.f)^2)
 }
-boxplot(mspe.la, mspe.ri, mspe.st, mspe.f, names=c('LASSO','Ridge', 'Stepwise', 'Full'), col=c('steelblue', 'gray80', 'tomato', 'springgreen'), cex.axis=1, cex.lab=1, cex.main=2)
-mtext(expression(hat(MSPE)), side=2, line=2.5)
+boxplot(mspe.la, mspe.ri, mspe.st, mspe.f, names = c("LASSO", "Ridge", "Stepwise", 
+    "Full"), col = c("steelblue", "gray80", "tomato", "springgreen"), cex.axis = 1, 
+    cex.lab = 1, cex.main = 2)
+mtext(expression(hat(MSPE)), side = 2, line = 2.5)
 ```
 
 ![](README_files/figure-markdown_github/mspecredit-1.png)
