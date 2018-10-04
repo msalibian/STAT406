@@ -1,7 +1,7 @@
 STAT406 - Lecture 8 notes
 ================
 Matias Salibian-Barrera
-2018-10-02
+2018-10-04
 
 #### LICENSE
 
@@ -10,7 +10,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
--   Preliminary lecture slides are [here](STAT406-18-lecture8-preliminary.pdf).
+-   Lecture slides are [here](STAT406-18-lecture-8.pdf).
 
 Non-parametric regression
 =========================
