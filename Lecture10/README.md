@@ -1,7 +1,7 @@
 STAT406 - Lecture 10 notes
 ================
 Matias Salibian-Barrera
-2018-09-28
+2018-10-04
 
 #### LICENSE
 
@@ -10,7 +10,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-The lecture slides will be here.
+Preliminary lecture slides are [here](STAT406-18-lecture-10-preliminary.pdf).
 
 Regression trees
 ----------------
