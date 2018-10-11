@@ -43,11 +43,11 @@ and **[HTF09]** indicate two of the reference books listed below.
 	* Sections 7.1, 7.3, 7.4, 7.5, 7.6 from [JWHT13]
 * Week 6 (L9/10): Curse of dimensionality, Regression Trees
 	* Sections 8.1, 8.1.1, 8.1.3, 8.1.4 from [JWHT13]
-* Week 7 (L11/12): Bagging, Classification, LDA, Logistic Regression
-	* Sections 8.2, 8.2.1, 4.1, 4.2 from [JWHT13]
-<!-- * Week 8 (L14/15): LDA, LQA, Nearest Neighbours, Trees
-	* Section 4.4, 4.3, 2.2.3, 8.1.2 from [JWHT13]
-* Week 9 (L16/17): Ensembles, Bagging, Random Forests
+* Week 7 (L11/MT2): Bagging
+	* Sections 8.2, 8.2.1 from [JWHT13]
+* Week 8 (L12/13): Classification, LDA, LQA, Logistic Regression, Nearest Neighbours, Trees
+	* Section 4.1, 4.2, 4.3, 4.4, 2.2.3, 8.1.2 from [JWHT13]
+<!-- * Week 9 (L16/17): Ensembles, Bagging, Random Forests
 	* Sections 8.2.1 and 8.2.2 from [JWHT13]
 * Week 10 (L18/19): Boosting, Neural Networks?
 	* Sections 8.2.3 from [JWHT13]
