@@ -1,7 +1,7 @@
 STAT406 - Lecture 11 notes
 ================
 Matias Salibian-Barrera
-2018-10-10
+2018-10-16
 
 #### LICENSE
 
@@ -12,10 +12,14 @@ Lecture slides
 
 Preliminary lecture slides are [here](STAT406-18-lecture-11-preliminary.pdf).
 
-Pruning regression trees
-------------------------
+Pruning regression trees with `rpart`
+-------------------------------------
 
-The stopping criteria generally used when fitting regression trees do not take into account explicitly the complexity of the tree. Hence, we may end up with an overfitting tree, which typically results in a decline in the quality of the corresponding predictions. As discussed in class, one solution is to purposedly grow / train a very large overfitting tree, and then prune it. One can also estimate the corresponding MSPE of each tree in the prunning sequence and choose an optimal one. The function `rpart` implements this approach, and we illustrate it below. We force `rpart` to build a very large tree via the arguments of the function `rpart.control`. At the same time, to obtain a good picture of the evolution of MSPE for different subtrees, we set the smallest complexity parameter to be considered by the cross-validation experiment to a very low value (here we use `1e-8`).
+***Important note**: As discussed in class, the K-fold CV methodology implemented in the package `rpart` seems to consider a sequence of trees (or, equivalently, of complexity parameters) based on the full training set. For more details refer to the corresponding documentation: pages 12 and ff of the package vignette, which can be accessed from `R` using the command `vignette('longintro', package='rpart')`. For an alternative implementation of CV-based pruning that follows the spirit of K-fold CV more closely, please see the Section "Pruning regression trees with `tree`" below.*
+
+The stopping criteria generally used when fitting regression trees do not take into account explicitly the complexity of the tree. Hence, we may end up with an overfitting tree, which typically results in a decline in the quality of the corresponding predictions. As discussed in class, one solution is to purposedly grow / train a very large overfitting tree, and then prune it. One can also estimate the corresponding MSPE of each tree in the prunning sequence and choose an optimal one. The function `rpart` implements this approach, and we illustrate it below.
+
+We force `rpart` to build a very large tree via the arguments of the function `rpart.control`. At the same time, to obtain a good picture of the evolution of MSPE for different subtrees, we set the smallest complexity parameter to be considered by the cross-validation experiment to a very low value (here we use `1e-8`).
 
 ``` r
 library(rpart)
@@ -352,6 +356,62 @@ text(bos.t, pretty=TRUE)
 ```
 
 ![](README_files/figure-markdown_github/prune6-1.png)
+
+#### Why is the pruned tree not a subtree of the "default" one?
+
+Note that the pruned tree above is not a subtree of the one constructed using the default stopping criteria. The reason for this difference is that one of the default criteria is a limit on the minimum size of a child node. When we relaxed the criteria this limit was reduced and thus the "default" tree is not in fact a subtree of the large tree (that is later pruned). For example: ...
+
+Pruning regression trees with `tree`
+------------------------------------
+
+The implementation of trees in the `R` package `tree` follows the original CV-based pruning strategy, as discussed in Section 3.4 of the book
+
+> Breiman, Leo. (1984). Classification and regression trees. Wadsworth International Group
+
+or Section 7.2 of:
+
+> Ripley, Brian D. (1996). Pattern recognition and neural networks. Cambridge University Press
+
+We now use the function `tree::tree()` to fit the same regression tree as above. Note that the default stopping criteria in this implementation of regression trees is different from the one in `rpart::rpart()`, hence to obtain the same results as above we need to modify the default stopping criteria using the argument `control`:
+
+``` r
+library(tree)
+bos.t2 <- tree(medv ~ ., data=dat.tr, control=tree.control(nobs=nrow(dat.tr), mincut=6, minsize=20))
+```
+
+We plot the resulting tree
+
+``` r
+plot(bos.t2); text(bos.t2)
+```
+
+![](README_files/figure-markdown_github/prunetree1-1.png)
+
+``` r
+set.seed(123)
+```
+
+As discussed before, we now fit a very large tree, which will be pruned later:
+
+``` r
+bos.to2 <- tree(medv ~ ., data=dat.tr, control=tree.control(nobs=nrow(dat.tr), mincut=1, minsize=2, mindev=1e-10))
+plot(bos.to2)
+```
+
+![](README_files/figure-markdown_github/prunetree2-1.png)
+
+We now use the function `tree:cv.tree()` to estimate the MSPE of the subtrees of `bos.to2`, using 5-fold CV:
+
+``` r
+set.seed(123)
+tt <- cv.tree(bos.to2, K = 5)
+bos.pr2 <- prune.tree(bos.to2, k = tt$k[ which.min(tt$dev) ])
+plot(bos.pr2); text(bos.pr2)
+```
+
+![](README_files/figure-markdown_github/prunetree3-1.png)
+
+Compare this pruned tree with the one obtained with the regression trees implementation in `rpart`.
 
 Instability of regression trees
 -------------------------------
