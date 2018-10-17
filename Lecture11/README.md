@@ -15,7 +15,7 @@ Lecture slides are [here](STAT406-18-lecture-11.pdf).
 Pruning regression trees with `rpart`
 -------------------------------------
 
-***Important note**: As discussed in class, the K-fold CV methodology implemented in the package `rpart` seems to consider a sequence of trees (or, equivalently, of complexity parameters) based on the full training set. For more details refer to the corresponding documentation: pages 12 and ff of the package vignette, which can be accessed from `R` using the command `vignette('longintro', package='rpart')`. For an alternative implementation of CV-based pruning that follows the spirit of K-fold CV more closely, please see the Section "Pruning regression trees with `tree`" below.*
+***Important note**: As discussed in class, the K-fold CV methodology implemented in the package `rpart` seems to consider a sequence of trees (or, equivalently, of complexity parameters) based on the full training set. For more details refer to the corresponding documentation: pages 12 and ff of the package vignette, which can be accessed from `R` using the command `vignette('longintro', package='rpart')`. For an alternative implementation of CV-based pruning that follows the spirit of K-fold CV more closely, please see also the Section **"Pruning regression trees with `tree`"** below.*
 
 The stopping criteria generally used when fitting regression trees do not take into account explicitly the complexity of the tree. Hence, we may end up with an overfitting tree, which typically results in a decline in the quality of the corresponding predictions. As discussed in class, one solution is to purposedly grow / train a very large overfitting tree, and then prune it. One can also estimate the corresponding MSPE of each tree in the prunning sequence and choose an optimal one. The function `rpart` implements this approach, and we illustrate it below.
 
@@ -371,6 +371,8 @@ The implementation of trees in the `R` package `tree` follows the original CV-ba
 or Section 7.2 of:
 
 > Ripley, Brian D. (1996). Pattern recognition and neural networks. Cambridge University Press
+
+Both books are available in electronic form from the UBC Library.
 
 We now use the function `tree::tree()` to fit the same regression tree as above. Note that the default stopping criteria in this implementation of regression trees is different from the one in `rpart::rpart()`, hence to obtain the same results as above we need to modify the default stopping criteria using the argument `control`:
 

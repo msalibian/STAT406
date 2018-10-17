@@ -30,8 +30,8 @@ package vignette, which can be accessed from `R` using the
 command `vignette('longintro', package='rpart')`. 
 For an alternative implementation of CV-based pruning 
 that follows the spirit of K-fold
-CV more closely, please see the Section "Pruning regression trees
-with `tree`" below._ 
+CV more closely, please see also the Section **"Pruning regression trees
+with `tree`"** below._ 
 
 The stopping criteria generally used when fitting regression trees do not
 take into account explicitly the complexity of the tree. Hence, we 
@@ -159,6 +159,8 @@ Section 3.4 of the book
 or Section 7.2 of:
 
 > Ripley, Brian D. (1996). Pattern recognition and neural networks. Cambridge University Press
+
+Both books are available in electronic form from the UBC Library. 
 
 We now use the function `tree::tree()` to fit the same regression
 tree as above. Note that the default stopping criteria in this
