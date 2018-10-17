@@ -1,7 +1,7 @@
 STAT406 - Lecture 11 notes
 ================
 Matias Salibian-Barrera
-2018-10-16
+2018-10-17
 
 #### LICENSE
 
@@ -10,7 +10,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-Preliminary lecture slides are [here](STAT406-18-lecture-11-preliminary.pdf).
+Lecture slides are [here](STAT406-18-lecture-11.pdf).
 
 Pruning regression trees with `rpart`
 -------------------------------------
@@ -387,13 +387,10 @@ plot(bos.t2); text(bos.t2)
 
 ![](README_files/figure-markdown_github/prunetree1-1.png)
 
-``` r
-set.seed(123)
-```
-
 As discussed before, we now fit a very large tree, which will be pruned later:
 
 ``` r
+set.seed(123)
 bos.to2 <- tree(medv ~ ., data=dat.tr, control=tree.control(nobs=nrow(dat.tr), mincut=1, minsize=2, mindev=1e-10))
 plot(bos.to2)
 ```

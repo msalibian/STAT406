@@ -17,7 +17,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-Preliminary lecture slides are [here](STAT406-18-lecture-11-preliminary.pdf). 
+Lecture slides are [here](STAT406-18-lecture-11.pdf). 
 
 ## Pruning regression trees with `rpart`
 
@@ -170,21 +170,25 @@ need to modify the default stopping criteria using the argument
 library(tree)
 bos.t2 <- tree(medv ~ ., data=dat.tr, control=tree.control(nobs=nrow(dat.tr), mincut=6, minsize=20))
 ```
+
 We plot the resulting tree
+
 ```{r prunetree1, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 plot(bos.t2); text(bos.t2)
-set.seed(123)
 ```
 
 As discussed before, we now fit a very large tree, which will be 
 pruned later:
+
 ```{r prunetree2, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+set.seed(123)
 bos.to2 <- tree(medv ~ ., data=dat.tr, control=tree.control(nobs=nrow(dat.tr), mincut=1, minsize=2, mindev=1e-10))
 plot(bos.to2)
 ```
 
 We now use the function `tree:cv.tree()` to estimate the MSPE of 
 the subtrees of `bos.to2`, using 5-fold CV:
+
 ```{r prunetree3, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 set.seed(123)
 tt <- cv.tree(bos.to2, K = 5)
