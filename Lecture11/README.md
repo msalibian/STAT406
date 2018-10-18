@@ -1,7 +1,7 @@
 STAT406 - Lecture 11 notes
 ================
 Matias Salibian-Barrera
-2018-10-17
+2018-10-18
 
 #### LICENSE
 
@@ -15,9 +15,9 @@ Lecture slides are [here](STAT406-18-lecture-11.pdf).
 Pruning regression trees with `rpart`
 -------------------------------------
 
-***Important note**: As discussed in class, the K-fold CV methodology implemented in the package `rpart` seems to consider a sequence of trees (or, equivalently, of complexity parameters) based on the full training set. For more details refer to the corresponding documentation: pages 12 and ff of the package vignette, which can be accessed from `R` using the command `vignette('longintro', package='rpart')`. For an alternative implementation of CV-based pruning that follows the spirit of K-fold CV more closely, please see also the Section **"Pruning regression trees with `tree`"** below.*
+***Important note**: As discussed in class, the K-fold CV methodology implemented in the package `rpart` seems to consider a sequence of trees (or, equivalently, of complexity parameters) based on the full training set. For more details refer to the corresponding documentation: pages 12 and ff of the package vignette, which can be accessed from `R` using the command `vignette('longintro', package='rpart')`. For an alternative implementation of CV-based pruning, please see also the Section **"Pruning regression trees with `tree`"** below.*
 
-The stopping criteria generally used when fitting regression trees do not take into account explicitly the complexity of the tree. Hence, we may end up with an overfitting tree, which typically results in a decline in the quality of the corresponding predictions. As discussed in class, one solution is to purposedly grow / train a very large overfitting tree, and then prune it. One can also estimate the corresponding MSPE of each tree in the prunning sequence and choose an optimal one. The function `rpart` implements this approach, and we illustrate it below.
+The stopping criteria generally used when fitting regression trees do not take into account explicitly the complexity of the tree. Hence, we may end up with either an overfitting tree, or a very simple one, which typically results in a decline in the quality of the corresponding predictions. As discussed in class, one solution is to purposedly grow / train a very large overfitting tree, and then prune it. One can also estimate the corresponding MSPE of each tree in the prunning sequence and choose an optimal one. The function `rpart` implements this approach, and we illustrate it below.
 
 We force `rpart` to build a very large tree via the arguments of the function `rpart.control`. At the same time, to obtain a good picture of the evolution of MSPE for different subtrees, we set the smallest complexity parameter to be considered by the cross-validation experiment to a very low value (here we use `1e-8`).
 
@@ -51,7 +51,7 @@ with(dat.te, mean((medv - pr.to)^2) )
 
     ## [1] 36.51097
 
-To prune we explore the *CP table* returned in the `rpart` object to find the value of the complexity parameter with optimal estimated prediction error:
+To prune we explore the *CP table* returned in the `rpart` object to find the value of the complexity parameter with optimal estimated prediction error. The estimated prediction error of each subtree (corresponding to each value of `CP`) is contained in the column `xerror`, and the associated standard deviation is in column `xstd`. We would like to find the value of `CP` that yields a corresponding pruned tree with smallest estimated prediction error. The function `printcp` shows the CP table corresponding to an `rpart` object:
 
 ``` r
 printcp(bos.to)
@@ -329,40 +329,30 @@ with(dat.te, mean((medv - pr.t3)^2) )
 
 Again, it would be a **very good exercise** for you to compare the MSPE of the pruned tree with that of several of the alternative methods we have seen in class so far, **without using a training / test split**.
 
-Note that pruning doesn't always improve a tree. For example, if we prune the first tree we fit in this example:
-
-``` r
-# what if we prune the original tree?
-set.seed(123)
-bos.t <- rpart(medv ~ ., data=dat.tr, method='anova')
-b <- bos.t$cptable[which.min(bos.t$cptable[,"xerror"]),"CP"]
-bos.t4 <- prune(bos.t, cp=b)
-```
-
-We obtain the same tree as before:
-
-``` r
-plot(bos.t4, uniform=FALSE, margin=0.01)
-text(bos.t4, pretty=TRUE)
-```
-
-![](README_files/figure-markdown_github/prune10-1.png)
-
-Below is the original tree:
-
-``` r
-plot(bos.t, uniform=FALSE, margin=0.01)
-text(bos.t, pretty=TRUE)
-```
-
-![](README_files/figure-markdown_github/prune6-1.png)
-
 #### Why is the pruned tree not a subtree of the "default" one?
 
 Note that the pruned tree above is not a subtree of the one constructed using the default stopping criteria. The reason for this difference is that one of the default criteria is a limit on the minimum size of a child node. When we relaxed the criteria this limit was reduced and thus the "default" tree is not in fact a subtree of the large tree (that is later pruned). For example: ...
 
-Pruning regression trees with `tree`
-------------------------------------
+<!-- Note that pruning doesn't always improve a tree. For example,  -->
+<!-- if we prune the first tree we fit in this example: -->
+<!-- ```{r prune8, fig.width=6, fig.height=6, message=FALSE, warning=FALSE} -->
+<!-- # what if we prune the original tree? -->
+<!-- set.seed(123) -->
+<!-- bos.t <- rpart(medv ~ ., data=dat.tr, method='anova') -->
+<!-- b <- bos.t$cptable[which.min(bos.t$cptable[,"xerror"]),"CP"] -->
+<!-- bos.t4 <- prune(bos.t, cp=b) -->
+<!-- ``` -->
+<!-- We obtain the same tree as before: -->
+<!-- ```{r prune10, fig.width=6, fig.height=6, message=FALSE, warning=FALSE} -->
+<!-- plot(bos.t4, uniform=FALSE, margin=0.01) -->
+<!-- text(bos.t4, pretty=TRUE) -->
+<!-- ``` -->
+<!-- Below is the original tree: -->
+<!-- ```{r prune6, fig.width=6, fig.height=6, message=FALSE, warning=FALSE} -->
+<!-- plot(bos.t, uniform=FALSE, margin=0.01) -->
+<!-- text(bos.t, pretty=TRUE) -->
+<!-- ``` -->
+#### Pruning regression trees with `tree`
 
 The implementation of trees in the `R` package `tree` follows the original CV-based pruning strategy, as discussed in Section 3.4 of the book
 
