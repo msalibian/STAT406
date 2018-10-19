@@ -62,9 +62,9 @@ but the main purpose here is to understand **what** we are doing. Also note that
 an alternative (better in terms of reusability of the
 ensemble, but maybe still not the most efficient option) would be
 to store the $N$ trees directly. This would also allow for
-more elegant and easy to read code. Once again, this approach 
-will be sacrificed in the altar of clarity of presentation and 
-pedagogy (but I do illustrate it below!)
+more elegant and easy to read code. This approach 
+will be illustrated below, but first we will use the 
+the former (and hopefully clearer) strategy.
 
 First create an array where we will store all the predictions:
 ```{r bag2, fig.width=5, fig.height=5, message=FALSE, warning=TRUE}
