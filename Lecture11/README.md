@@ -1,7 +1,7 @@
 STAT406 - Lecture 11 notes
 ================
 Matias Salibian-Barrera
-2018-10-18
+2018-10-19
 
 #### LICENSE
 
@@ -331,7 +331,45 @@ Again, it would be a **very good exercise** for you to compare the MSPE of the p
 
 #### Why is the pruned tree not a subtree of the "default" one?
 
-Note that the pruned tree above is not a subtree of the one constructed using the default stopping criteria. The reason for this difference is that one of the default criteria is a limit on the minimum size of a child node. When we relaxed the criteria this limit was reduced and thus the "default" tree is not in fact a subtree of the large tree (that is later pruned). For example: ...
+Note that the pruned tree above is not a subtree of the one constructed using the default stopping criteria. In particular, note that the node to the right of the cut "lstat &gt;= 14.4" is split with the cut "dis &gt;= 1.385", whereas in the original tree, the corresponding node was split using "lstat &gt;= 4.91":
+
+``` r
+set.seed(123)
+bos.t <- rpart(medv ~ ., data=dat.tr, method='anova')
+plot(bos.t, uniform=FALSE, margin=0.01)
+text(bos.t, pretty=TRUE)
+```
+
+![](README_files/figure-markdown_github/prune6-1.png)
+
+Although "intuitively" one may say that building an overfitting tree means "running the tree algorithm longer" (in other words, relaxing the stopping rules will just make the splitting algorithm run longer), this is not the case. The reason for this difference is that one of the default "stopping" criteria is to set a limit on the minimum size of a child node. This default limit in `rpart` is 7 (`round(20/3)`). When we relaxed the tree building criteria this limit was reduced (to 1) and thus the "default" tree is not in fact a subtree of the large tree (that is later pruned). In particular, note that the split "dis &gt;= 1.38485" leaves a node with only 4 observations, which means that this split would not have been considered when building the "default" tree. You can verify this by inspecting the pruned tree
+
+``` r
+bos.t3
+```
+
+    ## n= 380 
+    ## 
+    ## node), split, n, deviance, yval
+    ##       * denotes terminal node
+    ## 
+    ##  1) root 380 33010.2000 22.90500  
+    ##    2) rm< 6.945 318 12835.9200 20.03648  
+    ##      4) lstat>=14.4 127  2674.8670 15.02047  
+    ##        8) crim>=7.08414 51   821.1698 11.66863 *
+    ##        9) crim< 7.08414 76   896.2204 17.26974 *
+    ##      5) lstat< 14.4 191  4841.0270 23.37173  
+    ##       10) dis>=1.38485 187  2655.2230 22.92032  
+    ##         20) rm< 6.5445 144  1013.1340 21.57708 *
+    ##         21) rm>=6.5445 43   512.1851 27.41860 *
+    ##       11) dis< 1.38485 4   366.3075 44.47500  
+    ##         22) black< 339.985 1     0.0000 27.90000 *
+    ##         23) black>=339.985 3     0.0000 50.00000 *
+    ##    3) rm>=6.945 62  4136.8300 37.61774  
+    ##      6) rm< 7.437 36  1001.7500 32.65000 *
+    ##      7) rm>=7.437 26  1016.5300 44.49615  
+    ##       14) rad>=16 1     0.0000 21.90000 *
+    ##       15) rad< 16 25   485.5200 45.40000 *
 
 <!-- Note that pruning doesn't always improve a tree. For example,  -->
 <!-- if we prune the first tree we fit in this example: -->

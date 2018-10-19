@@ -96,13 +96,12 @@ to the estimated optimal value found above:
 ```{r prune4, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 bos.t3 <- prune(bos.to, cp=b)
 ```
-This is how the optimally pruned tree looks:
 
+This is how the optimally pruned tree looks:
 ```{r prune4.5, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 plot(bos.t3, uniform=FALSE, margin=0.01)
 text(bos.t3, pretty=TRUE)
 ```
-
 
 Finally, we can verify that the predictions of the pruned 
 tree on the test set are better than before:
@@ -121,13 +120,33 @@ of the alternative methods we have seen in class so far,
 #### Why is the pruned tree not a subtree of the "default" one?
 
 Note that the pruned tree above is not a subtree of the one
-constructed using the default stopping criteria.  The reason 
-for this difference is that one of the default criteria is 
-a limit on the minimum size of a child node. When we relaxed
-the criteria this limit was reduced and thus the "default" tree
-is not in fact a subtree of the large tree
-(that is later pruned). For example: ... 
+constructed using the default stopping criteria. In particular, note 
+that the node to the right of the cut "lstat >= 14.4" is split 
+with the cut "dis >= 1.385", whereas in the original tree, 
+the corresponding node was split using "lstat >= 4.91":
+```{r prune6, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+set.seed(123)
+bos.t <- rpart(medv ~ ., data=dat.tr, method='anova')
+plot(bos.t, uniform=FALSE, margin=0.01)
+text(bos.t, pretty=TRUE)
+```
 
+Although "intuitively" one may say that building an overfitting tree
+means "running the tree algorithm longer" (in other words, relaxing the 
+stopping rules will just make the splitting algorithm run longer), this 
+is not the case. The reason for this difference is that one 
+of the default "stopping" criteria is to set a limit on the minimum 
+size of a child node. This default limit in `rpart` is 7
+(`round(20/3)`). When we relaxed the tree building criteria this limit was reduced 
+(to 1) and thus the "default" tree is not in fact a subtree of the large tree
+(that is later pruned). In particular, note that 
+the split "dis >= 1.38485" leaves a node with only 4 observations, 
+which means that this split would not have been considered
+when building the "default" tree. You can verify this by inspecting the 
+pruned tree
+```{r prunecheck, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+bos.t3
+```
 
 <!-- Note that pruning doesn't always improve a tree. For example,  -->
 <!-- if we prune the first tree we fit in this example: -->
