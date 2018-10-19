@@ -212,11 +212,18 @@ plot(bos.to2)
 ```
 
 We now use the function `tree:cv.tree()` to estimate the MSPE of 
-the subtrees of `bos.to2`, using 5-fold CV:
-
+the subtrees of `bos.to2`, using 5-fold CV, and plot the estimated
+MSPE (here labeled as "deviance") as a function of the 
+complexity parameter (or, equivalently, the size of the tree): 
 ```{r prunetree3, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 set.seed(123)
 tt <- cv.tree(bos.to2, K = 5)
+plot(tt)
+```
+
+Finally, we use the function `prune.tree` to prune the larger tree
+at the "optimal" size, as estimated by `cv.tree` above:
+```{r prunetree3.2, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 bos.pr2 <- prune.tree(bos.to2, k = tt$k[ which.min(tt$dev) ])
 plot(bos.pr2); text(bos.pr2)
 ```

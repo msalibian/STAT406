@@ -427,16 +427,24 @@ plot(bos.to2)
 
 ![](README_files/figure-markdown_github/prunetree2-1.png)
 
-We now use the function `tree:cv.tree()` to estimate the MSPE of the subtrees of `bos.to2`, using 5-fold CV:
+We now use the function `tree:cv.tree()` to estimate the MSPE of the subtrees of `bos.to2`, using 5-fold CV, and plot the estimated MSPE (here labeled as "deviance") as a function of the complexity parameter (or, equivalently, the size of the tree):
 
 ``` r
 set.seed(123)
 tt <- cv.tree(bos.to2, K = 5)
+plot(tt)
+```
+
+![](README_files/figure-markdown_github/prunetree3-1.png)
+
+Finally, we use the function `prune.tree` to prune the larger tree at the "optimal" size, as estimated by `cv.tree` above:
+
+``` r
 bos.pr2 <- prune.tree(bos.to2, k = tt$k[ which.min(tt$dev) ])
 plot(bos.pr2); text(bos.pr2)
 ```
 
-![](README_files/figure-markdown_github/prunetree3-1.png)
+![](README_files/figure-markdown_github/prunetree3.2-1.png)
 
 Compare this pruned tree with the one obtained with the regression trees implementation in `rpart`.
 
