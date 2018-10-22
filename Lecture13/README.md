@@ -1,7 +1,7 @@
 STAT406 - Lecture 13 notes
 ================
 Matias Salibian-Barrera
-2018-10-21
+2018-10-22
 
 LICENSE
 -------
@@ -11,15 +11,15 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-Preliminary lecture slides will be here.
+Preliminary lecture slides are [here](STAT406-18-lecture-13-preliminary.pdf).
 
 Classification
 ==============
 
 As we discussed in class, what is commonly referred to as *classification* can be thought of as prediction, when the responses are classes and we use a particular loss function (the *0-1 loss* we discussed in class). Furthermore, it is easy to show (which we did in class) that the optimal classifier (in terms of minimizing the expected misclassification error) is the one that assigns an observation to the class with the highest probability of occuring, conditional to the value of the observed explanatory variables.
 
-A related discussion about including costs of misclassification and the difference between prediction and classification can be found here: <http://www.fharrell.com/post/classification/>.
-
+<!-- A related discussion about including costs of misclassification  -->
+<!-- and the difference between prediction and classification can be found here: [http://www.fharrell.com/post/classification/](http://www.fharrell.com/post/classification/). -->
 Most (if not all) classification methods we will cover in this course can be simply thought of as different approaches to estimate the conditional probability of each class, conditional on the value of the explanatory variables. In symbols: *P*(**G** = **g**|**X** = **x**<sub>0</sub>). The obvious parallel with what we have done before in this class, is that many (all?) regression methods we discussed in class are different ways of estimating the conditional mean of the response variable (conditional on the value of the explanatory variables).
 
 As in the regression case, there are different ways to estimate this optimal predictor / classifier. Some will be model-based, some will be non-parametric in nature. And some can be considered "restricted" non-parametric methods (without relying on a model, but imposing some other type of constrain on the shape of the classifier). The equivalent methods for regression with continuous responses are: linear or non-linear regression as model-based methods; kernel or local regression as non-parametric methods; and splines or regression trees as "constrained" (regularized?) non-parametric methods.
