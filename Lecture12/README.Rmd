@@ -17,7 +17,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-Preliminary lecture slides are [here](STAT406-18-lecture-12-preliminary.pdf).
+The lecture slides are [here](STAT406-18-lecture-12.pdf).
 
 
 ## Bagging

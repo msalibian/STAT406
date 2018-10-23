@@ -1,7 +1,7 @@
 STAT406 - Lecture 12 notes
 ================
 Matias Salibian-Barrera
-2018-10-19
+2018-10-23
 
 #### LICENSE
 
@@ -10,7 +10,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-Preliminary lecture slides are [here](STAT406-18-lecture-12-preliminary.pdf).
+The lecture slides are [here](STAT406-18-lecture-12.pdf).
 
 Bagging
 -------
