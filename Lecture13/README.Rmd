@@ -30,8 +30,8 @@ expected misclassification error) is the one that assigns an observation
 to the class with the highest probability of occuring, conditional to the
 value of the observed explanatory variables. 
 
-A related discussion about including costs of misclassification 
-and the difference between prediction and classification can be found here: [http://www.fharrell.com/post/classification/](http://www.fharrell.com/post/classification/).
+<!-- A related discussion about including costs of misclassification  -->
+<!-- and the difference between prediction and classification can be found here: [http://www.fharrell.com/post/classification/](http://www.fharrell.com/post/classification/). -->
 
 Most (if not all) classification methods we will cover in this course can be
 simply thought of as different approaches to estimate the conditional probability of
