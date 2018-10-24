@@ -1,7 +1,7 @@
 STAT406 - Lecture 12 notes
 ================
 Matias Salibian-Barrera
-2018-10-23
+2018-10-24
 
 #### LICENSE
 
@@ -35,7 +35,7 @@ dat.te <- Boston[ ii, ]
 dat.tr <- Boston[ -ii, ]
 ```
 
-I will now train *N* = 5 trees and average their predictions. Note that, in order to illustrate the process more clearly, I will compute and store the *N* × *n*<sub>*e*</sub> predictions, where *n*<sub>*e*</sub> denotes the number of observations in the test set. This is not the best (most efficient) way of implementing *bagging*, but the main purpose here is to understand **what** we are doing. Also note that an alternative (better in terms of reusability of the ensemble, but maybe still not the most efficient option) would be to store the *N* trees directly. This would also allow for more elegant and easy to read code. This approach will be illustrated below, but first we will use the the former (and hopefully clearer) strategy.
+I will now train *N* = 5 trees and average their predictions. Note that, in order to illustrate the process more clearly, I will compute and store the *n*<sub>*e*</sub> × *N* predictions in a two-dimensional array (aka a matrix), where *n*<sub>*e*</sub> denotes the number of observations in the test set. This is not the best (i.e. most efficient) way of implementing *bagging*, but the main purpose here is to understand **exactly what** we are doing. Also note that an alternative (better in terms of reusability of the ensemble, but maybe still not the most efficient option) is to store the *N* trees directly. This will also allow for more elegant and easy to read code, and it is illustrated below, but first we will use the the former (and hopefully clearer) strategy.
 
 First create an array where we will store all the predictions:
 
@@ -45,7 +45,14 @@ myps <- array(NA, dim=c(nrow(dat.te), N))
 con <- rpart.control(minsplit=3, cp=1e-3, xval=1)
 ```
 
-The last object (`con`) contains my options to train large (potentially overfitting) trees.
+The last object (`con`) contains my options to train large (potentially overfitting) trees. As discussed in class, we now generate `N` bootstrap samples by generating vectors of randomly sampled indices (with replacement), the relevant lines of code are:
+
+``` r
+  ii <- sample(n.tr, replace=TRUE)
+  tmp <- rpart(..., data=dat.tr[ii, ], ...)
+```
+
+where we train the trees on the data set `dat.tr[ii, ]`, which is the boostrap sample. Then, for each of these trees we compute the corresponding (vector of) predictions on the test set (`predict(tmp, newdata=dat.te, type='vector')`) and store them. Putting all the pieces together we get:
 
 ``` r
 n.tr <- nrow(dat.tr)
@@ -55,13 +62,23 @@ for(j in 1:N) {
   tmp <- rpart(medv ~ ., data=dat.tr[ii, ], method='anova', control=con)
   myps[,j] <- predict(tmp, newdata=dat.te, type='vector')
 }
+```
+
+The bagged predictions are the average of the predictions obtained with each tree in the ensamble. In other words, for each point in `dat.te` we need to compute the average of the predictions obtained with the `N` different trees. Because of the way I stored the results in the matrix `myps`, the bagged prediction of each point in `dat.te` is the average of the corresponding row in the matrix `myps`. We can compute all these (*n*<sub>*e*</sub>) averages at once using `rowMeans()` as follows:
+
+``` r
 pr.bagg <- rowMeans(myps)
+```
+
+Finally, the estimated MSPE of the bagged ensemble of trees obtained with our specific test set is:
+
+``` r
 with(dat.te, mean( (medv - pr.bagg)^2 ) )
 ```
 
     ## [1] 22.50854
 
-And compare with predictions from the pruned tree, and the ones from other predictors discussed in the previous note:
+We can now compare this with the similarly estimated MSPE of the pruned tree:
 
 ``` r
 myc <- rpart.control(minsplit=3, cp=1e-8, xval=10)
@@ -76,7 +93,7 @@ with(dat.te, mean((medv - pr.t3)^2) )
 
     ## [1] 21.22249
 
-What if we *bagg* *N* = 10 trees?
+Would the quality of the bagged predictions improve if we use a larger ensemble? For example, what happens if we *bagg* *N* = 10 trees?
 
     ## [1] 22.78935
 
@@ -90,12 +107,38 @@ or *N* = 1000 trees?
 
 Note that, at least for this test set, increasing the number of bagged trees seems to improve the MSPE. However, the gain appears to decrease, so it may not be worth the computational effort to use a larger *bag* / ensemble. Furthermore, one may also want to investigate whether this is an artifact of this specific training / test partition, or if similar patterns of MSPE are observed for other random training / test splits. Below we try a different test/training split and repeat the bagging experiment above:
 
-    ## [1]  5.00000 22.50854
-    ## [1] 10.00000 22.78935
-    ## [1] 100.00000  18.42413
-    ## [1] 1000.00000   17.70385
+``` r
+set.seed(123456)
+n <- nrow(Boston)
+ii <- sample(n, floor(n/4))
+dat.te <- Boston[ ii, ]
+dat.tr <- Boston[ -ii, ]
+Ns <- c(5, 10, 100, 1000)
+all.results <- matrix(NA, length(Ns), 2) 
+colnames(all.results) <- c('N', 'MSPE') 
+n.tr <- nrow(dat.tr)
+for(hh in 1:length(Ns)) {
+  N <- Ns[hh]
+  myps <- array(NA, dim=c(nrow(dat.te), N))
+  set.seed(123)
+  for(j in 1:N) {
+    ii <- sample(n.tr, replace=TRUE)
+    tmp <- rpart(medv ~ ., data=dat.tr[ii, ], method='anova', control=con)
+    myps[,j] <- predict(tmp, newdata=dat.te, type='vector')
+  }
+  pr.bagg <- rowMeans(myps)
+  all.results[hh, ] <- c(N, with(dat.te, mean( (medv - pr.bagg)^2 ) ) )
+}
+print(all.results)
+```
 
-The pattern is in fact similar to the one we observed before: increasing the size of the ensemble *N* helps, but the improvement becomes smaller as *N* increases. A very good exercise is to explore what happens with the MSPE of the bagged ensemble when the MSPE is estimated using cross-validation (instead of using a test set). I leave this as an exercise for the reader.
+    ##         N     MSPE
+    ## [1,]    5 16.82573
+    ## [2,]   10 14.29633
+    ## [3,]  100 12.98647
+    ## [4,] 1000 12.68876
+
+The pattern is in fact similar to the one we observed before: increasing the size of the ensemble *N* helps, but the improvement becomes smaller as *N* increases. A *very good exercise* is to explore what happens with the MSPE of the bagged ensemble (for different values of *N*) when the MSPE is estimated using cross-validation (instead of using this specific test set). Do it!
 
 #### More efficient, useful and elegant implementation
 
@@ -131,7 +174,7 @@ Given a new data set, in order to obtain the corresponding predictions for each 
 -   loop over the *N* trees, averaging the corresponding *N* vectors of predictions; or
 -   use `sapply` (check the help page if you are not familiar with the `apply` functions in `R`).
 
-The later option results in code that is much more elegant, efficient (allowing for future uses of the ensemble), and compact. Of course both give exactly the same results. Below we illustrate both strategies. If we use the **first approach** we obtain the following estimated MSPE using the test set:
+The later option results in code that is much more elegant, efficient (allowing for future uses of the ensemble), and compact. Of course both give exactly the same results. Below we illustrate both strategies. If we use the **first approach (loop)** we obtain the following estimated MSPE using the test set:
 
 ``` r
 pr.bagg2 <- rep(0, nrow(dat.te))
@@ -142,7 +185,7 @@ with(dat.te, mean( (medv - pr.bagg2)^2 ) )
 
     ## [1] 18.42413
 
-(compare it with the results we obtained before). Using the **second approach**:
+(compare it with the results we obtained before). Using the **second approach (sapply)**:
 
 ``` r
 pr.bagg3 <- rowMeans(sapply(mybag, predict, newdata=dat.te))
