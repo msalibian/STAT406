@@ -37,7 +37,7 @@ There are several (many?) `R` packages implementing
 bagging for different predictors, with varying degrees of 
 flexibility (the implementations) and user-friendliness. 
 However, for pedagogical and illustrative purposes, in these notes I will
-*bagg* by hand.
+**bagg** by hand.
 
 ### Bagging by hand
 
@@ -58,7 +58,7 @@ Note that, in order to illustrate the process more
 clearly, I will compute and store the $n_e \times N$
 predictions in a two-dimensional array (aka a matrix), 
 where $n_e$ denotes the number of observations in 
-the test set. This is not the best (i.e. most efficient) way of implementing *bagging*,
+the test set. This is not the best (i.e. most efficient) way of implementing **bagging**,
 but the main purpose here is to understand **exactly what** we are doing. Also note that
 an alternative (better in terms of reusability of the
 ensemble, but maybe still not the most efficient option) is
@@ -122,7 +122,7 @@ pr.t3 <- predict(bos.t3, newdata=dat.te, type='vector')
 with(dat.te, mean((medv - pr.t3)^2) )
 ```
 Would the quality of the bagged predictions improve if we use 
-a larger ensemble? For example, what happens if we *bagg* $N = 10$ trees? 
+a larger ensemble? For example, what happens if we **bagg** $N = 10$ trees? 
 ```{r bag10, fig.width=5, fig.height=5, message=FALSE, warning=TRUE, echo=FALSE}
 N <- 10
 myps <- array(NA, dim=c(nrow(dat.te), N))
@@ -167,7 +167,7 @@ with(dat.te, mean( (medv - pr.bagg)^2 ) )
 
 Note that, at least for this test set, increasing the number of bagged trees
 seems to improve the MSPE. However, the gain appears to decrease, so it may
-not be worth the computational effort to use a larger *bag* / ensemble. 
+not be worth the computational effort to use a larger **bag** / ensemble. 
 Furthermore, one may also want to investigate whether this is an
 artifact of this specific training / test partition, or if similar
 patterns of MSPE are observed for other random training / test splits. 
@@ -199,7 +199,7 @@ print(all.results)
 ```
 The pattern is in fact similar to the one we observed before: 
 increasing the size of the ensemble $N$ helps, but the improvement 
-becomes smaller as $N$ increases. A *very good exercise* is to explore what happens 
+becomes smaller as $N$ increases. A **very good exercise** is to explore what happens 
 with the MSPE of
 the bagged ensemble (for different values of $N$) when the MSPE is estimated using cross-validation
 (instead of using this specific test set). Do it!
@@ -210,7 +210,7 @@ the bagged ensemble (for different values of $N$) when the MSPE is estimated usi
 I will now illustrate a possibly more efficient way to implement bagging, namely
 storing the $N$ trees (rather than their predictions on a given data set).
 In this way one can re-use the ensemble (on any future data set) without
-having to re-train the elements of the *bag*. Since the idea is 
+having to re-train the elements of the **bag**. Since the idea is 
 the same, I will just do it for ensemble of $N = 100$ trees. 
 To simplify the comparison between this implementation of
 bagging and the one used above, we first re-create
