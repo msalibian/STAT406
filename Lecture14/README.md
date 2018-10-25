@@ -259,12 +259,12 @@ The questions for you are:
 <!-- ``` -->
 <!-- Hence we can estimate the sensitivities of LDA and QDA as 17/19 and 16/19  -->
 <!-- respectively. Their specificities are both 16/20.  -->
-<!-- <!-- # sensitivity  -->
---&gt; <!-- <!-- # LDA: 16/20 = 4/5 --> --&gt; <!-- <!-- # QDA: 16/20  --> --&gt;
-
-<!-- <!-- # specificity -->
---&gt; <!-- <!-- # LDA: 17/19 --> --&gt; <!-- <!-- # QDA: 16/19 --> --&gt;
-
+<!-- # sensitivity  -->
+<!-- # LDA: 16/20 = 4/5 -->
+<!-- # QDA: 16/20  -->
+<!-- # specificity -->
+<!-- # LDA: 17/19 -->
+<!-- # QDA: 16/19 -->
 <!-- For the zip code data: -->
 <!-- ```{r zip3, fig.width=6, fig.height=6, message=FALSE, warning=FALSE} -->
 <!-- data(zip.train, package='ElemStatLearn')  -->
@@ -276,18 +276,23 @@ The questions for you are:
 <!-- te.lda <- as.numeric(predict(a, newdata=x.te)$class) -->
 <!-- table(te.lda, x.te$V1) -->
 <!-- ``` -->
-<!-- <!-- # sensitivity - test -->
---&gt; <!-- <!-- # 350/ 359 = 97.4% --> --&gt;
-
-<!-- <!-- # specificity - test -->
---&gt; <!-- <!-- # 160 / 166 = 96.4% --> --&gt;
-
-<!-- <!-- # build the ROC curve -->
---&gt;
-
-<!-- <!-- te.lda <- predict(a, newdata=x.te)$posterior[,1] -->
---&gt; <!-- <!-- sens <- spec <- rep(0, 50) --> --&gt; <!-- <!-- als <- seq(0, 1, length=51) --> --&gt; <!-- <!-- for(i in 1:50) { --> --&gt; <!-- <!--   npr.1 <- (te.lda > als[i]) --> --&gt; <!-- <!--   npr.2 <- !npr.1 --> --&gt; <!-- <!--   sens[i] <- sum( (as.numeric(as.factor(x.te$V1)) == 1) & npr.1 ) --> --&gt; <!-- <!--   spec[i] <- sum( (as.numeric(as.factor(x.te$V1)) == 2) & npr.2 ) --> --&gt; <!-- <!-- } --> --&gt; <!-- <!-- sens <- sens / sum(as.numeric(as.factor(x.te$V1)) == 1) --> --&gt; <!-- <!-- spec <- spec / sum(as.numeric(as.factor(x.te$V1)) == 2) --> --&gt; <!-- <!-- plot(1-spec, sens, type='b', ylim=c(0,1), xlim=c(0,1)) --> --&gt;
-
+<!-- # sensitivity - test -->
+<!-- # 350/ 359 = 97.4% -->
+<!-- # specificity - test -->
+<!-- # 160 / 166 = 96.4% -->
+<!-- # build the ROC curve -->
+<!-- te.lda <- predict(a, newdata=x.te)$posterior[,1] -->
+<!-- sens <- spec <- rep(0, 50) -->
+<!-- als <- seq(0, 1, length=51) -->
+<!-- for(i in 1:50) { -->
+<!--   npr.1 <- (te.lda > als[i]) -->
+<!--   npr.2 <- !npr.1 -->
+<!--   sens[i] <- sum( (as.numeric(as.factor(x.te$V1)) == 1) & npr.1 ) -->
+<!--   spec[i] <- sum( (as.numeric(as.factor(x.te$V1)) == 2) & npr.2 ) -->
+<!-- } -->
+<!-- sens <- sens / sum(as.numeric(as.factor(x.te$V1)) == 1) -->
+<!-- spec <- spec / sum(as.numeric(as.factor(x.te$V1)) == 2) -->
+<!-- plot(1-spec, sens, type='b', ylim=c(0,1), xlim=c(0,1)) -->
 K-Nearest Neighbours (K-NN)
 ---------------------------
 
@@ -406,7 +411,7 @@ mean( u50 != x.te$V1 )
 
     ## [1] 0.05536913
 
-Note how the performance of the K-NN classifier in this case stops improving when K is 10 or more. Since the number *K* of nearest neighbours is in fact a tuning constant that needs to be chosen by the user, how would do it in an objective manner? What would you do if you didn't have a test set available?
+Note how the performance of the K-NN classifier in this case stops improving when K is larger than 5. Since the number *K* of nearest neighbours is in fact a tuning constant that needs to be chosen by the user, how would do it in an objective way? What would you do if you didn't have a test set available?
 
 #### Challenges for K-NN classifiers
 

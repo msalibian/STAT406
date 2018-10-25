@@ -239,13 +239,13 @@ The questions for you are:
 <!-- Hence we can estimate the sensitivities of LDA and QDA as 17/19 and 16/19  -->
 <!-- respectively. Their specificities are both 16/20.  -->
 
-<!-- <!-- # sensitivity  --> -->
-<!-- <!-- # LDA: 16/20 = 4/5 --> -->
-<!-- <!-- # QDA: 16/20  --> -->
+<!-- # sensitivity  -->
+<!-- # LDA: 16/20 = 4/5 -->
+<!-- # QDA: 16/20  -->
 
-<!-- <!-- # specificity --> -->
-<!-- <!-- # LDA: 17/19 --> -->
-<!-- <!-- # QDA: 16/19 --> -->
+<!-- # specificity -->
+<!-- # LDA: 17/19 -->
+<!-- # QDA: 16/19 -->
 
 
 <!-- For the zip code data: -->
@@ -260,26 +260,26 @@ The questions for you are:
 <!-- te.lda <- as.numeric(predict(a, newdata=x.te)$class) -->
 <!-- table(te.lda, x.te$V1) -->
 <!-- ``` -->
-<!-- <!-- # sensitivity - test --> -->
-<!-- <!-- # 350/ 359 = 97.4% --> -->
+<!-- # sensitivity - test -->
+<!-- # 350/ 359 = 97.4% -->
 
-<!-- <!-- # specificity - test --> -->
-<!-- <!-- # 160 / 166 = 96.4% --> -->
+<!-- # specificity - test -->
+<!-- # 160 / 166 = 96.4% -->
 
-<!-- <!-- # build the ROC curve --> -->
+<!-- # build the ROC curve -->
 
-<!-- <!-- te.lda <- predict(a, newdata=x.te)$posterior[,1] --> -->
-<!-- <!-- sens <- spec <- rep(0, 50) --> -->
-<!-- <!-- als <- seq(0, 1, length=51) --> -->
-<!-- <!-- for(i in 1:50) { --> -->
-<!-- <!--   npr.1 <- (te.lda > als[i]) --> -->
-<!-- <!--   npr.2 <- !npr.1 --> -->
-<!-- <!--   sens[i] <- sum( (as.numeric(as.factor(x.te$V1)) == 1) & npr.1 ) --> -->
-<!-- <!--   spec[i] <- sum( (as.numeric(as.factor(x.te$V1)) == 2) & npr.2 ) --> -->
-<!-- <!-- } --> -->
-<!-- <!-- sens <- sens / sum(as.numeric(as.factor(x.te$V1)) == 1) --> -->
-<!-- <!-- spec <- spec / sum(as.numeric(as.factor(x.te$V1)) == 2) --> -->
-<!-- <!-- plot(1-spec, sens, type='b', ylim=c(0,1), xlim=c(0,1)) --> -->
+<!-- te.lda <- predict(a, newdata=x.te)$posterior[,1] -->
+<!-- sens <- spec <- rep(0, 50) -->
+<!-- als <- seq(0, 1, length=51) -->
+<!-- for(i in 1:50) { -->
+<!--   npr.1 <- (te.lda > als[i]) -->
+<!--   npr.2 <- !npr.1 -->
+<!--   sens[i] <- sum( (as.numeric(as.factor(x.te$V1)) == 1) & npr.1 ) -->
+<!--   spec[i] <- sum( (as.numeric(as.factor(x.te$V1)) == 2) & npr.2 ) -->
+<!-- } -->
+<!-- sens <- sens / sum(as.numeric(as.factor(x.te$V1)) == 1) -->
+<!-- spec <- spec / sum(as.numeric(as.factor(x.te$V1)) == 2) -->
+<!-- plot(1-spec, sens, type='b', ylim=c(0,1), xlim=c(0,1)) -->
 
 
 ## K-Nearest Neighbours (K-NN)
