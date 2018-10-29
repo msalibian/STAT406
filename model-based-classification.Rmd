@@ -10,7 +10,7 @@ fontsize: 12pt
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, fig.width=6, fig.height=6, message=FALSE, warning=FALSE)
 ```
 
 ## Model-based classification
@@ -51,7 +51,6 @@ Hence, to find the value $c_i$ with the largest
 $P( G = c_i | \mathbf{X} = \mathbf{x}_0)$ 
 we only need to compute the numerators in the right hand side above
 for each $c_j \in {\cal C}$ and select the class with the largest value. 
-
 We now look at a simple example of the above general approach.
 
 ### An example: LDA
@@ -117,4 +116,122 @@ $$
 \mathbf{x}_i \, .
 $$
 
+### A numerical example
 
+Consider the example used in class, with 2 classes and a 2-dimensional 
+vector of explanatory variables. We first load the data
+```{r lda0}
+data(vaso, package='robustbase')
+```
+
+We will compute an approximation to the optimal predictor based on the
+Gaussian model behind LDA (assuming a Gaussian distribution for the vector
+of features in each class, with a common covariance matrix). 
+The goal is to classify a new observation at $\mathbf{x}_0 = (\mbox{Volume}, \mbox{Rate})^\top = (1.3, 1.9)^\top$. 
+
+For this, we first estimate the parameters of the distributions of 
+$\mathbf{X} | G = 0$ and $\mathbf{X} | G = 1$. These are the two vectors of 
+means:
+$\mathbf{\mu}_0 \in \mathbb{R}^2$, $\mathbf{\mu}_1 \in \mathbb{R}^2$, and the common 
+covariance matrix $\mathbf{\Sigma} \in \mathbb{R}^{2 \times 2}$. 
+Since we will have to perform a couple of operations on each subgroup (compute
+their sample means and covariance matrices), we first create two new objects, one
+per class. This is not necessary, but it results in shorter and easier to read
+code. 
+We call each subgrup `d0` (for class "0") and `d1` (for class "1"):
+```{r lda00}
+d0 <- subset(vaso, Y == 0, select = c('Volume', 'Rate')) 
+d1 <- subset(vaso, Y == 1, select = c('Volume', 'Rate')) 
+```
+The vectors of
+means for each class are
+```{r lda01}
+( mu0 <- colMeans( d0 ) )
+( mu1 <- colMeans( d1 ) )
+```
+To estimate $\mathbf{\Sigma}$ we first compute the covariance matrix of each 
+group:
+```{r lda02}
+( sigma0 <- cov( d0 ) )
+( sigma1 <- cov( d1 ) )
+```
+and then use their weighted average, using the number of observations in each
+group:
+```{r lda03}
+(sigma.hat <- ( (nrow(d0) - 1 ) * sigma0 
+               + (nrow(d1) - 1) * sigma1 ) / (nrow(vaso) - 2) )
+```
+We now estimate the probabilities $P( G = 0 )$ and $P( G = 1 )$:
+```{r lda04}
+( pi0 <- with(vaso, mean(Y == 0)) )
+( pi1 <- with(vaso, mean(Y == 1)) )
+```
+We are now ready to compute estimates of
+$f(\mathbf{x}_0 \, | \, G = 0) P( G = 0)$ and 
+$f(\mathbf{x}_0 \, | \, G = 1) P( G = 1)$. We do it first by hand, then
+using pre-coded multivariate Gaussian densities in `R` and finally compare
+the results using the function `lda` in package `MASS`, as done in the
+lecture notes. 
+
+#### By hand
+
+To do it by hand we use the formula of the density of a multivariate normal 
+distribution, as above. We first compute the exponents in the exponential
+function `cp0` and `cp1` below, and then the value of the density function
+(without the $\sqrt{2 \, \pi}$ that is common to both terms):
+```{r lda1}
+x0 <- c(1.9, 1.3)
+p <- 2
+cp0 <- crossprod( x0 - mu0, solve(sigma.hat, x0 - mu0))
+dens0 <- det(sigma.hat)^(-p/2) * exp( - cp0 / 2 )
+cp1 <- crossprod( x0 - mu1, solve(sigma.hat, x0 - mu1))
+dens1 <- det(sigma.hat)^(-p/2) * exp( - cp1 / 2 )
+```
+We now compute
+$f(\mathbf{x}_0 \, | \, G = 0) P( G = 0)$:
+```{r lda2}
+( pp0 <- dens0 * pi0 )
+```
+and 
+$f(\mathbf{x}_0 \, | \, G = 1) P( G = 1)$:
+```{r lda3}
+( pp1 <- dens1 * pi1 )
+```
+We see that the (estimated) optimal classifier would classify a point
+at $\mathbf{x}_0 = (\mbox{Volume}, \mbox{Rate})^\top = (1.3, 1.9)^\top$
+as belonging to class 1. The corresponding conditional probabilities
+for each class are:
+```{r lda4}
+c( posterior0 = pp0 / (pp0 + pp1), posterior1 = pp1 / (pp0 + pp1) )
+```
+
+#### Using a built-in function to compute multivariate Gaussian densities
+
+Using the estimated parameters 
+$\mathbf{\mu}_0 \in \mathbb{R}^2$, $\mathbf{\mu}_1 \in \mathbb{R}^2$, and the common 
+covariance matrix $\mathbf{\Sigma} \in \mathbb{R}^{2 \times 2}$ as before, 
+we can compute the corresponding values of Gaussian density functions using 
+the function `dmvnorm` in package `mvtnorm` (see its help page for more
+details):
+```{r lda5}
+dens0 <- mvtnorm::dmvnorm(x0, mean=mu0, sigma=sigma.hat)
+dens1 <- mvtnorm::dmvnorm(x0, mean=mu1, sigma=sigma.hat)
+```
+And now, the numerators of the conditional probabilities and the 
+conditional probabilities are:
+```{r lda6}
+( pp0 <- dens0 * pi0 )
+( pp1 <- dens1 * pi1 )
+c( posterior0 = pp0 / (pp0 + pp1), posterior1 = pp1 / (pp0 + pp1) )
+```
+**Note: why do `pp0` and `pp1` take different values here, but the conditional probabilities are the same in the end?**
+
+#### Using `MASS::lda`
+
+We now use the function `lda` in package `MASS` as in the lecture slides and notes:
+```{r lda.mass}
+library(MASS)
+a.lda <- lda(Y ~ Volume + Rate, data=vaso)
+names(x0) <- c('Volume', 'Rate')
+predict(a.lda, newdata=data.frame(t(x0)))$posterior
+```
