@@ -35,8 +35,9 @@ $$
 $$
 If we know (can model reasonably) and can estimate all the 
 conditional probabilities  
-$P( G = c_\ell | \mathbf{X} = \mathbf{x}_0)$ 
-for all possible values of the features $\mathbf{x}_0 \in \mathbb{R}^p$
+$P( G = c_\ell | \mathbf{X} = \mathbf{x})$ 
+for all possible values of the features $\mathbf{x} \in \mathbb{R}^p$
+and all classes $c_\ell \in {\cal C}$, 
 then we can estimate the optimal (with respect to the 0-1 loss) classifier.
 One way to model (and estimate) the above conditional probabilities is
 to do it indirectly by modeling the distribution of the vector of
@@ -61,7 +62,7 @@ distribution with mean $\mathbf{\mu}_\ell \in \mathbb{R}^p$
 and covariance matrix $\mathbf{\Sigma} \in \mathbb{R}^{p \times p}$
 (the same for all $c_\ell \in {\cal C}$). In symbols:
 $$
-\mathbf{X} | G = c_i \ \sim \ {\cal N}\left( 
+\mathbf{X} | G = c_\ell \ \sim \ {\cal N}\left( 
 \mathbf{\mu}_\ell, 
 \mathbf{\Sigma} \right) \, .
 $$
@@ -77,21 +78,26 @@ choose the class with the largest value of
 $f( \, \mathbf{x}_0 \, | \, G = c_j) P( G = c_j )$. 
 
 To estimate the above densities we need to estimate the following
-parameters and probabilities:
+parameters:
 
 - $\mathbf{\mu}_i$, $i = 1, \ldots, K$;
-- $\mathbf{\Sigma}$; and
+- $\mathbf{\Sigma}$;
+
+and also the following probabilities:
+
 - $P( G = c_j )$, $j = 1, \ldots, K$. 
 
-The MLE estimators for the mean vectors are the sample means of
+The usual estimators for the mean vectors are the sample means of
 the features in each class in the training set, and the common
 covariance matrix (across classes) can be estimated by taking
 a weighted average of the sample covariance matrix in each class
 using the data in the training set. Finally, the probabilities of 
 each class can be estimated with the observed frequency of each
-class in the training set. In symbols we have
+class in the training set. 
 
-- For class $c_i \in {\cal C}$ we have 
+In symbols, we have:
+
+- For class $c_i \in {\cal C}$ the estimated vector of means:
 $$
 \hat{\mathbf{\mu}}_i \, = \, \frac{1}{n_i} \sum_{j \in {\cal N}_i} \mathbf{x}_j \, ,
 $$
@@ -127,7 +133,7 @@ data(vaso, package='robustbase')
 We will compute an approximation to the optimal predictor based on the
 Gaussian model behind LDA (assuming a Gaussian distribution for the vector
 of features in each class, with a common covariance matrix). 
-The goal is to classify a new observation at $\mathbf{x}_0 = (\mbox{Volume}, \mbox{Rate})^\top = (1.3, 1.9)^\top$. 
+The goal is to classify a new observation at $\mathbf{x}_0 = (\mbox{Volume}, \mbox{Rate})^\top = (1.9, 1.3)^\top$. 
 
 For this, we first estimate the parameters of the distributions of 
 $\mathbf{X} | G = 0$ and $\mathbf{X} | G = 1$. These are the two vectors of 
@@ -136,7 +142,7 @@ $\mathbf{\mu}_0 \in \mathbb{R}^2$, $\mathbf{\mu}_1 \in \mathbb{R}^2$, and the co
 covariance matrix $\mathbf{\Sigma} \in \mathbb{R}^{2 \times 2}$. 
 Since we will have to perform a couple of operations on each subgroup (compute
 their sample means and covariance matrices), we first create two new objects, one
-per class. This is not necessary, but it results in shorter and easier to read
+for the training data of each class. This is not necessary, but it results in shorter and easier to read
 code. 
 We call each subgrup `d0` (for class "0") and `d1` (for class "1"):
 ```{r lda00}
@@ -177,16 +183,18 @@ lecture notes.
 
 To do it by hand we use the formula of the density of a multivariate normal 
 distribution, as above. We first compute the exponents in the exponential
-function `cp0` and `cp1` below, and then the value of the density function
-(without the $\sqrt{2 \, \pi}$ that is common to both terms):
+function `cp0` and `cp1` below, and then the value of the density function:
+
 ```{r lda1}
 x0 <- c(1.9, 1.3)
 p <- 2
-cp0 <- crossprod( x0 - mu0, solve(sigma.hat, x0 - mu0))
-dens0 <- det(sigma.hat)^(-p/2) * exp( - cp0 / 2 )
-cp1 <- crossprod( x0 - mu1, solve(sigma.hat, x0 - mu1))
-dens1 <- det(sigma.hat)^(-p/2) * exp( - cp1 / 2 )
+cp0 <- as.numeric( crossprod( x0 - mu0, solve(sigma.hat, x0 - mu0)) )
+dens0 <- det(sigma.hat)^(-1/2) * exp( - cp0 / 2 ) * (sqrt(2*pi)^(-p))
+cp1 <- as.numeric( crossprod( x0 - mu1, solve(sigma.hat, x0 - mu1)) )
+dens1 <- det(sigma.hat)^(-1/2) * exp( - cp1 / 2 ) * (sqrt(2*pi)^(-p))
 ```
+(Note that we could have just used `exp( - cp0 / 2 )` and `exp( - cp1 / 2 )` 
+above, since the other terms are the same for both expressions). 
 We now compute
 $f(\mathbf{x}_0 \, | \, G = 0) P( G = 0)$:
 ```{r lda2}
@@ -224,11 +232,13 @@ conditional probabilities are:
 ( pp1 <- dens1 * pi1 )
 c( posterior0 = pp0 / (pp0 + pp1), posterior1 = pp1 / (pp0 + pp1) )
 ```
-**Note: why do `pp0` and `pp1` take different values here, but the conditional probabilities are the same in the end?**
 
 #### Using `MASS::lda`
 
-We now use the function `lda` in package `MASS` as in the lecture slides and notes:
+We now compare the above results with 
+the output of the function `lda` in package `MASS` as in the lecture slides and notes
+(pay attention to the effort needed to transform the object `x0` into 
+an appropriate data frame to use with `predict.lda`): 
 ```{r lda.mass}
 library(MASS)
 a.lda <- lda(Y ~ Volume + Rate, data=vaso)
