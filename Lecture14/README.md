@@ -1,7 +1,7 @@
 STAT406 - Lecture 14 notes
 ================
 Matias Salibian-Barrera
-2018-10-25
+2018-10-30
 
 LICENSE
 -------
@@ -11,7 +11,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-Preliminary lecture slides are [here](STAT406-18-lecture-14-preliminary.pdf).
+The lecture slides are [here](STAT406-18-lecture-14.pdf). Additional notes about model-based classification are [here](model-based-classification.pdf).
 
 QDA
 ---
