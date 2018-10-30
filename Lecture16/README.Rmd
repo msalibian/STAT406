@@ -1,0 +1,163 @@
+---
+title: "STAT406 - Lecture 16 notes"
+author: "Matias Salibian-Barrera"
+date: "`r format(Sys.Date())`"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## LICENSE
+These notes are released under the 
+"Creative Commons Attribution-ShareAlike 4.0 International" license. 
+See the **human-readable version** [here](https://creativecommons.org/licenses/by-sa/4.0/)
+and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/legalcode). 
+
+## Lecture slides
+
+Preliminary lecture slides will be here.
+
+
+# Random Forests (continued)
+
+Consider again the ISOLET data, available 
+here: 
+[http://archive.ics.uci.edu/ml/datasets/ISOLET](http://archive.ics.uci.edu/ml/datasets/ISOLET). 
+Here we only use a subset 
+corresponding to the observations for the letters **C** and **Z**. 
+
+We first load the training and test data sets, and force the response 
+variable to be categorical, so that the `R` implementations of the
+different predictors we will use below will build 
+classifiers and not their regression counterparts:
+```{r rf.isolet, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+xtr <- read.table('../Lecture15/isolet-train-c-z.data', sep=',')
+xte <- read.table('../Lecture15/isolet-test-c-z.data', sep=',') 
+xtr$V618 <- as.factor(xtr$V618)
+xte$V618 <- as.factor(xte$V618)
+```
+To train a Random Forest we use the function `randomForest` in the
+package of the same name. The code underlying this package was originally 
+written by Leo Breiman. We train a RF leaving all
+paramaters at their default values, and check 
+its performance on the test set:
+```{r rf.isolet2, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+library(randomForest)
+set.seed(123)
+a.rf <- randomForest(V618 ~ ., data=xtr, ntree=500) 
+p.rf <- predict(a.rf, newdata=xte, type='response')
+table(p.rf, xte$V618)
+```
+Note that the Random Forest only makes one mistake out of 120 observations
+in the test set. The OOB error rate estimate is slightly over 2%, 
+and we see that 500 trees is a reasonable forest size:
+
+```{r rf.oob, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+plot(a.rf, lwd=3, lty=1)
+a.rf
+```
+
+#### Using a test set instead of OBB
+
+Given that in this case we do have a test set, we can use it 
+to monitor the error rate (instead of using the OOB error estimates):
+
+```{r rf.isolet.test, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+x.train <- model.matrix(V618 ~ ., data=xtr)
+y.train <- xtr$V618
+x.test <- model.matrix(V618 ~ ., data=xte)
+y.test <- xte$V618
+set.seed(123)
+a.rf <- randomForest(x=x.train, y=y.train, xtest=x.test, ytest=y.test, ntree=500) 
+test.err <- a.rf$test$err.rate
+ma <- max(c(test.err))
+plot(test.err[, 2], lwd=2, lty=1, col='red', type='l', ylim=c(0, max(c(0, ma))))
+lines(test.err[, 3], lwd=2, lty=1, col='green')
+lines(test.err[, 1], lwd=2, lty=1, col='black')
+```
+
+According to the help page for the `plot` method for objects of class
+`randomForest`, the following plot should show both error rates (OOB plus
+those on the test set):
+
+```{r rf.isolet.test.plot, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+plot(a.rf, lwd=2)
+a.rf
+```
+
+#### Feature sequencing / Variable ranking
+
+To explore which variables were used in the forest,
+and also, their importance rank as discussed in
+class, we can use the function `varImpPlot`:
+```{r rf.isolet3, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+varImpPlot(a.rf, n.var=20)
+```
+
+#### Comparing RF with other classifiers
+
+We now compare the Random Forest with some of the other classifiers we saw in class,
+using their classification error rate on the test set as our comparison measure. 
+We first start with K-NN:
+```{r rf.isolet4, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+library(class)
+u1 <- knn(train=xtr[, -618], test=xte[, -618], cl=xtr[, 618], k = 1)
+table(u1, xte$V618)
+
+u5 <- knn(train=xtr[, -618], test=xte[, -618], cl=xtr[, 618], k = 5)
+table(u5, xte$V618)
+
+u10 <- knn(train=xtr[, -618], test=xte[, -618], cl=xtr[, 618], k = 10)
+table(u10, xte$V618)
+
+u20 <- knn(train=xtr[, -618], test=xte[, -618], cl=xtr[, 618], k = 20)
+table(u20, xte$V618)
+
+u50 <- knn(train=xtr[, -618], test=xte[, -618], cl=xtr[, 618], k = 50)
+table(u50, xte$V618)
+```
+To use logistic regression we first create a new variable that is 1
+for the letter **C** and 0 for the letter **Z**, and use it as
+our response variable. 
+```{r rf.isoletglm, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+xtr$V619 <- as.numeric(xtr$V618==3)
+d.glm <- glm(V619 ~ . - V618, data=xtr, family=binomial)
+pr.glm <- as.numeric( predict(d.glm, newdata=xte, type='response') >  0.5 )
+table(pr.glm, xte$V618)
+```
+Question for the reader: why do you think this classifier's performance
+is so disappointing? 
+
+It is interesting to see how a simple LDA classifier does:
+```{r rf.isolet5, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+library(MASS)
+xtr$V619 <- NULL
+d.lda <- lda(V618 ~ . , data=xtr)
+pr.lda <- predict(d.lda, newdata=xte)$class
+table(pr.lda, xte$V618)
+```
+Finally, note that a carefully built classification tree 
+performs remarkably well, only using 3 features:
+```{r rf.isolet6, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+library(rpart)
+my.c <- rpart.control(minsplit=5, cp=1e-8, xval=10)
+set.seed(987)
+a.tree <- rpart(V618 ~ ., data=xtr, method='class', parms=list(split='information'), control=my.c)
+cp <- a.tree$cptable[which.min(a.tree$cptable[,"xerror"]),"CP"]
+a.tp <- prune(a.tree, cp=cp)
+p.t <- predict(a.tp, newdata=xte, type='vector')
+table(p.t, xte$V618)
+```
+Finally, note that if you train a single classification tree with the
+default values for the stopping criterion tuning parameters, the 
+tree also uses only 3 features, but its classification error rate
+on the test set is larger than that of the pruned one:
+```{r rf.isolet7, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+set.seed(987)
+a2.tree <- rpart(V618 ~ ., data=xtr, method='class', parms=list(split='information'))
+p2.t <- predict(a2.tree, newdata=xte, type='vector')
+table(p2.t, xte$V618)
+```
+
