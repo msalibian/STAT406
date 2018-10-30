@@ -1,7 +1,7 @@
 STAT406 - Lecture 15 notes
 ================
 Matias Salibian-Barrera
-2018-10-25
+2018-10-29
 
 LICENSE
 -------
@@ -251,10 +251,10 @@ a.rf
     ##                      Number of trees: 500
     ## No. of variables tried at each split: 24
     ## 
-    ##         OOB estimate of  error rate: 2.08%
+    ##         OOB estimate of  error rate: 2.29%
     ## Confusion matrix:
     ##      3  26 class.error
-    ## 3  235   5  0.02083333
+    ## 3  234   6  0.02500000
     ## 26   5 235  0.02083333
 
 ``` r
