@@ -9,8 +9,8 @@ The notes in this repository are released under the "Creative Commons Attributio
 ## Course outline
 The course outline is available [here](STAT406-18-19-MSB.pdf).
 
-## Tentative weekly schedule (including Quizzes and Midterms)
-The tentative week-by-week schedule is [here](Weekly-schedule-18-19-detailed-2.pdf).
+## (UPDATED) Tentative weekly schedule (including Quizzes and Midterms)
+The tentative week-by-week schedule is [here](Weekly-schedule-18-19-detailed-3.pdf).
 
 ## PIAZZA
 You can register in the course's [PIAZZA](https://www.piazza.com) page via
