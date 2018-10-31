@@ -1,7 +1,7 @@
 STAT406 - Lecture 15 notes
 ================
 Matias Salibian-Barrera
-2018-10-29
+2018-10-30
 
 LICENSE
 -------
@@ -15,23 +15,44 @@ Preliminary lecture slides are [here](STAT406-18-lecture-15-preliminary.pdf).
 
 #### Instability of trees
 
-Just like we discussed in the regression case, classification trees can be highly unstable (meaning: small changes in the training set may result in large changes in the corresponding tree).
+Just like in the regression case, classification trees can be highly unstable (specifically: relatively small changes in the training set may result in comparably large changes in the corresponding tree).
 
-We illustrate the problem on the toy example we used in class:
+We illustrate the problem on the very simple graduate school admissions example (3-class 2-dimensional covariates) we used in class. First read the data:
 
 ``` r
 mm <- read.table('../Lecture14/T11-6.DAT', header=FALSE)
+```
+
+We transform the response variable `V3` into a factor:
+
+``` r
 mm$V3 <- as.factor(mm$V3)
-# re-scale one feature, for better plots
+```
+
+To obtain better scaled plots, we re-scale one of the features (so both explanatory variables have similar scales):
+
+``` r
 mm[,2] <- mm[,2] / 150
 ```
 
-We now slightly modify the data and compare the resulting trees and their predictions:
+Now we train a classification tree on these data, using deviance-based (`information`) splits:
+
+``` r
+library(rpart)
+a.t <- rpart(V3~V1+V2, data=mm, method='class', parms=list(split='information'))
+```
+
+To show how the tree changes when the data are perturbed slightly, we create a new training set (`mm2`) that is equal to the original one, but change the responses of two observations:
 
 ``` r
 mm2 <- mm
 mm2[1,3] <- 2
 mm2[7,3] <- 2
+```
+
+The following plot contains the new training set, with the two changed observations:
+
+``` r
 plot(mm2[,1:2], pch=19, cex=1.5, col=c("red", "blue", "green")[mm2[,3]],
      xlab='GPA', 'GMAT', xlim=c(2,5), ylim=c(2,5))
 points(mm[c(1,7),-3], pch='O', cex=1.1, col=c("red", "blue", "green")[mm[c(1,7),3]])
@@ -39,28 +60,37 @@ points(mm[c(1,7),-3], pch='O', cex=1.1, col=c("red", "blue", "green")[mm[c(1,7),
 
 ![](README_files/figure-markdown_github/inst2-1.png)
 
-``` r
-library(rpart)
-# default trees on original and modified data
-a.t <- rpart(V3~V1+V2, data=mm, method='class', parms=list(split='information'))
-a2.t <- rpart(V3~V1+V2, data=mm2, method='class', parms=list(split='information'))
+As above, we train a classification tree on the perturbed data:
 
+``` r
+a2.t <- rpart(V3~V1+V2, data=mm2, method='class', parms=list(split='information'))
+```
+
+To visualize the differences between the two trees we build a fine grid of points and compare the predicted probabilities of each class on each point on the grid. First, construct the grid:
+
+``` r
 aa <- seq(2, 5, length=200)
 bb <- seq(2, 5, length=200)
 dd <- expand.grid(aa, bb)
 names(dd) <- names(mm)[1:2]
+```
 
-# corresponding predictions on the grid
+Now, compute the estimated conditional probabilities of each of the 3 classes on each of the 40,000 points on the grid `dd`:
+
+``` r
 p.t <- predict(a.t, newdata=dd, type='prob')
 p2.t <- predict(a2.t, newdata=dd, type='prob')
+```
 
-# reds
+We now show the estimated probabilities of class "red" with each of the two trees:
+
+``` r
 filled.contour(aa, bb, matrix(p.t[,1], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
 plot.axes={axis(1); axis(2)}, 
 panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])})
 ```
 
-![](README_files/figure-markdown_github/inst2.5-1.png)
+![](README_files/figure-markdown_github/inst2.2-1.png)
 
 ``` r
 filled.contour(aa, bb, matrix(p2.t[,1], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
@@ -70,7 +100,9 @@ points(mm[c(1,7),-3], pch='O', cex=1.1, col=c("red", "blue", "green")[mm[c(1,7),
 })
 ```
 
-![](README_files/figure-markdown_github/inst2.5-2.png)
+![](README_files/figure-markdown_github/inst2.2-2.png)
+
+Similarly, we do it for class "blue":
 
 ``` r
 # blues
@@ -79,7 +111,7 @@ plot.axes={axis(1); axis(2)},
 panel.last={ points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])})
 ```
 
-![](README_files/figure-markdown_github/inst2.5-3.png)
+![](README_files/figure-markdown_github/kk-1.png)
 
 ``` r
 filled.contour(aa, bb, matrix(p2.t[,2], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
@@ -89,7 +121,9 @@ points(mm[c(1,7),-3], pch='O', cex=1.1, col=c("red", "blue", "green")[mm[c(1,7),
 })
 ```
 
-![](README_files/figure-markdown_github/inst2.5-4.png)
+![](README_files/figure-markdown_github/kk-2.png)
+
+And finally, for class "green":
 
 ``` r
 # greens
@@ -97,7 +131,7 @@ filled.contour(aa, bb, matrix(p.t[,3], 200, 200), col=terrain.colors(20), xlab='
 plot.axes={axis(1); axis(2)}, panel.last={ points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])})
 ```
 
-![](README_files/figure-markdown_github/inst2.5-5.png)
+![](README_files/figure-markdown_github/kk2-1.png)
 
 ``` r
 filled.contour(aa, bb, matrix(p2.t[,3], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
@@ -107,21 +141,16 @@ points(mm[c(1,7),-3], pch='O', cex=1.1, col=c("red", "blue", "green")[mm[c(1,7),
 })
 ```
 
-![](README_files/figure-markdown_github/inst2.5-6.png)
+![](README_files/figure-markdown_github/kk2-2.png)
 
-<!-- # predictions by color -->
-<!-- mpt <- apply(p.t, 1, which.max) -->
-<!-- mp2t <- apply(p2.t, 1, which.max) -->
-<!-- image(aa, bb, matrix(as.numeric(mpt), 200, 200), col=c('pink', 'lightblue','lightgreen'), xlab='GPA', ylab='GMAT') -->
-<!-- points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]]) -->
-<!-- image(aa, bb, matrix(as.numeric(mp2t), 200, 200), col=c('pink', 'lightblue','lightgreen'), xlab='GPA', ylab='GMAT') -->
-<!-- points(mm2[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm2[,3]]) -->
-<!-- points(mm[c(1,7),-3], pch='O', cex=1.2, col=c("red", "blue", "green")[mm[c(1,7),3]]) -->
-<!-- # Bagging!! -->
+We see that the regions that would be classified as "red" or "green", in particular, change quite noticeably by only changing two points in the training set. Bagging can provide more stable classifiers and we discuss this strategy below.
+
 Bagging
 -------
 
-We now show the possitive effect of bagging. We average the predicted conditional probabilities, and we *bagg* large trees. Note that the predicted probabilities obtained with bagged trees do not differ much from each other when the *bags* were built with the original and perturbed data sets.
+Just as we did for regression, bagging consists of building an ensemble of predictors (in this case, classifiers) using bootstrap samples. If we using *B* bootstrap samples, we will construct *B* classifiers, and given a point **x**, we now have *B* estimated conditional probabilities for each of the possible *K* classes. Unlike what happens with regression problems, we now have a choice to make when deciding how to combine the *B* outputs for each point. We can take either: a majority vote over the *B* separate decisions, or we can average the *B* estimated probabilities for the *K* classes, to obtain bagged estimated conditional probabilities. As discussed and illustrated in class, the latter approach is usually preferred.
+
+To illustrate the increased stability of bagged classification trees, we repeat the experiment above: we build an ensemble of 1000 classification trees trained on the original data, and a second ensemble (also of 1000 trees) using the slightly modified data. The first ensemble is constructed as follows:
 
 ``` r
 my.c <- rpart.control(minsplit=3, cp=1e-6, xval=10)
@@ -133,49 +162,109 @@ for(j in 1:NB) {
   ii <- sample(1:n, replace=TRUE)
   ts[[j]] <- rpart(V3~V1+V2, data=mm[ii,], method='class', parms=list(split='information'), control=my.c)
 }
+```
 
+Note that the 1,000 trees are stored in the list `ts`. We do it again with the slightly modified data as before, and store the trees in the ensemble in the list `ts2`:
+
+``` r
+mm2 <- mm
+mm2[1,3] <- 2
+mm2[7,3] <- 2
+NB <- 1000
+ts2 <- vector('list', NB)
+set.seed(123)
+n <- nrow(mm)
+for(j in 1:NB) {
+  ii <- sample(1:n, replace=TRUE)
+  ts2[[j]] <- rpart(V3~V1+V2, data=mm2[ii,], method='class', parms=list(split='information'), control=my.c)
+}
+```
+
+We use the same fine grid as before to show the estimated conditional probabilities, this time obtained with the two ensembles.
+
+``` r
 aa <- seq(2, 5, length=200)
 bb <- seq(2, 5, length=200)
 dd <- expand.grid(aa, bb)
 names(dd) <- names(mm)[1:2]
+```
+
+To combine (average) the 1,000 estimated probabilities of each of the 3 classes for each of the 40,000 points in the grid `dd` I use the function `vapply` and store the result in a 3-dimensional array. The averaged probabilities over the 1000 bagged trees can then obtained by averaging across the 3rd dimension. This approach may not be intuitively very clear at first sight. You are strongly encouraged to ignore it and build these 40,000 bagged conditional probabilities your own way instead.
+
+``` r
 pp0 <- vapply(ts, FUN=predict, FUN.VALUE=matrix(0, 200*200, 3), newdata=dd, type='prob')
 pp <- apply(pp0, c(1, 2), mean)
+pp02 <- vapply(ts2, FUN=predict, FUN.VALUE=matrix(0, 200*200, 3), newdata=dd, type='prob')
+pp2 <- apply(pp02, c(1, 2), mean)
+```
 
-# reds
-filled.contour(aa, bb, matrix(pp[,1], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
+We now show the estimated conditional probabilities for "red" in each point of the grid, with each of the two ensembles. Note how similar they are (and contrast this with the results without bagging):
+
+``` r
+filled.contour(aa, bb, matrix(pp[,3], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
                plot.axes={axis(1); axis(2)},
                  panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])})
 ```
 
-![](README_files/figure-markdown_github/bag1-1.png)
+![](README_files/figure-markdown_github/bag1.plot-1.png)
 
 ``` r
-# blues
-filled.contour(aa, bb, matrix(pp[,2], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
-               plot.axes={axis(1); axis(2)}, 
-                 panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])})
+filled.contour(aa, bb, matrix(pp2[,3], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
+               plot.axes={axis(1); axis(2)},
+                 panel.last={points(mm2[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm2[,3]]);
+                 points(mm[c(1,7),-3], pch='O', cex=1.2, col=c("red", "blue", "green")[mm[c(1,7),3]])
+               })
 ```
 
-![](README_files/figure-markdown_github/bag1-2.png)
+![](README_files/figure-markdown_github/bag1.plot-2.png)
 
-``` r
-# greens
-filled.contour(aa, bb, matrix(pp[,3], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
-               plot.axes={axis(1); axis(2)}, 
-                 panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])})
-```
+You are strongly encouraged to obtain the corresponding plots comparing the estimated conditional probabilities with both ensembles for each of the other 2 classes.
 
-![](README_files/figure-markdown_github/bag1-3.png)
-
+<!-- # blues -->
+<!-- filled.contour(aa, bb, matrix(pp[,2], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT', -->
+<!--                plot.axes={axis(1); axis(2)},  -->
+<!--                  panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])}) -->
+<!-- # greens -->
+<!-- filled.contour(aa, bb, matrix(pp[,3], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT', -->
+<!--                plot.axes={axis(1); axis(2)},  -->
+<!--                  panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])}) -->
 <!-- pp2 <- apply(pp, 1, which.max) -->
 <!-- pdf('gpa-bagg-pred-rpart.pdf') -->
 <!-- image(aa, bb, matrix(as.numeric(pp2), 200, 200), col=c('pink', 'lightblue','lightgreen'), xlab='GPA', ylab='GMAT') -->
 <!-- points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]]) -->
 <!-- dev.off() -->
-And with the modified data
-
-![](README_files/figure-markdown_github/bag2-1.png)![](README_files/figure-markdown_github/bag2-2.png)![](README_files/figure-markdown_github/bag2-3.png)
-
+<!-- And with the modified data -->
+<!-- mm2 <- mm -->
+<!-- mm2[1,3] <- 2 -->
+<!-- mm2[7,3] <- 2 -->
+<!-- NB <- 1000 -->
+<!-- ts <- vector('list', NB) -->
+<!-- set.seed(123) -->
+<!-- n <- nrow(mm) -->
+<!-- for(j in 1:NB) { -->
+<!--   ii <- sample(1:n, replace=TRUE) -->
+<!--   ts[[j]] <- rpart(V3~V1+V2, data=mm2[ii,], method='class', parms=list(split='information'), control=my.c) -->
+<!-- } -->
+<!-- pp0 <- vapply(ts, FUN=predict, FUN.VALUE=matrix(0, 200*200, 3), newdata=dd, type='prob') -->
+<!-- pp3 <- apply(pp0, c(1, 2), mean) -->
+<!-- # reds -->
+<!-- filled.contour(aa, bb, matrix(pp3[,1], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT', -->
+<!--                plot.axes={axis(1); axis(2)}, -->
+<!--                  panel.last={points(mm2[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm2[,3]]); -->
+<!--                  points(mm[c(1,7),-3], pch='O', cex=1.2, col=c("red", "blue", "green")[mm[c(1,7),3]]) -->
+<!--                }) -->
+<!-- # blues -->
+<!-- filled.contour(aa, bb, matrix(pp3[,2], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT', -->
+<!--                plot.axes={axis(1); axis(2)}, -->
+<!--                  panel.last={points(mm2[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm2[,3]]); -->
+<!--                  points(mm[c(1,7),-3], pch='O', cex=1.2, col=c("red", "blue", "green")[mm[c(1,7),3]]) -->
+<!--                }) -->
+<!-- # greens -->
+<!-- filled.contour(aa, bb, matrix(pp3[,3], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT', -->
+<!--                plot.axes={axis(1); axis(2)}, -->
+<!--                  panel.last={points(mm2[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm2[,3]]); -->
+<!--                  points(mm[c(1,7),-3], pch='O', cex=1.2, col=c("red", "blue", "green")[mm[c(1,7),3]]) -->
+<!--                }) -->
 <!-- pp4 <- apply(pp3, 1, which.max) -->
 <!-- pdf('gpa-bagg-pred2-rpart.pdf') -->
 <!-- image(aa, bb, matrix(as.numeric(pp4), 200, 200), col=c('pink', 'lightblue','lightgreen'), xlab='GPA', ylab='GMAT') -->
@@ -208,7 +297,7 @@ And the predicted conditional probabilities for the rest of the classes are:
 
 ![](README_files/figure-markdown_github/rf2-1.png)![](README_files/figure-markdown_github/rf2-2.png)
 
-A simple exercise would be for the reader to train a Random Forest on the perturbed data and verify that the predicted conditional probabilities do not change much, as was the case for the bagged classifier.
+A very interesting exercise would be to train a Random Forest on the perturbed data and verify that the predicted conditional probabilities do not change much, as was the case for the bagged classifier.
 
 ### Another example
 
