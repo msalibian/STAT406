@@ -1,7 +1,7 @@
 STAT406 - Lecture 15 notes
 ================
 Matias Salibian-Barrera
-2018-10-31
+2018-11-01
 
 LICENSE
 -------
@@ -11,7 +11,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-Preliminary lecture slides are [here](STAT406-18-lecture-15-preliminary.pdf).
+Lecture slides are [here](STAT406-18-lecture-15.pdf).
 
 #### Instability of trees
 
@@ -222,84 +222,3 @@ filled.contour(aa, bb, matrix(pp2[,3], 200, 200), col=terrain.colors(20), xlab='
 ![](README_files/figure-markdown_github/bag1.plot-2.png)
 
 You are strongly encouraged to obtain the corresponding plots comparing the estimated conditional probabilities with both ensembles for each of the other 2 classes ("blue" and "green").
-
-Random Forests
-==============
-
-Even though using a *bagged* ensemble of trees usually results in a more stable predictor / classifier, it can be improved further by constucting the members of the ensemble in a careful way. The main idea is to try to reduce the (conditional) potential correlation among the predictions of the bagged trees, as discussed in class. To train a Random Forest in `R` we use the funtion `randomForest` from the package with the same name. The syntax is the same as that of `rpart`, but the tuning parameters for each of the *trees* in the *forest* are different from `rpart`. Refer to the help page if you need to modify them.
-
-``` r
-library(randomForest)
-a.rf <- randomForest(V3~V1+V2, data=mm, ntree=500) 
-```
-
-Predictions can be obtained using the `predict` method, as usual, when you specify the `newdata` argument. Refer to the help page of `predict.randomForest` for details on the behaviour of `predict` for Random Forests objects when the argument `newdata` is missing.
-
-To visualize the predicted classes obtained with a Random Forest on our example data, we compute the corresponding predicted conditional class probabilities on the same grid used before. The estimated conditional probabilities for class *red* are shown in the plot below (how are these estimated conditional probabilities computed exactly?)
-
-``` r
-pp.rf <- predict(a.rf, newdata=dd, type='prob')
-filled.contour(aa, bb, matrix(pp.rf[,1], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
-               plot.axes={axis(1); axis(2)},
-                 panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])
-               })
-```
-
-![](README_files/figure-markdown_github/rf1.1-1.png)
-
-And the predicted conditional probabilities for the rest of the classes are: ![](README_files/figure-markdown_github/rf2-1.png)![](README_files/figure-markdown_github/rf2-2.png)
-
-A very interesting exercise would be to train a Random Forest on the perturbed data (in `mm2`) and verify that the predicted conditional probabilities do not change much, as was the case for the bagged classifier.
-
-### Another example
-
-We will now use a more interesting example. The ISOLET data, available here: <http://archive.ics.uci.edu/ml/datasets/ISOLET>, contains data on sound recordings of 150 speakers saying each letter of the alphabet (twice). See the original source for more details. Since the full data set is rather large, here we only use the subset corresponding to the observations for the letters **C** and **Z**.
-
-We first load the training and test data sets, and force the response variable to be categorical, so that the `R` implementations of the different predictors we will use below will build classifiers and not their regression counterparts:
-
-``` r
-xtr <- read.table('isolet-train-c-z.data', sep=',')
-xte <- read.table('isolet-test-c-z.data', sep=',') 
-xtr$V618 <- as.factor(xtr$V618)
-xte$V618 <- as.factor(xte$V618)
-```
-
-We first train a Random Forest, using all the default parameters, and check its performance on the test set:
-
-``` r
-library(randomForest)
-set.seed(123)
-( a.rf <- randomForest(V618 ~ ., data=xtr, ntree=500) )
-```
-
-    ## 
-    ## Call:
-    ##  randomForest(formula = V618 ~ ., data = xtr, ntree = 500) 
-    ##                Type of random forest: classification
-    ##                      Number of trees: 500
-    ## No. of variables tried at each split: 24
-    ## 
-    ##         OOB estimate of  error rate: 2.08%
-    ## Confusion matrix:
-    ##      3  26 class.error
-    ## 3  235   5  0.02083333
-    ## 26   5 235  0.02083333
-
-``` r
-p.rf <- predict(a.rf, newdata=xte, type='response')
-table(p.rf, xte$V618)
-```
-
-    ##     
-    ## p.rf  3 26
-    ##   3  60  1
-    ##   26  0 59
-
-Note that the Random Forest only makes one mistake out of 120 (approx 0.8%) observations in the test set. However, the OOB error rate estimate is slightly over 2%.
-The next plot shows the evolution of the OOB error rate estimate as a function of the number of classifiers in the ensemble (trees in the forest). Note that 500 trees appears to be a reasonable forest size, in the sense thate the OOB error rate estimate is stable.
-
-``` r
-plot(a.rf, lwd=3, lty=1)
-```
-
-![](README_files/figure-markdown_github/rf.oob-1.png)
