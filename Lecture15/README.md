@@ -189,20 +189,20 @@ And we see that the class most voted is 1.
 The above calculation can be made more elegantly with the function `sapply` (or `lapply`):
 
 ``` r
-votes2 <- sapply(ts, FUN=function(a, newx) as.numeric(predict(a, newdata=newx, type='class') ), newx=data.frame(x0) )
+votes2 <- sapply(ts, FUN=function(a, newx) predict(a, newdata=newx, type='class'), newx=data.frame(x0) )
 table(votes2)
 ```
 
     ## votes2
-    ##   1   3 
-    ## 900 100
+    ##   1   2   3 
+    ## 900   0 100
 
 #### Average probabilities (over the ensemble)
 
 If we wanted to compute the average of the conditional probabilities across the *B* different estimates, we could do it in a very similar way. Here I show how to do it using `sapply`. You are strongly encouraged to verify these calculations by computing the average of the conditional probabilities using a for-loop.
 
 ``` r
-votes2 <- sapply(ts, FUN=function(a, newx) as.numeric(predict(a, newdata=newx, type='prob') ), newx=data.frame(x0) )
+votes2 <- sapply(ts, FUN=function(a, newx) predict(a, newdata=newx, type='prob'), newx=data.frame(x0) )
 ( rowMeans(votes2) )
 ```
 
