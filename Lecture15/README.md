@@ -144,11 +144,11 @@ points(mm[c(1,7),-3], pch='O', cex=1.1, col=c("red", "blue", "green")[mm[c(1,7),
 Note that, for example, the regions of the feature space (the explanatory variables) that would be classified as "red" or "green" for the trees trained with the original and the slightly changed training sets change quite noticeably, even though the difference in the training sets is relatively small. Below we show how an ensemble of classifiers constructed via bagging can provide a more stable classifier.
 
 Bagging
--------
+=======
 
 Just as we did for regression, bagging consists of building an ensemble of predictors (in this case, classifiers) using bootstrap samples. If we using *B* bootstrap samples, we will construct *B* classifiers, and given a point **x**, we now have *B* estimated conditional probabilities for each of the possible *K* classes. Unlike what happens with regression problems, we now have a choice to make when deciding how to combine the *B* outputs for each point. We can take either: a majority vote over the *B* separate decisions, or we can average the *B* estimated probabilities for the *K* classes, to obtain bagged estimated conditional probabilities. As discussed and illustrated in class, the latter approach is usually preferred.
 
-To illustrate the increased stability of bagged classification trees, we repeat the experiment above: we build an ensemble of 1000 classification trees trained on the original data, and a second ensemble (also of 1000 trees) using the slightly modified data. The first ensemble is constructed as follows:
+To illustrate the increased stability of bagged classification trees, we repeat the experiment above: we build an ensemble of 1000 classification trees trained on the original data, and a second ensemble (also of 1000 trees) using the slightly modified data. Each ensemble is constructed in exactly the same way we did in the regression case. For the first ensemble we train `NB = 1000` trees and store them in a list (called `ts`) for future use:
 
 ``` r
 my.c <- rpart.control(minsplit=3, cp=1e-6, xval=10)
@@ -162,7 +162,57 @@ for(j in 1:NB) {
 }
 ```
 
-Note that the 1,000 trees are stored in the list `ts`. We do it again with the slightly modified data as before, and store the trees in the ensemble in the list `ts2`:
+### Using the ensemble
+
+As discussed in class, there are two possible ways to use this ensemble given a new observation: we can classify it to the class with most votes among the *B* bagged classifiers, or we can compute the average conditional probabilities over the *B* classifiers, and use this average as our esimated conditional probability. We illustrate both of these with the point `(GPA, GMAT) = (3.3, 3.0)`.
+
+#### Majority vote
+
+The simplest, but less elegant way to compute the votes for each class across the *B* trees in the ensemble is to loop over them and count:
+
+``` r
+x0 <- t( c(V1=3.3, V2=3.0) )
+votes <- vector('numeric', 3)
+names(votes) <- 1:3
+for(j in 1:NB) {
+  k <- predict(ts[[j]], newdata=data.frame(x0), type='class')
+  votes[k] <- votes[k] + 1
+}
+(votes)
+```
+
+    ##   1   2   3 
+    ## 900   0 100
+
+And we see that the class most voted is 1.
+
+The above calculation can be made more elegantly with the function `sapply` (or `lapply`):
+
+``` r
+votes2 <- sapply(ts, FUN=function(a) as.numeric(predict(a, newdata=data.frame(x0), type='class') ) )
+table(votes2)
+```
+
+    ## votes2
+    ##   1   3 
+    ## 900 100
+
+#### Average probabilities (over the ensemble)
+
+If we wanted to compute the average of the conditional probabilities across the *B* different estimates, we could do it in a very similar way. Here I show how to do it using `sapply`. You are strongly encouraged to verify these calculations by computing the average of the conditional probabilities using a for-loop.
+
+``` r
+votes2 <- sapply(ts, FUN=function(a) as.numeric(predict(a, newdata=data.frame(x0), type='prob') ) )
+( rowMeans(votes2) )
+```
+
+    ## [1] 0.9007797587 0.0001445378 0.0990757034
+
+And again, we see that class `1` has a much higher probability of occuring for this point.
+
+### Increased stability of ensembles
+
+To illustrate that ensembles of tree-based classifiers tend to be more stable than a single tree, we construct another example, but this time using the slightly modified data. The ensemble is stored in the list `ts2`:
 
 ``` r
 mm2 <- mm
@@ -187,7 +237,7 @@ dd <- expand.grid(aa, bb)
 names(dd) <- names(mm)[1:2]
 ```
 
-To combine (average) the 1,000 estimated probabilities of each of the 3 classes for each of the 40,000 points in the grid `dd` I use the function `vapply` and store the result in a 3-dimensional array. The averaged probabilities over the 1000 bagged trees can then obtained by averaging across the 3rd dimension. This approach may not be intuitively very clear at first sight. *You are strongly encouraged to ignore my code below and compute the bagged conditional probabilites for the 3 classes for each point in the grid in a way that is clear to you*. The main goal is to understand the method and be able to do it on your own. Efficient and / or elegant code can be written later, but it is not the focus of this course. The ensemble of trees trained with the original data:
+To combine (average) the `NB = 1000` estimated probabilities of each of the 3 classes for each of the 40,000 points in the grid `dd` I use the function `vapply` and store the result in a 3-dimensional array. The averaged probabilities over the 1000 bagged trees can then obtained by averaging across the 3rd dimension. This approach may not be intuitively very clear at first sight. *You are strongly encouraged to ignore my code below and compute the bagged conditional probabilites for the 3 classes for each point in the grid in a way that is clear to you*. The main goal is to understand the method and be able to do it on your own. Efficient and / or elegant code can be written later, but it is not the focus of this course. The ensemble of trees trained with the original data:
 
 ``` r
 pp0 <- vapply(ts, FUN=predict, FUN.VALUE=matrix(0, 200*200, 3), newdata=dd, type='prob')

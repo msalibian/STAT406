@@ -136,7 +136,7 @@ change quite noticeably, even though the difference in the training sets is
 relatively small. Below we show how an ensemble of classifiers 
 constructed via bagging can provide a more stable classifier.
 
-## Bagging
+# Bagging
 
 Just as we did for regression, bagging consists of building an ensemble of
 predictors (in this case, classifiers) using bootstrap samples. 
@@ -153,8 +153,11 @@ in class, the latter approach is usually preferred.
 To illustrate the increased stability of bagged classification trees, 
 we repeat the experiment above: we build an ensemble of 1000 classification
 trees trained on the original data, and a second ensemble (also of 1000
-trees) using the slightly modified data. The first ensemble is
-constructed as follows:
+trees) using the slightly modified data. 
+Each ensemble is constructed in exactly the same way we did
+in the regression case. 
+For the first ensemble we train `NB = 1000` trees
+and store them in a list (called `ts`) for future use:
 ```{r bag0}
 my.c <- rpart.control(minsplit=3, cp=1e-6, xval=10)
 NB <- 1000
@@ -166,9 +169,56 @@ for(j in 1:NB) {
   ts[[j]] <- rpart(V3~V1+V2, data=mm[ii,], method='class', parms=list(split='information'), control=my.c)
 }
 ```
-Note that the 1,000 trees are stored in the list `ts`. We do it again
-with the slightly modified data as before, and store the trees in the ensemble
-in the list `ts2`:
+
+### Using the ensemble
+
+As discussed in class, there are two possible ways to use this ensemble given
+a new observation: we can classify it to the class with most votes among the 
+*B* bagged classifiers, or we can compute the average conditional probabilities
+over the *B* classifiers, and use this average as our esimated conditional 
+probability. We illustrate both of these with the point `(GPA, GMAT) = (3.3, 3.0)`.
+
+#### Majority vote
+
+The simplest, but less elegant way to compute the votes for each class 
+across the *B* trees in the ensemble is to loop over them and 
+count:
+```{r predbag0}
+x0 <- t( c(V1=3.3, V2=3.0) )
+votes <- vector('numeric', 3)
+names(votes) <- 1:3
+for(j in 1:NB) {
+  k <- predict(ts[[j]], newdata=data.frame(x0), type='class')
+  votes[k] <- votes[k] + 1
+}
+(votes)
+```
+And we see that the class most voted is `r as.numeric(which.max(votes))`. 
+
+The above calculation can be made more elegantly with the function `sapply`
+(or `lapply`):
+```{r predbag1}
+votes2 <- sapply(ts, FUN=function(a) as.numeric(predict(a, newdata=data.frame(x0), type='class') ) )
+table(votes2)
+```
+#### Average probabilities (over the ensemble)
+
+If we wanted to compute the average of the conditional probabilities across
+the *B* different estimates, we could do it in a very similar way. Here I show how 
+to do it using `sapply`. You are strongly encouraged to verify these calculations
+by computing the average of the conditional probabilities using a for-loop. 
+```{r predbag2}
+votes2 <- sapply(ts, FUN=function(a) as.numeric(predict(a, newdata=data.frame(x0), type='prob') ) )
+( rowMeans(votes2) )
+```
+And again, we see that class `1` has a much higher probability of occuring 
+for this point. 
+
+### Increased stability of ensembles
+
+To illustrate that ensembles of tree-based classifiers tend to be more stable
+than a single tree, we construct another example, but this time using
+the slightly modified data. The ensemble is stored in the list `ts2`:
 ```{r bag02}
 mm2 <- mm
 mm2[1,3] <- 2
@@ -191,7 +241,7 @@ bb <- seq(2, 5, length=200)
 dd <- expand.grid(aa, bb)
 names(dd) <- names(mm)[1:2]
 ```
-To combine (average) the 1,000 estimated probabilities 
+To combine (average) the `NB = 1000` estimated probabilities 
 of each of the 3 classes for each of the 40,000 points 
 in the grid `dd` I use the function `vapply`
 and store the result in a 3-dimensional array. The
