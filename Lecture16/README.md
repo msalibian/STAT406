@@ -1,7 +1,7 @@
 STAT406 - Lecture 16 notes
 ================
 Matias Salibian-Barrera
-2018-11-01
+2018-11-02
 
 LICENSE
 -------
@@ -16,7 +16,9 @@ Preliminary lecture slides will be here.
 Random Forests
 ==============
 
-Even though using a *bagged* ensemble of trees usually results in a more stable predictor / classifier, it can be improved further by constucting the members of the ensemble in a careful way. The main idea is to try to reduce the (conditional) potential correlation among the predictions of the bagged trees, as discussed in class. To train a Random Forest in `R` we use the funtion `randomForest` from the package with the same name. The syntax is the same as that of `rpart`, but the tuning parameters for each of the *trees* in the *forest* are different from `rpart`. Refer to the help page if you need to modify them.
+Even though using a *bagged* ensemble of trees usually results in a more stable predictor / classifier, a better ensemble can be improved by training each of its members in a careful way. The main idea is to try to reduce the (conditional) potential correlation among the predictions of the bagged trees, as discussed in class. Each of the bootstrap trees in the ensemble is grown using only a randomly selected set of features when partitioning each node. More specifically, at each node only a random subset of explanatory variables is considered to determine the optimal split. This randomly chosen features are selected independently at each node as the tree is being constructed.
+
+To train a Random Forest in `R` we use the funtion `randomForest` from the package with the same name. The syntax is the same as that of `rpart`, but the tuning parameters for each of the *trees* in the *forest* are different from `rpart`. Refer to the help page if you need to modify them.
 
 We load and prepare the admissions data as before:
 
@@ -33,7 +35,7 @@ library(randomForest)
 a.rf <- randomForest(V3~V1+V2, data=mm, ntree=500) 
 ```
 
-Predictions can be obtained using the `predict` method, as usual, when you specify the `newdata` argument. Refer to the help page of `predict.randomForest` for details on the behaviour of `predict` for Random Forests objects when the argument `newdata` is missing.
+Predictions can be obtained using the `predict` method, as usual, when you specify the `newdata` argument. Refer to the help page of `predict.randomForest` for details on the different behaviour of `predict` for Random Forests objects when the argument `newdata` is either present or missing.
 
 To visualize the predicted classes obtained with a Random Forest on our example data, we compute the corresponding predicted conditional class probabilities on the same grid used before:
 
@@ -48,10 +50,10 @@ The estimated conditional probabilities for class *red* are shown in the plot be
 
 ``` r
 pp.rf <- predict(a.rf, newdata=dd, type='prob')
-filled.contour(aa, bb, matrix(pp.rf[,1], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
+filled.contour(aa, bb, matrix(pp.rf[,1], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT', 
                plot.axes={axis(1); axis(2)},
-                 panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])
-               })
+               panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])}
+               )
 ```
 
 ![](README_files/figure-markdown_github/rf1.1-1.png)
