@@ -46,9 +46,9 @@ and **[HTF09]** indicate two of the reference books listed below.
 * Week 7 (L11/MT2): Bagging
 	* Sections 8.2, 8.2.1 from [JWHT13]
 * Week 8 (L12/13): Classification, LDA, LQA, Logistic Regression
-	* Section 4.1, 4.2, 4.3, 4.4, 2.2.3, 8.1.2 from [JWHT13]
-* Week 9 (L14/15): LDA, LQA, Logistic Regression, Nearest Neighbours, Trees, Ensembles, Bagging, Random Forests
-	* Sections 8.2.1 and 8.2.2 from [JWHT13]
+	* Section 4.1, 4.2, 4.3, 4.4, 2.2.3 from [JWHT13]
+* Week 9 (L14/15): Trees, Ensembles, Bagging
+	* Sections 8.1.2, 8.2.1 and 8.2.2 from [JWHT13]
 * Week 10 (L16/MT3): Random Forests
 	* Sections 8.2.1 and 8.2.2 from [JWHT13]
 * Week 11 (L17/18): Boosting, Neural Networks?
@@ -57,7 +57,7 @@ and **[HTF09]** indicate two of the reference books listed below.
 * Week 12 (L19/20): Unsupervised learning, K-means, model-based clustering
 	* Sections 10.3 from [JWHT13]
 	* Sections 13.2, 14.3 from [HTF09]
-* Week 13 (L21/MT4): Hierarchical clustering, Principal Components, Multidimensional Scaling
+* Week 13 (L21/L22): Hierarchical clustering, Principal Components, Multidimensional Scaling
 	* Sections 10.2, 10.3 from [JWHT13]
 	* Sections 8.5, 14.3, 14.5.1, 14.8, 14.9 from [HTF09]
 
