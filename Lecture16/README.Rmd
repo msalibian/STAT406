@@ -28,7 +28,7 @@ each of its members in a careful way. The main idea is to try to reduce the
 as discussed in class. Each of the bootstrap trees in the ensemble is
 grown using only a randomly selected set of features when partitioning each node.
 More specifically, at each node only a random subset of explanatory variables
-is considered to determine the optimal split. This randomly chosen features 
+is considered to determine the optimal split. These randomly chosen features 
 are selected independently at each node as the tree is being constructed. 
 
 To train a Random Forest in `R` we use the 
@@ -51,7 +51,7 @@ a.rf <- randomForest(V3~V1+V2, data=mm, ntree=500)
 Predictions can be obtained using the `predict` method, as usual, when 
 you specify the `newdata` argument. Refer to the help page 
 of `predict.randomForest` for details on the different 
-behaviour of `predict` for Random Forests objects when the argument `newdata` is 
+behaviour of `predict` for Random Forest objects when the argument `newdata` is 
 either present or missing. 
 
 To visualize the predicted classes obtained with a Random Forest

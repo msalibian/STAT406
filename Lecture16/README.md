@@ -1,7 +1,7 @@
 STAT406 - Lecture 16 notes
 ================
 Matias Salibian-Barrera
-2018-11-02
+2018-11-03
 
 LICENSE
 -------
@@ -16,7 +16,7 @@ Preliminary lecture slides will be here.
 Random Forests
 ==============
 
-Even though using a *bagged* ensemble of trees usually results in a more stable predictor / classifier, a better ensemble can be improved by training each of its members in a careful way. The main idea is to try to reduce the (conditional) potential correlation among the predictions of the bagged trees, as discussed in class. Each of the bootstrap trees in the ensemble is grown using only a randomly selected set of features when partitioning each node. More specifically, at each node only a random subset of explanatory variables is considered to determine the optimal split. This randomly chosen features are selected independently at each node as the tree is being constructed.
+Even though using a *bagged* ensemble of trees usually results in a more stable predictor / classifier, a better ensemble can be improved by training each of its members in a careful way. The main idea is to try to reduce the (conditional) potential correlation among the predictions of the bagged trees, as discussed in class. Each of the bootstrap trees in the ensemble is grown using only a randomly selected set of features when partitioning each node. More specifically, at each node only a random subset of explanatory variables is considered to determine the optimal split. These randomly chosen features are selected independently at each node as the tree is being constructed.
 
 To train a Random Forest in `R` we use the funtion `randomForest` from the package with the same name. The syntax is the same as that of `rpart`, but the tuning parameters for each of the *trees* in the *forest* are different from `rpart`. Refer to the help page if you need to modify them.
 
@@ -35,7 +35,7 @@ library(randomForest)
 a.rf <- randomForest(V3~V1+V2, data=mm, ntree=500) 
 ```
 
-Predictions can be obtained using the `predict` method, as usual, when you specify the `newdata` argument. Refer to the help page of `predict.randomForest` for details on the different behaviour of `predict` for Random Forests objects when the argument `newdata` is either present or missing.
+Predictions can be obtained using the `predict` method, as usual, when you specify the `newdata` argument. Refer to the help page of `predict.randomForest` for details on the different behaviour of `predict` for Random Forest objects when the argument `newdata` is either present or missing.
 
 To visualize the predicted classes obtained with a Random Forest on our example data, we compute the corresponding predicted conditional class probabilities on the same grid used before:
 
@@ -90,10 +90,10 @@ set.seed(123)
     ##                      Number of trees: 500
     ## No. of variables tried at each split: 24
     ## 
-    ##         OOB estimate of  error rate: 2.08%
+    ##         OOB estimate of  error rate: 2.29%
     ## Confusion matrix:
     ##      3  26 class.error
-    ## 3  235   5  0.02083333
+    ## 3  234   6  0.02500000
     ## 26   5 235  0.02083333
 
 We now check its performance on the test set:
@@ -210,8 +210,8 @@ table(u5, xte$V618)
 
     ##     
     ## u5    3 26
-    ##   3  58  6
-    ##   26  2 54
+    ##   3  58  5
+    ##   26  2 55
 
 ``` r
 u10 <- knn(train=xtr[, -618], test=xte[, -618], cl=xtr[, 618], k = 10)
@@ -220,8 +220,8 @@ table(u10, xte$V618)
 
     ##     
     ## u10   3 26
-    ##   3  58  5
-    ##   26  2 55
+    ##   3  58  6
+    ##   26  2 54
 
 ``` r
 u20 <- knn(train=xtr[, -618], test=xte[, -618], cl=xtr[, 618], k = 20)
@@ -240,8 +240,8 @@ table(u50, xte$V618)
 
     ##     
     ## u50   3 26
-    ##   3  58  6
-    ##   26  2 54
+    ##   3  58  7
+    ##   26  2 53
 
 To use logistic regression we first create a new variable that is 1 for the letter **C** and 0 for the letter **Z**, and use it as our response variable.
 
