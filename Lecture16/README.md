@@ -1,7 +1,7 @@
 STAT406 - Lecture 16 notes
 ================
 Matias Salibian-Barrera
-2018-11-03
+2018-11-06
 
 LICENSE
 -------
@@ -11,7 +11,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-Preliminary lecture slides will be here.
+The lecture slides are [here](STAT406-18-lecture-16.pdf).
 
 Random Forests
 ==============
@@ -90,10 +90,10 @@ set.seed(123)
     ##                      Number of trees: 500
     ## No. of variables tried at each split: 24
     ## 
-    ##         OOB estimate of  error rate: 2.29%
+    ##         OOB estimate of  error rate: 2.08%
     ## Confusion matrix:
     ##      3  26 class.error
-    ## 3  234   6  0.02500000
+    ## 3  235   5  0.02083333
     ## 26   5 235  0.02083333
 
 We now check its performance on the test set:
@@ -210,8 +210,8 @@ table(u5, xte$V618)
 
     ##     
     ## u5    3 26
-    ##   3  58  5
-    ##   26  2 55
+    ##   3  58  6
+    ##   26  2 54
 
 ``` r
 u10 <- knn(train=xtr[, -618], test=xte[, -618], cl=xtr[, 618], k = 10)
@@ -220,8 +220,8 @@ table(u10, xte$V618)
 
     ##     
     ## u10   3 26
-    ##   3  58  6
-    ##   26  2 54
+    ##   3  58  5
+    ##   26  2 55
 
 ``` r
 u20 <- knn(train=xtr[, -618], test=xte[, -618], cl=xtr[, 618], k = 20)
@@ -240,8 +240,8 @@ table(u50, xte$V618)
 
     ##     
     ## u50   3 26
-    ##   3  58  7
-    ##   26  2 53
+    ##   3  58  6
+    ##   26  2 54
 
 To use logistic regression we first create a new variable that is 1 for the letter **C** and 0 for the letter **Z**, and use it as our response variable.
 
