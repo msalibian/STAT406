@@ -6,7 +6,7 @@ output: github_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE) #, eval = FALSE)
+knitr::opts_chunk$set(echo = TRUE) #, cache=TRUE) #, eval = FALSE)
 ```
 
 ## LICENSE
@@ -28,9 +28,13 @@ It is then easy to prove that Adaboost.M1
 is computing an approximation to the *optimal classifier*
 G( x ) = log[ P( Y = 1 | X = x ) / P( Y = -1 | X = x ) ] / 2.
 More specifically, Adaboost.M1 is fitting an 
-additive model to that function, in other words is
+additive model to that function. In other words, it is
 attempting to find functions $f_1$, $f_2$, ..., $f_N$ such that 
-$G(x) = \sum_i f_i( x )$. 
+$G(x) = \sum_i f_i( x^{(i)} )$, where $x^{(i)}$ is a sub-vector
+of $x$ (i.e. the function $f_i$ only depends on *some* of the
+available features, typically a few of them: 1 or 2, say). Note
+that each $f_i$ generally depends on a different subset of 
+features than the other $f_j$'s. 
 
 Knowing what function the boosting algorithm is approximating (albeit in 
 a greedy and suboptimal way), allows us to   
@@ -73,21 +77,35 @@ bo1 <- boosting(spam ~ ., data=spam.tr, boos=FALSE, mfinal=500, control=onesplit
 pr1 <- predict(bo1, newdata=spam.te)
 table(spam.te$spam, pr1$class) # (pr1$confusion)
 ```
-The classification error rate on the test set is rather high. We now
+The classification error rate on the test set is rather high (`r pr1$error`). We now
 compare it with that of a Random Forest:
 
 ```{r spam.3, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 library(randomForest)
 set.seed(123) 
 a <- randomForest(spam ~ . , data=spam.tr) # , ntree=500)
+```
+We look at the output
+```{r spam.3.rf, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+a
+```
+Note that the OOB estimate of the classification error rate 
+is `r a$err.rate[a$ntree, "OOB"]`. 
+The number of trees used seems to be appropriate in terms
+of the stability of the OOB error rate estimate:
+```{r spam.plot.rf, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 plot(a)
+```
+
+Now use the test set to estimate the error rate of the Random Forest 
+(for a fair comparison with the one computed with boosting) and obtain
+```{r spam.error.rate.rf, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 pr.rf <- predict(a, newdata=spam.te, type='response')
 table(spam.te$spam, pr.rf)
 ```
-
-The number of trees in the random forest seems to be appropriate, and its
-performance on this test set is definitively better than that of 
-boosting (the estimated classification error rate of the latter using this test set is
+The performance of Random Forests on this test set is better than that of 
+boosting (recall that the estimated classification error rate 
+for 1-split trees-based Adaboost was 
 `r pr1$error`, while for the Random Forest is `r mean( spam.te$spam != pr.rf )` 
 on the test set and `r a$err.rate[a$ntree, "OOB"]` using OOB). 
 

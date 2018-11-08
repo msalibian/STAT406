@@ -16,7 +16,7 @@ Preliminary lecture slides will be here.
 What is Adaboost doing, *really*?
 ---------------------------------
 
-We have seen in class that Adaboost can be thought of as fitting an *additive model* in a stepwise (greedy) way, using an exponential loss. It is then easy to prove that Adaboost.M1 is computing an approximation to the *optimal classifier* G( x ) = log\[ P( Y = 1 | X = x ) / P( Y = -1 | X = x ) \] / 2. More specifically, Adaboost.M1 is fitting an additive model to that function, in other words is attempting to find functions *f*<sub>1</sub>, *f*<sub>2</sub>, ..., *f*<sub>*N*</sub> such that *G*(*x*)=∑<sub>*i*</sub>*f*<sub>*i*</sub>(*x*).
+We have seen in class that Adaboost can be thought of as fitting an *additive model* in a stepwise (greedy) way, using an exponential loss. It is then easy to prove that Adaboost.M1 is computing an approximation to the *optimal classifier* G( x ) = log\[ P( Y = 1 | X = x ) / P( Y = -1 | X = x ) \] / 2. More specifically, Adaboost.M1 is fitting an additive model to that function. In other words, it is attempting to find functions *f*<sub>1</sub>, *f*<sub>2</sub>, ..., *f*<sub>*N*</sub> such that *G*(*x*)=∑<sub>*i*</sub>*f*<sub>*i*</sub>(*x*<sup>(*i*)</sup>), where *x*<sup>(*i*)</sup> is a sub-vector of *x* (i.e. the function *f*<sub>*i*</sub> only depends on *some* of the available features, typically a few of them: 1 or 2, say). Note that each *f*<sub>*i*</sub> generally depends on a different subset of features than the other *f*<sub>*j*</sub>'s.
 
 Knowing what function the boosting algorithm is approximating (albeit in a greedy and suboptimal way), allows us to
 understand when the algorithm is expected to work well, and also when it may not work well. In particular, it provides one way to choose the complexity of the *weak lerners* used to construct the ensemble. For an example you can refer to the corresponding lab activity.
@@ -51,16 +51,42 @@ table(spam.te$spam, pr1$class) # (pr1$confusion)
     ##   email   879   39
     ##   spam     55  560
 
-The classification error rate on the test set is rather high. We now compare it with that of a Random Forest:
+The classification error rate on the test set is rather high (0.0613177). We now compare it with that of a Random Forest:
 
 ``` r
 library(randomForest)
 set.seed(123) 
 a <- randomForest(spam ~ . , data=spam.tr) # , ntree=500)
+```
+
+We look at the output
+
+``` r
+a
+```
+
+    ## 
+    ## Call:
+    ##  randomForest(formula = spam ~ ., data = spam.tr) 
+    ##                Type of random forest: classification
+    ##                      Number of trees: 500
+    ## No. of variables tried at each split: 7
+    ## 
+    ##         OOB estimate of  error rate: 4.89%
+    ## Confusion matrix:
+    ##       email spam class.error
+    ## email  1812   58  0.03101604
+    ## spam     92 1106  0.07679466
+
+Note that the OOB estimate of the classification error rate is 0.0488918. The number of trees used seems to be appropriate in terms of the stability of the OOB error rate estimate:
+
+``` r
 plot(a)
 ```
 
-![](README_files/figure-markdown_github/spam.3-1.png)
+![](README_files/figure-markdown_github/spam.plot.rf-1.png)
+
+Now use the test set to estimate the error rate of the Random Forest (for a fair comparison with the one computed with boosting) and obtain
 
 ``` r
 pr.rf <- predict(a, newdata=spam.te, type='response')
@@ -72,7 +98,7 @@ table(spam.te$spam, pr.rf)
     ##   email   888   30
     ##   spam     53  562
 
-The number of trees in the random forest seems to be appropriate, and its performance on this test set is definitively better than that of boosting (the estimated classification error rate of the latter using this test set is 0.0613177, while for the Random Forest is 0.0541422 on the test set and 0.0488918 using OOB).
+The performance of Random Forests on this test set is better than that of boosting (recall that the estimated classification error rate for 1-split trees-based Adaboost was 0.0613177, while for the Random Forest is 0.0541422 on the test set and 0.0488918 using OOB).
 
 Is there *any room for improvement* for Adaboost? As we discussed in class, depending on the interactions that may be present in the *true classification function*, we might be able to improve our boosting classifier by slightly increasing the complexity of our base ensemble members. Here we try to use 3-split classification trees, instead of the 1-split ones used above:
 
