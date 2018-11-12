@@ -137,9 +137,11 @@ Discussed in class.
 
 ### An example with a simple neural network
 
-This example using the ISOLET data illustrates the use of simple neural networks, and also highlights some issues of which it may be important to be aware.
+This example using the ISOLET data illustrates the use of simple neural networks (NNs), and also highlights some issues of which it may be important to be aware. As we discussed in class, NNs typically have more parameters than observations and a number of tuning parameters that need to be chosen by the user. Among these: the number of hidden layers, the number of units in each layer, the *activation function*, the *loss function*, a decaying factor, and the initial point at which to start the optimization iterations. In the example below we illustrate some difficulties that can be encountered when trying to find which tuning parameters to use to train a NN.
 
-We will use the ISOLET data again. The data set is available here: <http://archive.ics.uci.edu/ml/datasets/ISOLET>, along with more information about it. It contains data on sound recordings of 150 speakers saying each letter of the alphabet (twice). See the original source for more details. The data set is rather large and available in compressed form. Here we will read it from a private copy in plain text form available on Dropbox.
+In order to focus on the concepts behind NN, we will use the `nnet` package in `R`. This package is a very simple implementation of NNs with a single hidden layer, and relies on standard optimization algorithms to train it. Such simple setting will allow us to separate implementation / optimization issues from the underlying model and ideas behind NN, which carry over naturally to more complex NNs.
+
+For our example we will use again the ISOLET data which is available here: <http://archive.ics.uci.edu/ml/datasets/ISOLET>, along with more information about it. It contains data on sound recordings of 150 speakers saying each letter of the alphabet (twice). See the original source for more details. The full data file is rather large and available in compressed form. Instead, we will read it from a private copy in plain text form I made available on Dropbox.
 
 #### "C" and "Z"
 
@@ -272,7 +274,7 @@ mean(b2 != x.te$V618)
 
 The second (worse) solution performs better on the test set.
 
-What if we add more units to the hidden layer?
+What if we add more units to the hidden layer? We increase the number of units on the hidden layer from 3 to 6.
 
 ``` r
 set.seed(123)
@@ -281,7 +283,21 @@ set.seed(456)
 a2 <- nnet(V618 ~ ., data=x.tr, size=3, decay=0, maxit=1500, MaxNWts=2000, trace=FALSE)
 ```
 
-The objective functions are 6.4827381 and 9.052401810^{-5}, and their performance on the training and test sets are:
+The objective functions are
+
+``` r
+a1$value
+```
+
+    ## [1] 6.482738
+
+``` r
+a2$value
+```
+
+    ## [1] 9.052402e-05
+
+respectively, and their performance on the training and test sets are:
 
 ``` r
 b1 <- predict(a1, type='class') #, type='raw')
@@ -311,7 +327,9 @@ mean(b2 != x.te$V618)
 
     ## [1] 0.04166667
 
-What if we add a decaying factor?
+Again we note that the (seemingly much) worse solution (in terms of the objective function whose optimization defines the NN) performs better on the test set.
+
+What if we add a decaying factor as a form of regularization?
 
 ``` r
 set.seed(123)
@@ -329,7 +347,7 @@ a2$value
 
     ## [1] 5.345279
 
-The two solutions are the same. How does it do on the training and test sets?
+Now the two solutions starting from these random initial values are the same (the reader is encouraged to try more random starts). How does this NN do on the training and test sets?
 
 ``` r
 b1 <- predict(a1, type='class') #, type='raw')
@@ -345,7 +363,9 @@ mean(b1 != x.te$V618)
 
     ## [1] 0.008333333
 
-Add more weights.
+Note that this "regularized" solution which corresponds to a slightly better solution than the worse one above in terms of objective function (but still much worse than the best ones) performs noticeably better on the test set. This seem to suggest that it is not easy to select which of the many local extrema to used based on the objective function values they attain.
+
+Another tuning parameter we can vary is the number of units in the hidden layer, which will also increase significantly the number of possible weight parameters in our model. The above solution uses 1858 weights. We now add more units to the hidden layer (6 instead of 3) and increase the limit on the number of allowable weights to 4000:
 
 ``` r
 set.seed(123)
@@ -391,7 +411,11 @@ mean(b2 != x.te$V618)
 
     ## [1] 0.008333333
 
+Note that both of these two distinct solutions fit the training set well exactly (0 apparent error rate), and have the same performance on the test set. We leave it to the reader to perform a more exhaustive study of the prediction properties of these solutions using an appropriate CV experiment.
+
 #### More letters
+
+We now repeat the same exercise above but on a 4-class setting.
 
 ``` r
 lets <- c(3, 7, 9, 26)
