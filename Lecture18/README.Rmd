@@ -321,19 +321,16 @@ using an appropriate CV experiment.
 
 We now repeat the same exercise above but on a 4-class
 setting. 
-
 ```{r iso20}
 lets <- c(3, 7, 9, 26)
-LETTERS[lets]
-
 x.tr <- xx.tr[ xx.tr$V618 %in% lets, ]
 x.tr$V618 <- as.factor(x.tr$V618)
-
 # testing set
 x.te <- xx.te[ xx.te$V618 %in% lets, ]
 truth <- x.te$V618 <- as.factor(x.te$V618)
-
-
+```
+One unit on the hidden layer is not enough:
+```{r iso20.1}
 set.seed(123)
 a1 <- nnet(V618 ~ ., data=x.tr, size=1, decay=0, maxit=1500, MaxNWts=2000, trace=FALSE)
 a1$value
@@ -344,129 +341,73 @@ a2$value
 length(a2$wts)
 b1 <- predict(a1, type='class') #, type='raw')
 mean(b1 != x.tr$V618)
-
 b2 <- predict(a2, type='class') #, type='raw')
 mean(b2 != x.tr$V618)
-
 b1 <- predict(a1, newdata=x.te, type='class') #, type='raw')
 mean(b1 != x.te$V618)
-
 b2 <- predict(a2, newdata=x.te, type='class') #, type='raw')
 mean(b2 != x.te$V618)
 ```
-
-```{r isolet22}
-set.seed(123)
-a1 <- nnet(V618 ~ ., data=x.tr, size=3, decay=0, maxit=1500, MaxNWts=2000, trace=FALSE)
-
-set.seed(456)
-a2 <- nnet(V618 ~ ., data=x.tr, size=3, decay=0, maxit=1500, MaxNWts=2000, trace=FALSE)
-
-b1 <- predict(a1, type='class') #, type='raw')
-mean(b1 != x.tr$V618)
-
-b2 <- predict(a2, type='class') #, type='raw')
-mean(b2 != x.tr$V618)
-
-b1 <- predict(a1, newdata=x.te, type='class') #, type='raw')
-mean(b1 != x.te$V618)
-
-b2 <- predict(a2, newdata=x.te, type='class') #, type='raw')
-mean(b2 != x.te$V618)
-```
-
-```{r isolate30}
-set.seed(123)
-a1 <- nnet(V618 ~ ., data=x.tr, size=3, decay=0.05, maxit=500, MaxNWts=2000, trace=FALSE)
-
-set.seed(456)
-a2 <- nnet(V618 ~ ., data=x.tr, size=3, decay=0.05, maxit=500, MaxNWts=2000, trace=FALSE)
-
-b1 <- predict(a1, type='class') #, type='raw')
-mean(b1 != x.tr$V618)
-
-b2 <- predict(a2, type='class') #, type='raw')
-mean(b2 != x.tr$V618)
-
-b1 <- predict(a1, newdata=x.te, type='class') #, type='raw')
-mean(b1 != x.te$V618)
-
-b2 <- predict(a2, newdata=x.te, type='class') #, type='raw')
-mean(b2 != x.te$V618)
-```
-
+Better results are obtained with 6 units on the hidden layer
+and a slightly regularized solution:
 ```{r isolate31}
 set.seed(123)
 a1 <- nnet(V618 ~ ., data=x.tr, size=6, decay=0.05, maxit=500, MaxNWts=4000, trace=FALSE)
-
+a1$value
+length(a1$wts)
 set.seed(456)
 a2 <- nnet(V618 ~ ., data=x.tr, size=6, decay=0.05, maxit=500, MaxNWts=4000, trace=FALSE)
-
+a2$value
+length(a2$wts)
 b1 <- predict(a1, type='class') #, type='raw')
 mean(b1 != x.tr$V618)
-
 b2 <- predict(a2, type='class') #, type='raw')
 mean(b2 != x.tr$V618)
-
 b1 <- predict(a1, newdata=x.te, type='class') #, type='raw')
 mean(b1 != x.te$V618)
-
 b2 <- predict(a2, newdata=x.te, type='class') #, type='raw')
 mean(b2 != x.te$V618)
 ```
 
 #### Even more letters
+We repeat it with even more letters. 
 ```{r isolate40}
 lets <- c(3, 5, 7, 9, 12, 13, 26)
 LETTERS[lets]
-
 x.tr <- xx.tr[ xx.tr$V618 %in% lets, ]
 x.tr$V618 <- as.factor(x.tr$V618)
-
 # testing set
 x.te <- xx.te[ xx.te$V618 %in% lets, ]
 truth <- x.te$V618 <- as.factor(x.te$V618)
-
+```
+Use 6 units on the hidden layer and moderate
+regularization via a decaying factor of `0.3` and a limit 
+of `4000` on the
+number of weights:
+```{r isolate40.1}
 set.seed(123)
-a1 <- nnet(V618 ~ ., data=x.tr, size=4, decay=0, maxit=1500, MaxNWts=3000, trace=FALSE)
-
+a1 <- nnet(V618 ~ ., data=x.tr, size=6, decay=0.3, maxit=1500, MaxNWts=4000, trace=FALSE)
+a1$value
+length(a1$wts)
 set.seed(456)
-a2 <- nnet(V618 ~ ., data=x.tr, size=4, decay=0, maxit=1500, MaxNWts=3000, trace=FALSE)
-
+a2 <- nnet(V618 ~ ., data=x.tr, size=6, decay=0.3, maxit=1500, MaxNWts=4000, trace=FALSE)
+a2$value
+length(a2$wts)
 b1 <- predict(a1, type='class') #, type='raw')
 mean(b1 != x.tr$V618)
-
 b2 <- predict(a2, type='class') #, type='raw')
 mean(b2 != x.tr$V618)
-
 b1 <- predict(a1, newdata=x.te, type='class') #, type='raw')
 mean(b1 != x.te$V618)
-
 b2 <- predict(a2, newdata=x.te, type='class') #, type='raw')
 mean(b2 != x.te$V618)
 ```
-
-```{r isolate41}
-set.seed(123)
-a1 <- nnet(V618 ~ ., data=x.tr, size=3, decay=0.3, maxit=1500, MaxNWts=2000, trace=FALSE)
-
-set.seed(456)
-a2 <- nnet(V618 ~ ., data=x.tr, size=3, decay=0.3, maxit=1500, MaxNWts=2000, trace=FALSE)
-
-b1 <- predict(a1, type='class') #, type='raw')
-mean(b1 != x.tr$V618)
-
-b2 <- predict(a2, type='class') #, type='raw')
-mean(b2 != x.tr$V618)
-
-b1 <- predict(a1, newdata=x.te, type='class') #, type='raw')
-mean(b1 != x.te$V618)
-
-b2 <- predict(a2, newdata=x.te, type='class') #, type='raw')
-mean(b2 != x.te$V618)
-```
-
-
+Did these solutions converge? A 0 value means convergence, while a 1
+means that the maximum number of iterations was reached:
+For `a1`: `r a1$convergence` and for `a2`: `r a2$convergence`.
+You are strongly encouraged to study what happens with other
+combinations of decay, number of weights and number of units
+on the hidden layer. 
 
 #### Additional resources for discussion (refer to the lecture for context)
 
