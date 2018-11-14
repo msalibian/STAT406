@@ -7,7 +7,7 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.width=6, fig.height=6, 
-                      message=FALSE, warning=FALSE)# , cache=TRUE) #, eval = FALSE)
+                      message=FALSE, warning=FALSE, cache=TRUE) #, eval = FALSE)
 ```
 
 ## LICENSE
@@ -82,20 +82,15 @@ bo1 <- boosting(spam ~ ., data=spam.tr, boos=FALSE, mfinal=500, control=onesplit
 pr1 <- predict(bo1, newdata=spam.te)
 table(spam.te$spam, pr1$class) # (pr1$confusion)
 ```
-The classification error rate on the test set is rather high (`r pr1$error`). We now
-compare it with that of a Random Forest:
-
+The classification error rate on the test set is `r round(pr1$error, 3)`. We now
+compare it with that of a Random Forest and look at the fit:
 ```{r spam.3, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 library(randomForest)
 set.seed(123) 
-a <- randomForest(spam ~ . , data=spam.tr) # , ntree=500)
-```
-We look at the output
-```{r spam.3.rf, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
-a
+(a <- randomForest(spam ~ . , data=spam.tr, ntree=500))
 ```
 Note that the OOB estimate of the classification error rate 
-is `r a$err.rate[a$ntree, "OOB"]`. 
+is `r round(a$err.rate[a$ntree, "OOB"], 3)`. 
 The number of trees used seems to be appropriate in terms
 of the stability of the OOB error rate estimate:
 ```{r spam.plot.rf, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
@@ -111,8 +106,7 @@ table(spam.te$spam, pr.rf)
 The performance of Random Forests on this test set is better than that of 
 boosting (recall that the estimated classification error rate 
 for 1-split trees-based Adaboost was 
-`r pr1$error`, while for the Random Forest is `r mean( spam.te$spam != pr.rf )` 
-on the test set and `r a$err.rate[a$ntree, "OOB"]` using OOB). 
+`r round(pr1$error, 3)`, while for the Random Forest is `r round(mean( spam.te$spam != pr.rf ), 3)` on the test set and `r round(a$err.rate[a$ntree, "OOB"], 3)` using OOB). 
 
 Is there *any room for improvement* for Adaboost? 
 As we discussed in class, depending on the interactions that may be 
@@ -126,18 +120,19 @@ bo3 <- boosting(spam ~ ., data=spam.tr, boos=FALSE, mfinal=500, control=threespl
 pr3 <- predict(bo3, newdata=spam.te)
 (pr3$confusion)
 ```
-The number of element on the boosting ensemble appears to be
-appropriate:
+The number of elements on the boosting ensemble (500) appears to be
+appropriate when we look at the error rate on the test set as 
+a function of the number of boosting iterations:
 ```{r spam.5, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 plot(errorevol(bo3, newdata=spam.te))
 ```
 
 There is, in fact, a noticeable improvement in performance on this
-test set. The estimated classification error rate of AdaBoost using
-3-split trees on this test set is
-`r pr3$error`. Recall that the estimated classification error rate
-for the Random Forest was `r mean( spam.te$spam != pr.rf )`
-(or `r a$err.rate[a$ntree, "OOB"]` using OOB). 
+test set compared to the AdaBoost using *stumps*. 
+The estimated classification error rate of AdaBoost using 3-split trees on this test set is
+`r round(pr3$error,3)`. Recall that the estimated classification error rate
+for the Random Forest was `r round(mean( spam.te$spam != pr.rf ),3)`
+(or `r round(a$err.rate[a$ntree, "OOB"],3)` using OOB). 
 
 As mentioned above you are strongly encouraged to finish this analysis
 by doing a complete K-fold CV analysis in order to compare boosting with random 
@@ -312,7 +307,7 @@ b2 <- predict(a2, newdata=x.te, type='class') #, type='raw')
 mean(b2 != x.te$V618)
 ```
 Note that both of these two distinct solutions fit the training set 
-well exactly (0 apparent error rate), and have the same performance
+exactly (0 apparent error rate), and have the same performance
 on the test set. We leave it to the reader to perform a more
 exhaustive study of the prediction properties of these solutions
 using an appropriate CV experiment. 
@@ -329,16 +324,19 @@ x.tr$V618 <- as.factor(x.tr$V618)
 x.te <- xx.te[ xx.te$V618 %in% lets, ]
 truth <- x.te$V618 <- as.factor(x.te$V618)
 ```
-One unit on the hidden layer is not enough:
+The following tries show that a NN with 
+only one unit in the hidden layer does not perform well.
+As before, we compare two local minima of the NN training
+algorithm. First we show the values of the
+corresponding local minima of the objective function, and then
+their error rates on the training and test sets.
 ```{r iso20.1}
 set.seed(123)
 a1 <- nnet(V618 ~ ., data=x.tr, size=1, decay=0, maxit=1500, MaxNWts=2000, trace=FALSE)
 a1$value
-length(a1$wts)
 set.seed(456)
 a2 <- nnet(V618 ~ ., data=x.tr, size=1, decay=0, maxit=1500, MaxNWts=2000, trace=FALSE)
 a2$value
-length(a2$wts)
 b1 <- predict(a1, type='class') #, type='raw')
 mean(b1 != x.tr$V618)
 b2 <- predict(a2, type='class') #, type='raw')
@@ -348,17 +346,23 @@ mean(b1 != x.te$V618)
 b2 <- predict(a2, newdata=x.te, type='class') #, type='raw')
 mean(b2 != x.te$V618)
 ```
+Note that the error rates on the test set are
+`r round(mean(b1 != x.te$V618), 3)` and 
+`r round(mean(b2 != x.te$V618), 3)`, which are
+very high.
 Better results are obtained with 6 units on the hidden layer
-and a slightly regularized solution:
+and a slightly regularized solution. As before, 
+use two runs of the training
+algorithm and look at the corresponding values of the
+objective function, and the error rates 
+of both NNs on the training and test sets.
 ```{r isolate31}
 set.seed(123)
 a1 <- nnet(V618 ~ ., data=x.tr, size=6, decay=0.05, maxit=500, MaxNWts=4000, trace=FALSE)
 a1$value
-length(a1$wts)
 set.seed(456)
 a2 <- nnet(V618 ~ ., data=x.tr, size=6, decay=0.05, maxit=500, MaxNWts=4000, trace=FALSE)
 a2$value
-length(a2$wts)
 b1 <- predict(a1, type='class') #, type='raw')
 mean(b1 != x.tr$V618)
 b2 <- predict(a2, type='class') #, type='raw')
@@ -368,9 +372,14 @@ mean(b1 != x.te$V618)
 b2 <- predict(a2, newdata=x.te, type='class') #, type='raw')
 mean(b2 != x.te$V618)
 ```
+The error rates on the test set are now 
+`r round(mean(b1 != x.te$V618), 3)` and 
+`r round(mean(b2 != x.te$V618), 3)`, which are
+much better than before.
 
 #### Even more letters
-We repeat it with even more letters. 
+We now consider building a classifier with 7 classes, which 
+is a more challenging problem. 
 ```{r isolate40}
 lets <- c(3, 5, 7, 9, 12, 13, 26)
 LETTERS[lets]
@@ -380,19 +389,16 @@ x.tr$V618 <- as.factor(x.tr$V618)
 x.te <- xx.te[ xx.te$V618 %in% lets, ]
 truth <- x.te$V618 <- as.factor(x.te$V618)
 ```
-Use 6 units on the hidden layer and moderate
-regularization via a decaying factor of `0.3` and a limit 
-of `4000` on the
-number of weights:
+The following code trains a NN with 6 units on the hidden layer and
+moderate regularization (via a decaying factor of `0.3` and 
+an upper limit of 4000 weights).
 ```{r isolate40.1}
 set.seed(123)
 a1 <- nnet(V618 ~ ., data=x.tr, size=6, decay=0.3, maxit=1500, MaxNWts=4000, trace=FALSE)
 a1$value
-length(a1$wts)
 set.seed(456)
 a2 <- nnet(V618 ~ ., data=x.tr, size=6, decay=0.3, maxit=1500, MaxNWts=4000, trace=FALSE)
 a2$value
-length(a2$wts)
 b1 <- predict(a1, type='class') #, type='raw')
 mean(b1 != x.tr$V618)
 b2 <- predict(a2, type='class') #, type='raw')
@@ -402,12 +408,17 @@ mean(b1 != x.te$V618)
 b2 <- predict(a2, newdata=x.te, type='class') #, type='raw')
 mean(b2 != x.te$V618)
 ```
-Did these solutions converge? A 0 value means convergence, while a 1
-means that the maximum number of iterations was reached:
-For `a1`: `r a1$convergence` and for `a2`: `r a2$convergence`.
+Note that in this case the NN with a better objective
+function (`r a2$value` versus `r a1$value`) achieves a better performance on 
+the test set (`r round(mean(b2 != x.te$V618), 3)` 
+versus `r round(mean(b1 != x.te$V618), 3)`), although the
+difference is rather small. Conclusions based on a 
+proper CV study would be much more reliable.
+
 You are strongly encouraged to study what happens with other
 combinations of decay, number of weights and number of units
-on the hidden layer. 
+on the hidden layer, using a proper CV setting to evaluate
+the results. 
 
 #### Additional resources for discussion (refer to the lecture for context)
 
