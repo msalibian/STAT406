@@ -7,7 +7,7 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.width=6, fig.height=6, 
-                      message=FALSE, warning=FALSE, cache=TRUE) #, eval = FALSE)
+                      message=FALSE, warning=FALSE)# , cache=TRUE) #, eval = FALSE)
 ```
 
 ## LICENSE
@@ -18,7 +18,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-Preliminary lecture slides will be here.
+Preliminary lecture slides are [here](STAT406-18-lecture-18-preliminary.pdf).
 
 ## What is Adaboost doing, *really*? 
 

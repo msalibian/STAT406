@@ -1,7 +1,7 @@
 STAT406 - Lecture 18 notes
 ================
 Matias Salibian-Barrera
-2018-11-12
+2018-11-13
 
 LICENSE
 -------
@@ -11,7 +11,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-Preliminary lecture slides will be here.
+Preliminary lecture slides are [here](STAT406-18-lecture-18-preliminary.pdf).
 
 What is Adaboost doing, *really*?
 ---------------------------------
