@@ -73,7 +73,7 @@ It is better to consider a large number of random starts and take the **best** f
 
 ``` r
 # Take the best solution out of 1000 random starts
-b <- kmeans(t(X2), centers=5, iter.max=20, nstart=1000)
+b <- kmeans(t(X2), centers = 5, iter.max = 20, nstart = 1000)
 split(colnames(X2), b$cluster)
 ```
 
@@ -115,14 +115,13 @@ It may be better to look at the groups on a map:
 ``` r
 library(rworldmap)
 library(countrycode)
-these <- countrycode(colnames(X2), 'country.name', 'iso3c')
+these <- countrycode(colnames(X2), "country.name", "iso3c")
 malDF <- data.frame(country = these, cluster = b$cluster)
-# malDF is a data.frame with the ISO3 country names plus a variable to
-# merge to the map data
+# malDF is a data.frame with the ISO3 country names plus a variable to merge
+# to the map data
 
 # This line will join your malDF data.frame to the country map data
-malMap <- joinCountryData2Map(malDF, joinCode = "ISO3",
-                              nameJoinColumn = "country")
+malMap <- joinCountryData2Map(malDF, joinCode = "ISO3", nameJoinColumn = "country")
 ```
 
     ## 77 codes from your data successfully matched countries in the map
@@ -130,13 +129,11 @@ malMap <- joinCountryData2Map(malDF, joinCode = "ISO3",
     ## 166 codes from the map weren't represented in your data
 
 ``` r
-# colors()[grep('blue', colors())]
-# fill the space on the graphical device
-par(mai=c(0,0,0,0),xaxs="i",yaxs="i")
-mapCountryData(malMap, nameColumnToPlot="cluster", catMethod = "categorical",
-               missingCountryCol = 'white', addLegend=FALSE, mapTitle="",
-               colourPalette=c('darkgreen', 'hotpink', 'tomato', 'blueviolet', 'yellow'),
-               oceanCol='dodgerblue')
+# colors()[grep('blue', colors())] fill the space on the graphical device
+par(mai = c(0, 0, 0, 0), xaxs = "i", yaxs = "i")
+mapCountryData(malMap, nameColumnToPlot = "cluster", catMethod = "categorical", 
+    missingCountryCol = "white", addLegend = FALSE, mapTitle = "", colourPalette = c("darkgreen", 
+        "hotpink", "tomato", "blueviolet", "yellow"), oceanCol = "dodgerblue")
 ```
 
 ![](README_files/figure-markdown_github/kmeans.map1-1.png)
@@ -149,13 +146,13 @@ library(cluster)
 d <- dist(t(X))
 # what happens with missing values?
 set.seed(123)
-a <- pam(d, k=3)
+a <- pam(d, k = 3)
 ```
 
 Compare the resulting groups with those of *K-means*:
 
 ``` r
-b <- kmeans(t(X2), centers=3, iter.max=20, nstart=1000)
+b <- kmeans(t(X2), centers = 3, iter.max = 20, nstart = 1000)
 table(a$clustering)
 ```
 
@@ -174,7 +171,7 @@ table(b$cluster)
 An better visualization is done using the map. interesting We plot the 3 groups found by `pam` on the map, followed by those found by K-means:
 
 ``` r
-these <- countrycode(colnames(X), 'country.name', 'iso3c')
+these <- countrycode(colnames(X), "country.name", "iso3c")
 malDF <- data.frame(country = these, cluster = a$clustering)
 malMap <- joinCountryData2Map(malDF, joinCode = "ISO3", nameJoinColumn = "country")
 ```
@@ -184,16 +181,16 @@ malMap <- joinCountryData2Map(malDF, joinCode = "ISO3", nameJoinColumn = "countr
     ## 166 codes from the map weren't represented in your data
 
 ``` r
-par(mai=c(0,0,0,0),xaxs="i",yaxs="i")
-mapCountryData(malMap, nameColumnToPlot="cluster", catMethod = "categorical",
-               missingCountryCol = 'white', addLegend=FALSE, mapTitle="",
-               colourPalette=c('darkgreen', 'hotpink', 'tomato', 'blueviolet', 'yellow'), oceanCol='dodgerblue')
+par(mai = c(0, 0, 0, 0), xaxs = "i", yaxs = "i")
+mapCountryData(malMap, nameColumnToPlot = "cluster", catMethod = "categorical", 
+    missingCountryCol = "white", addLegend = FALSE, mapTitle = "", colourPalette = c("darkgreen", 
+        "hotpink", "tomato", "blueviolet", "yellow"), oceanCol = "dodgerblue")
 ```
 
 ![](README_files/figure-markdown_github/un.pam.map-1.png)
 
 ``` r
-these <- countrycode(colnames(X2), 'country.name', 'iso3c')
+these <- countrycode(colnames(X2), "country.name", "iso3c")
 malDF <- data.frame(country = these, cluster = b$cluster)
 malMap <- joinCountryData2Map(malDF, joinCode = "ISO3", nameJoinColumn = "country")
 ```
@@ -203,11 +200,10 @@ malMap <- joinCountryData2Map(malDF, joinCode = "ISO3", nameJoinColumn = "countr
     ## 166 codes from the map weren't represented in your data
 
 ``` r
-par(mai=c(0,0,0,0),xaxs="i",yaxs="i")
-mapCountryData(malMap, nameColumnToPlot="cluster", catMethod = "categorical",
-               missingCountryCol = 'white', addLegend=FALSE, mapTitle="",
-               colourPalette=c('yellow', 'tomato', 'blueviolet'),
-               oceanCol='dodgerblue')
+par(mai = c(0, 0, 0, 0), xaxs = "i", yaxs = "i")
+mapCountryData(malMap, nameColumnToPlot = "cluster", catMethod = "categorical", 
+    missingCountryCol = "white", addLegend = FALSE, mapTitle = "", colourPalette = c("yellow", 
+        "tomato", "blueviolet"), oceanCol = "dodgerblue")
 ```
 
 ![](README_files/figure-markdown_github/un.pam.map-2.png)
@@ -215,10 +211,10 @@ mapCountryData(malMap, nameColumnToPlot="cluster", catMethod = "categorical",
 What if we use the L\_1 norm instead?
 
 ``` r
-d <- dist(t(X), method='manhattan')
+d <- dist(t(X), method = "manhattan")
 set.seed(123)
-a <- pam(d, k=3)
-these <- countrycode(colnames(X), 'country.name', 'iso3c')
+a <- pam(d, k = 3)
+these <- countrycode(colnames(X), "country.name", "iso3c")
 malDF <- data.frame(country = these, cluster = a$clustering)
 malMap <- joinCountryData2Map(malDF, joinCode = "ISO3", nameJoinColumn = "country")
 ```
@@ -228,11 +224,10 @@ malMap <- joinCountryData2Map(malDF, joinCode = "ISO3", nameJoinColumn = "countr
     ## 166 codes from the map weren't represented in your data
 
 ``` r
-par(mai=c(0,0,0,0),xaxs="i",yaxs="i")
-mapCountryData(malMap, nameColumnToPlot="cluster", catMethod = "categorical",
-               missingCountryCol = 'white', addLegend=FALSE, mapTitle="",
-               colourPalette=c('darkgreen', 'hotpink', 'tomato', 'blueviolet', 'yellow'),
-               oceanCol='dodgerblue')
+par(mai = c(0, 0, 0, 0), xaxs = "i", yaxs = "i")
+mapCountryData(malMap, nameColumnToPlot = "cluster", catMethod = "categorical", 
+    missingCountryCol = "white", addLegend = FALSE, mapTitle = "", colourPalette = c("darkgreen", 
+        "hotpink", "tomato", "blueviolet", "yellow"), oceanCol = "dodgerblue")
 ```
 
 ![](README_files/figure-markdown_github/un.pam.inf-1.png)
@@ -269,20 +264,19 @@ plot(a)
 
 ![](README_files/figure-markdown_github/brew.plot-1.png)
 
-Since other distances may produce different partitions, an interesting exercise would be to compare the above clusters with those found using the Euclidean or $L\_\\infy$ norms, for example.
+Since other distances may produce different partitions, an interesting exercise would be to compare the above clusters with those found using the Euclidean or *L*<sub>∞</sub> norms, for example.
 
 #### Cancer example
 
 This data contains gene expression levels for 6830 genes (rows) for 64 cell samples (columns). More information can be found here: <http://genome-www.stanford.edu/nci60/>. The data are included in the `ElemStatLearn` package, and also available on-line: <https://web.stanford.edu/~hastie/ElemStatLearn/>.
 
-We will use K-means to identify 8 possible clusters among the 64 cell samples. As discussed in class this exercise can (perhaps more interestingly) be formulated in terms of *feature selection*.
+We will use K-means to identify 8 possible clusters among the 64 cell samples. As discussed in class this exercise can (perhaps more interestingly) be formulated in terms of *feature selection*. We load the data and use K-means to find 8 clusters:
 
 ``` r
-# nci.data <- read.table('http://statweb.stanford.edu/~tibs/ElemStatLearn/datasets/nci.data', header=FALSE)
-data(nci, package='ElemStatLearn')
+data(nci, package = "ElemStatLearn")
 ncit <- t(nci)
 set.seed(31)
-a <- kmeans(ncit, centers=8, iter.max=5000, nstart=100)
+a <- kmeans(ncit, centers = 8, iter.max = 5000, nstart = 100)
 table(a$cluster)
 ```
 
@@ -290,35 +284,86 @@ table(a$cluster)
     ##  1  2  3  4  5  6  7  8 
     ##  3  8  5 14  6 15  9  4
 
+Note that in this application we do know the group to which each observation belongs (its cancer type). We can look at the cancer types that have been grouped together in each of the 8 clusters:
+
 ``` r
-split(colnames(nci), a$cluster)
+sapply(split(colnames(nci), a$cluster), table)
 ```
 
     ## $`1`
-    ## [1] "K562B-repro" "K562A-repro" "LEUKEMIA"   
+    ## 
+    ## K562A-repro K562B-repro    LEUKEMIA 
+    ##           1           1           1 
     ## 
     ## $`2`
-    ## [1] "CNS"    "CNS"    "CNS"    "RENAL"  "BREAST" "CNS"    "CNS"    "BREAST"
+    ## 
+    ## BREAST    CNS  RENAL 
+    ##      2      5      1 
     ## 
     ## $`3`
-    ## [1] "LEUKEMIA" "LEUKEMIA" "LEUKEMIA" "LEUKEMIA" "LEUKEMIA"
+    ## 
+    ## LEUKEMIA 
+    ##        5 
     ## 
     ## $`4`
-    ##  [1] "PROSTATE" "OVARIAN"  "OVARIAN"  "OVARIAN"  "OVARIAN"  "OVARIAN" 
-    ##  [7] "PROSTATE" "NSCLC"    "NSCLC"    "NSCLC"    "COLON"    "NSCLC"   
-    ## [13] "NSCLC"    "NSCLC"   
+    ## 
+    ##    COLON    NSCLC  OVARIAN PROSTATE 
+    ##        1        6        5        2 
     ## 
     ## $`5`
-    ## [1] "COLON" "COLON" "COLON" "COLON" "COLON" "COLON"
+    ## 
+    ## COLON 
+    ##     6 
     ## 
     ## $`6`
-    ##  [1] "NSCLC"    "NSCLC"    "RENAL"    "RENAL"    "RENAL"    "RENAL"   
-    ##  [7] "RENAL"    "RENAL"    "RENAL"    "BREAST"   "NSCLC"    "RENAL"   
-    ## [13] "UNKNOWN"  "OVARIAN"  "MELANOMA"
+    ## 
+    ##   BREAST MELANOMA    NSCLC  OVARIAN    RENAL  UNKNOWN 
+    ##        1        1        3        1        8        1 
     ## 
     ## $`7`
-    ## [1] "MELANOMA" "BREAST"   "BREAST"   "MELANOMA" "MELANOMA" "MELANOMA"
-    ## [7] "MELANOMA" "MELANOMA" "MELANOMA"
+    ## 
+    ##   BREAST MELANOMA 
+    ##        2        7 
     ## 
     ## $`8`
-    ## [1] "MCF7A-repro" "BREAST"      "MCF7D-repro" "BREAST"
+    ## 
+    ##      BREAST MCF7A-repro MCF7D-repro 
+    ##           2           1           1
+
+Note that clusters 2, 3, 5, 6 and 7 are dominated by one type of cancer. Similarly, almost all melanoma and renal samples are in clusters 7 and 6, respectively, while all CNS samples are in cluster 2. Cluster 4 is harder to interpret. Although all ovarian cancer samples are in this cluster, it also contains 2/3 of the NSCLC samples. It may be of interest to compare these results with those using different numbers of clusters.
+
+Finally, we will compare this partition (obtained with the usual K-means algorithm started from `100` random initial configurations) with the one found by K++ as implemented in `flexclust::kcca`:
+
+``` r
+library(flexclust)
+set.seed(123)
+kpp <- kcca(ncit, k = 8, family = kccaFamily("kmeans"), control = list(initcent = "kmeanspp"))
+table(kpp@cluster)
+```
+
+    ## 
+    ##  1  2  3  4  5  6  7  8 
+    ##  2  3  1 18 13  3 16  8
+
+while the one obtained with `kmeans` was
+
+``` r
+table(a$cluster)
+```
+
+    ## 
+    ##  1  2  3  4  5  6  7  8 
+    ##  3  8  5 14  6 15  9  4
+
+Note that the two partitions are quite different. Furthermore, note that there is still a lot of randomness in the solution returned by K++. If we run it again with a different pseudo-random number generating seed we obtain a very different partition:
+
+``` r
+set.seed(987)
+table(kcca(ncit, k = 8, family = kccaFamily("kmeans"), control = list(initcent = "kmeanspp"))@cluster)
+```
+
+    ## 
+    ##  1  2  3  4  5  6  7  8 
+    ## 28 14  2  9  6  2  2  1
+
+A very good exercise would be to determine which of these different partitions is better in terms of the objective function being optimized to find the clusters.

@@ -243,7 +243,7 @@ plot(a)
 
 Since other distances may produce different partitions, an interesting
 exercise would be to compare the above clusters with those found using
-the Euclidean or  $L_\infy$ norms, for example. 
+the Euclidean or  $L_\infty$ norms, for example. 
 
 #### Cancer example
 
@@ -257,15 +257,51 @@ available on-line:
 
 We will use K-means to identify 8 possible clusters among the 64 cell samples. 
 As discussed in class this exercise can (perhaps more interestingly) be formulated 
-in terms of *feature selection*. 
-
+in terms of *feature selection*. We load the data and use K-means to find 8 clusters:
 ```{r nci, fig.width=6, fig.height=6, message=FALSE, warning=FALSE, tidy=TRUE}
-# nci.data <- read.table('http://statweb.stanford.edu/~tibs/ElemStatLearn/datasets/nci.data', header=FALSE)
 data(nci, package='ElemStatLearn')
 ncit <- t(nci)
 set.seed(31)
 a <- kmeans(ncit, centers=8, iter.max=5000, nstart=100)
 table(a$cluster)
-split(colnames(nci), a$cluster)
 ```
+Note that in this application we do know the group to which each
+observation belongs (its cancer type). We can look at the cancer types that
+have been grouped together in each of the 8 clusters:
+```{r nci2, fig.width=6, fig.height=6, message=FALSE, warning=FALSE, tidy=TRUE}
+sapply(split(colnames(nci), a$cluster), table)
+```
+Note that clusters 2, 3, 5, 6 and 7 are dominated by one type of cancer. 
+Similarly, almost all melanoma and renal samples are in clusters 7 and 6, 
+respectively, while all CNS samples are in cluster 2. Cluster 4 is
+harder to interpret. Although all ovarian cancer samples are in this
+cluster, it also contains 2/3 of the NSCLC samples. It may be of interest
+to compare these results with those using different numbers of clusters. 
+
+Finally, we will compare this partition (obtained with the usual K-means algorithm
+started from `100` random initial configurations) with the one 
+found by K++ as implemented in `flexclust::kcca`:
+```{r nci1.kpp, fig.width=6, fig.height=6, message=FALSE, warning=FALSE, tidy=TRUE}
+library(flexclust)
+set.seed(123)
+kpp <- kcca(ncit, k = 8, family=kccaFamily("kmeans"), control=list(initcent="kmeanspp"))
+table(kpp@cluster)
+```
+while the one obtained with `kmeans` was
+```{r nci2.kpp, fig.width=6, fig.height=6, message=FALSE, warning=FALSE, tidy=TRUE}
+table(a$cluster)
+```
+Note that the two partitions are quite different. Furthermore, note that 
+there is still a lot of randomness in the solution returned by K++. If we run it again 
+with a different pseudo-random number generating seed we obtain a very different
+partition:
+```{r nci3.kpp, fig.width=6, fig.height=6, message=FALSE, warning=FALSE, tidy=TRUE}
+set.seed(987)
+table(kcca(ncit, k = 8, family=kccaFamily("kmeans"), control=list(initcent="kmeanspp"))@cluster)
+```
+A very good exercise would be 
+to determine which of these different partitions is better in terms 
+of the objective function being optimized to find the clusters.
+
+
 
