@@ -65,13 +65,13 @@ set.seed(123)
     ##                      Number of trees: 500
     ## No. of variables tried at each split: 7
     ## 
-    ##         OOB estimate of  error rate: 4.89%
+    ##         OOB estimate of  error rate: 5.02%
     ## Confusion matrix:
     ##       email spam class.error
-    ## email  1812   58  0.03101604
-    ## spam     92 1106  0.07679466
+    ## email  1807   63  0.03368984
+    ## spam     91 1107  0.07595993
 
-Note that the OOB estimate of the classification error rate is 0.049. The number of trees used seems to be appropriate in terms of the stability of the OOB error rate estimate:
+Note that the OOB estimate of the classification error rate is 0.05. The number of trees used seems to be appropriate in terms of the stability of the OOB error rate estimate:
 
 ``` r
 plot(a)
@@ -88,10 +88,10 @@ table(spam.te$spam, pr.rf)
 
     ##        pr.rf
     ##         email spam
-    ##   email   888   30
-    ##   spam     53  562
+    ##   email   886   32
+    ##   spam     55  560
 
-The performance of Random Forests on this test set is better than that of boosting (recall that the estimated classification error rate for 1-split trees-based Adaboost was 0.061, while for the Random Forest is 0.054 on the test set and 0.049 using OOB).
+The performance of Random Forests on this test set is better than that of boosting (recall that the estimated classification error rate for 1-split trees-based Adaboost was 0.061, while for the Random Forest is 0.057 on the test set and 0.05 using OOB).
 
 Is there *any room for improvement* for Adaboost? As we discussed in class, depending on the interactions that may be present in the *true classification function*, we might be able to improve our boosting classifier by slightly increasing the complexity of our base ensemble members. Here we try to use 3-split classification trees, instead of the 1-split ones used above:
 
@@ -115,7 +115,7 @@ plot(errorevol(bo3, newdata=spam.te))
 
 ![](README_files/figure-markdown_github/spam.5-1.png)
 
-There is, in fact, a noticeable improvement in performance on this test set compared to the AdaBoost using *stumps*. The estimated classification error rate of AdaBoost using 3-split trees on this test set is 0.044. Recall that the estimated classification error rate for the Random Forest was 0.054 (or 0.049 using OOB).
+There is, in fact, a noticeable improvement in performance on this test set compared to the AdaBoost using *stumps*. The estimated classification error rate of AdaBoost using 3-split trees on this test set is 0.044. Recall that the estimated classification error rate for the Random Forest was 0.057 (or 0.05 using OOB).
 
 As mentioned above you are strongly encouraged to finish this analysis by doing a complete K-fold CV analysis in order to compare boosting with random forests on these data.
 
@@ -176,13 +176,16 @@ a1 <- nnet(V618 ~ ., data=x.tr, size=1, decay=0, maxit=1500, MaxNWts=2000)
     ## iter  50 value 18.050036
     ## iter  60 value 18.048042
     ## iter  70 value 12.957465
-    ## iter  80 value 6.912095
-    ## iter  90 value 6.483391
-    ## iter 100 value 6.482796
-    ## iter 110 value 6.482767
-    ## iter 120 value 6.482733
-    ## iter 120 value 6.482733
-    ## final  value 6.482722 
+    ## iter  80 value 6.911630
+    ## iter  90 value 6.483383
+    ## iter 100 value 6.482835
+    ## iter 110 value 6.482692
+    ## iter 120 value 6.482643
+    ## iter 130 value 6.482535
+    ## iter 140 value 6.481985
+    ## iter 150 value 0.945104
+    ## iter 160 value 0.016044
+    ## final  value 0.000089 
     ## converged
 
 Note the slow convergence. The final value of the objective value was:
@@ -191,7 +194,7 @@ Note the slow convergence. The final value of the objective value was:
 a1$value
 ```
 
-    ## [1] 6.482722
+    ## [1] 8.868116e-05
 
 The error rate on the training set ("goodness of fit") is
 
@@ -200,7 +203,7 @@ b1 <- predict(a1, type='class') #, type='raw')
 mean(b1 != x.tr$V618)
 ```
 
-    ## [1] 0.002083333
+    ## [1] 0
 
 We see that this NN fits the training set perfectly. Is this desirable?
 
@@ -222,29 +225,30 @@ a2 <- nnet(V618 ~ ., data=x.tr, size=1, decay=0, maxit=1500, MaxNWts=2000)
     ## iter  70 value 35.625710
     ## iter  80 value 26.860150
     ## iter  90 value 26.859935
-    ## iter 100 value 22.647453
-    ## iter 110 value 22.622997
-    ## iter 120 value 22.622074
-    ## iter 130 value 16.996393
-    ## iter 140 value 16.166440
-    ## iter 150 value 16.164762
-    ## final  value 16.164753 
+    ## iter 100 value 22.644407
+    ## iter 110 value 22.622998
+    ## iter 120 value 22.622435
+    ## iter 130 value 19.205152
+    ## iter 140 value 13.031944
+    ## iter 150 value 11.588969
+    ## iter 160 value 11.583343
+    ## final  value 11.583318 
     ## converged
 
-Compare the attained value of the objective and the error rate on the training set with those above (6.482722 and 0, respectively):
+Compare the attained value of the objective and the error rate on the training set with those above (8.910^{-5} and 0, respectively):
 
 ``` r
 a2$value
 ```
 
-    ## [1] 16.16475
+    ## [1] 11.58332
 
 ``` r
 b2 <- predict(a2, type='class') #, type='raw')
 mean(b2 != x.tr$V618)
 ```
 
-    ## [1] 0.00625
+    ## [1] 0.004166667
 
 So, we see that the second run of NN produces a much worse solution. How are their performances on the test set?
 
@@ -424,7 +428,7 @@ a1 <- nnet(V618 ~ ., data=x.tr, size=1, decay=0, maxit=1500, MaxNWts=2000, trace
 a1$value
 ```
 
-    ## [1] 6.482739
+    ## [1] 9.785652e-05
 
 ``` r
 set.seed(456)
@@ -439,30 +443,30 @@ b1 <- predict(a1, type='class') #, type='raw')
 mean(b1 != x.tr$V618)
 ```
 
-    ## [1] 0.001041667
+    ## [1] 0
 
 ``` r
 b2 <- predict(a2, type='class') #, type='raw')
 mean(b2 != x.tr$V618)
 ```
 
-    ## [1] 0.5010417
+    ## [1] 0.4875
 
 ``` r
 b1 <- predict(a1, newdata=x.te, type='class') #, type='raw')
 mean(b1 != x.te$V618)
 ```
 
-    ## [1] 0.4666667
+    ## [1] 0.4583333
 
 ``` r
 b2 <- predict(a2, newdata=x.te, type='class') #, type='raw')
 mean(b2 != x.te$V618)
 ```
 
-    ## [1] 0.525
+    ## [1] 0.4875
 
-Note that the error rates on the test set are 0.467 and 0.525, which are very high. Better results are obtained with 6 units on the hidden layer and a slightly regularized solution. As before, use two runs of the training algorithm and look at the corresponding values of the objective function, and the error rates of both NNs on the training and test sets.
+Note that the error rates on the test set are 0.458 and 0.488, which are very high. Better results are obtained with 6 units on the hidden layer and a slightly regularized solution. As before, use two runs of the training algorithm and look at the corresponding values of the objective function, and the error rates of both NNs on the training and test sets.
 
 ``` r
 set.seed(123)
@@ -470,7 +474,7 @@ a1 <- nnet(V618 ~ ., data=x.tr, size=6, decay=0.05, maxit=500, MaxNWts=4000, tra
 a1$value
 ```
 
-    ## [1] 9.037808
+    ## [1] 9.037809
 
 ``` r
 set.seed(456)
@@ -575,7 +579,7 @@ mean(b2 != x.te$V618)
 
     ## [1] 0.01193317
 
-Note that in this case the NN with a better objective function (100.593792 versus 102.1805367) achieves a better performance on the test set (0.012 versus 0.019), although the difference is rather small. Conclusions based on a proper CV study would be much more reliable.
+Note that in this case the NN with a better objective function (100.593829 versus 102.1805369) achieves a better performance on the test set (0.012 versus 0.019), although the difference is rather small. Conclusions based on a proper CV study would be much more reliable.
 
 You are strongly encouraged to study what happens with other combinations of decay, number of weights and number of units on the hidden layer, using a proper CV setting to evaluate the results.
 
