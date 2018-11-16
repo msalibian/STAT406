@@ -22,10 +22,10 @@ Preliminary lecture slides are [here](STAT406-18-lecture-19-preliminary.pdf).
 # Unsupervised learning
 
 Unsupervised learning methods differ from the 
-supervised ones we have studied so far, in that 
+supervised ones we have studied so far in that 
 there is no response variable. The objective is
-not to predict a specific variable, but rather
-to identify different possible structures that may be
+not related to prediction but rather
+to the identification of different possible structures that may be
 present in the data. For example, one may be
 interested in determining whether the observations 
 are "grouped" in some way (clustering), or if the data can be
@@ -36,28 +36,32 @@ Many of these methods do not rely on any probabilistic
 model, and thus there may not be a clear *target* to 
 be estimated or approximated. As a consequence,
 the conclusions that can be reached from this type
-of analyses is essentially exploratory in nature. 
-
+of analyses are often of an exploratory nature. 
 
 ## Clustering
 
 A large class of unsupervised learning methods is
-collectively called *clustering*. The data consist
-of *n* observations **X**_1, **X**_2, ..., 
-**X**_n, each with *p* features, and the goal is 
-to identify possible *groups* in the data. In general,
-the number of groups is also unknown. 
+collectively called *clustering*. The objective 
+can be described as identifying different groups 
+of observations that are closer to each other ("clustered") than to those of 
+the other groups. The data consist of *n* observations $X_1$, $X_2$, ..., 
+$X_n$, each with *p* features. In general, the number of groups is
+unknown and needs to be determined from the data.
 
 In this course we will discuss both model-free
 and model-based clustering methods. In the first
-group we will present K-means (and several 
-related methods), and hierarchical clustering 
-methods (agglomerative). Model-based clustering
-is based on the assumption that the data 
+group we will present K-means (and other 
+related methods), and hierarchical (agglomerative) clustering 
+methods. Model-based clustering is based on the assumption that the data 
 is a random sample, and that the distribution of
 the vector of features **X** is a combination of 
-different distribution, depending on which group
-the observation belongs to. 
+different distributions (technically: a *mixture model*). 
+In the latter case, for observations belonging to a
+group, the vector **X** is assumed 
+to have a distribution in a specific (generally parametric) family. 
+Some of these model-based methods treat the group labels as 
+missing (unobserved) responses, and rely on the assumed model to 
+infer those missing labels. 
 
 ### K-means, K-means++, K-medoids
 
@@ -79,7 +83,7 @@ found here:
 > http://hdl.handle.net/1902.1/12379, Harvard Dataverse, V11
 
 The UN was founded in 1946 and it contains 193 member states. 
-These data records "important" votes, as classified
+The data include only "important" votes, as classified
 by the U.S. State Department. The votes for each country 
 were coded as follows: Yes (1), Abstain (2), No (3),
 Absent (8), Not a Member (9). There were 
@@ -92,8 +96,9 @@ political blocks. Our data consists of 77 observations
 with 368 variables each. More information on these data can be found 
 [here](https://dataverse.harvard.edu/dataset.xhtml?persistentId=hdl:1902.1/12379).
 
-The data is organized be resolution (one per row), its columns contain the
-corresponding vote of each country.
+The dataset is organized by vote (resolution), one per row, 
+and its columns contain the corresponding vote of each country
+(one country per column).
 We first read the data, and limit ourselves to resolutions where
 every country voted without missing votes:
 ```{r unvotes, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
@@ -144,12 +149,13 @@ mapCountryData(malMap, nameColumnToPlot="cluster", catMethod = "categorical",
 ```
 
 We can compare this partition with the one we obtain using PAM (K-medoids), 
-which is implemented in the function `pam` of package `cluster`. Recall
+which is implemented in the function `pam` of the package `cluster`. Recall
 from the discussion in class that `pam` does not need to manipulate the
 actual observations, only its pairwise distances (or dissimilarities). In
 this case we use Euclidean distances, but it may be interesting to 
-explore other distances, particulary in light of the `categorical` 
-nature of the data. Furthermore, to obtain clusters that may be easier to interpret we use *K = 3*:
+explore other distances, particulary in light of the categorical 
+nature of the data. Furthermore, to obtain clusters that may
+be easier to interpret we use `K = 3`:
 ```{r un.pam, fig.width=6, fig.height=6, message=FALSE, warning=FALSE, tidy=TRUE}
 library(cluster)
 # Use Euclidean distances
@@ -202,13 +208,18 @@ mapCountryData(malMap, nameColumnToPlot="cluster", catMethod = "categorical",
                oceanCol='dodgerblue')
 ```
 
+As mentioned before, since the data set does not include a *true label*, the 
+comparison between the different results is somewhat subjective, and it often
+relies on the knowledge of the subject matter experts. In our example above, this
+would mean asking the opinion of a political scientist as to whether these
+groupings correspond to known international political blocks or alignments.  
 
 #### Breweries
 
-Beer drinkers were asked to rate 9 breweries one 26
-attributes, e.g. this brewery has a rich tradition; or
-this brewery makes very good pilsner beer, etc. Relative to each attribute, the
-*judge* had to assign each brewery a score on a 6-point scale
+In this example beer drinkers were asked to rate 9 breweries one 26
+attributes, e.g. whether this brewery has a rich tradition; or
+whether it makes very good pilsner beer, etc. For each of these
+questions, the *judges* reported a score on a 6-point scale
 ranging from 1: "not true at all" to 6: "very true". The data
 are in the file `breweries.dat`:
 ```{r brew, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
@@ -216,7 +227,8 @@ x <- read.table('breweries.dat', header=FALSE)
 x <- t(x)
 ```
 
-For illustration purposes we use the L_1 distance and PAM.
+For illustration purposes we use the $L_1$ distance and the
+PAM clustering method.
 ```{r brew2, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 d <- dist(x, method='manhattan')
 set.seed(123)
@@ -225,14 +237,13 @@ table(a$clustering)
 ```
 To visualize the strength of these cluster partition we use
 the silhouette plot discussed in class:
-
 ```{r brew.plot, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 plot(a)
 ```
 
 Since other distances may produce different partitions, an interesting
 exercise would be to compare the above clusters with those found using
-the Euclidean on L_\infy norms, for example. 
+the Euclidean or  $L_\infy$ norms, for example. 
 
 #### Cancer example
 
