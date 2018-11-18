@@ -196,6 +196,8 @@ The explanation for this is that the response variables in the data set were in 
 
 where *x* = (*x*<sub>1</sub>, *x*<sub>2</sub>)<sup>⊤</sup>. Since *stumps* (1-split trees) are by definition functions of a single variable, boosting will not be able to approximate the above function using a linear combination of them, regardless of how many terms you use. Two-split trees, on the other hand, are able to model interactions between the two explanatory variables *X*<sub>1</sub> (`lon`) and *X*<sub>2</sub> (`lat`), and thus, with sufficient terms in the sum, we are able to approximate the above function relatively well.
 
+As before, note that the analysis above may depend on the specific training / test split we used, so it is strongly suggested that you re-do it using a proper cross-validation setup.
+
 Gradient boosting
 -----------------
 

@@ -7,7 +7,7 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.width=6, fig.height=6, 
-                      message=FALSE, warning=FALSE, cache=TRUE) #, eval = FALSE)
+                      message=FALSE, warning=FALSE) #, cache=TRUE) #, eval = FALSE)
 ```
 
 ## LICENSE
@@ -225,6 +225,10 @@ trees, on the other hand, are able to model interactions between the two
 explanatory variables $X_1$ (`lon`) and
 $X_2$ (`lat`), and thus, with sufficient terms in the sum, we are able to 
 approximate the above function relatively well. 
+
+As before, note that the analysis above may depend on the specific 
+training / test split we used, so it is strongly suggested that you
+re-do it using a proper cross-validation setup. 
 
 ## Gradient boosting
 
