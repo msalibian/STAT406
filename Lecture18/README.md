@@ -1,7 +1,7 @@
 STAT406 - Lecture 18 notes
 ================
 Matias Salibian-Barrera
-2018-11-15
+2018-11-18
 
 LICENSE
 -------
@@ -118,6 +118,83 @@ plot(errorevol(bo3, newdata=spam.te))
 There is, in fact, a noticeable improvement in performance on this test set compared to the AdaBoost using *stumps*. The estimated classification error rate of AdaBoost using 3-split trees on this test set is 0.044. Recall that the estimated classification error rate for the Random Forest was 0.057 (or 0.05 using OOB).
 
 As mentioned above you are strongly encouraged to finish this analysis by doing a complete K-fold CV analysis in order to compare boosting with random forests on these data.
+
+### An example on improving Adaboost's performance including interactions
+
+Consider the data set in the file `boost.sim.csv`. This is a synthetic data inspired by the well-known Boston Housing data. The response variable is `class` and the two predictors are `lon` and `lat`. We read the data set
+
+``` r
+sim <- read.table('boost.sim.csv', header=TRUE, sep=',', row.names=1)
+```
+
+We split the data randomly into a training and a test set:
+
+``` r
+set.seed(123)
+ii <- sample(nrow(sim), nrow(sim)/3)
+sim.tr <- sim[-ii, ] 
+sim.te <- sim[ii, ]
+```
+
+As before, we use *stumps* as our base classifiers
+
+``` r
+stump <- rpart.control(cp=-1,maxdepth=1,minsplit=0,xval=0)
+```
+
+and run 300 iterations of the boosting algorithm:
+
+``` r
+set.seed(17)
+sim1 <- boosting(class ~ ., data=sim.tr, boos=FALSE, mfinal=300, control=stump)
+```
+
+We examine the evolution of our ensemble on the test set:
+
+``` r
+plot(errorevol(sim1, newdata=sim.te))
+```
+
+![](README_files/figure-markdown_github/bostonsimu1-1.png)
+
+and note that the peformance is both disappointing and does not improve with the number of iterations. The error rate on the test set is 0.42. Based on the discussion in class about the effect of the complexity of the base classifiers, we now increase slightly their complexity: from stumps to trees with up to 2 splits:
+
+``` r
+twosplit <- rpart.control(cp=-1,maxdepth=2,minsplit=0,xval=0)
+set.seed(17)
+sim2 <- boosting(class ~ ., data=sim.tr, boos=FALSE, mfinal=300, control=twosplit)
+plot(errorevol(sim2, newdata=sim.te))
+```
+
+![](README_files/figure-markdown_github/boston00-1.png)
+
+Note that the error rate improves noticeably to 0.18. Interestingly, note as well that increasing the number of splits of the base classifiers does not seem to help. With 3-split trees:
+
+``` r
+threesplit <- rpart.control(cp=-1,maxdepth=3,minsplit=0,xval=0)
+set.seed(17)
+sim3 <- boosting(class ~ ., data=sim.tr, boos=FALSE, mfinal=300, control=threesplit)
+plot(errorevol(sim3, newdata=sim.te))
+```
+
+![](README_files/figure-markdown_github/boston00.more-1.png)
+
+the error rate is 0.16, while with 4-split trees the error rate is 0.16.
+
+<!-- Note the large improvement in performance over the test set. -->
+<!-- What if we use 4-split trees instead?  -->
+<!-- ```{r boston001} -->
+<!-- foursplit <- rpart.control(cp=-1,maxdepth=4,minsplit=0,xval=0) -->
+<!-- set.seed(17) -->
+<!-- sim4 <- boosting(class ~ ., data=sim.tr, boos=FALSE, mfinal=300, control=foursplit) -->
+<!-- plot(errorevol(sim4, newdata=sim.te)) -->
+<!-- ``` -->
+The explanation for this is that the response variables in the data set were in fact generated through the following relationship:
+
+    log [ P ( Y = 1 | X = x ) / P ( Y = -1 | X = x ) ] / 2
+     = [ max( x2 - 2, 0) - max( x1 + 1, 0) ] ( 1- x1 + x2 )
+
+where *x* = (*x*<sub>1</sub>, *x*<sub>2</sub>)<sup>⊤</sup>. Since *stumps* (1-split trees) are by definition functions of a single variable, boosting will not be able to approximate the above function using a linear combination of them, regardless of how many terms you use. Two-split trees, on the other hand, are able to model interactions between the two explanatory variables *X*<sub>1</sub> (`lon`) and *X*<sub>2</sub> (`lat`), and thus, with sufficient terms in the sum, we are able to approximate the above function relatively well.
 
 Gradient boosting
 -----------------

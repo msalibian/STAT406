@@ -7,7 +7,7 @@ output: github_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, fig.width=6, fig.height=6, 
-                      message=FALSE, warning=FALSE) #, cache=TRUE) #, eval = FALSE)
+                      message=FALSE, warning=FALSE, cache=TRUE) #, eval = FALSE)
 ```
 
 ## LICENSE
@@ -137,6 +137,94 @@ for the Random Forest was `r round(mean( spam.te$spam != pr.rf ),3)`
 As mentioned above you are strongly encouraged to finish this analysis
 by doing a complete K-fold CV analysis in order to compare boosting with random 
 forests on these data. 
+
+### An example on improving Adaboost's performance including interactions
+
+Consider the data set in the file `boost.sim.csv`. This 
+is a synthetic data inspired by the 
+well-known Boston Housing data. The response variable is `class` 
+and the two predictors are `lon` and `lat`. We read the data set
+```{r sim.read}
+sim <- read.table('boost.sim.csv', header=TRUE, sep=',', row.names=1)
+```
+We split the data randomly into a training and a test set:
+```{r sim.split}
+set.seed(123)
+ii <- sample(nrow(sim), nrow(sim)/3)
+sim.tr <- sim[-ii, ] 
+sim.te <- sim[ii, ]
+```
+As before, we use *stumps* as our base classifiers
+```{r boston0}
+stump <- rpart.control(cp=-1,maxdepth=1,minsplit=0,xval=0)
+```
+and run 300 iterations of the boosting algorithm:
+```{r bostonsimu0}
+set.seed(17)
+sim1 <- boosting(class ~ ., data=sim.tr, boos=FALSE, mfinal=300, control=stump)
+```
+We examine the evolution of our ensemble on the test set:
+```{r bostonsimu1}
+plot(errorevol(sim1, newdata=sim.te))
+```
+
+and note that the peformance is both disappointing and does not improve with
+the number of iterations. The error rate on the test set is
+`r round(predict(sim1, newdata=sim.te)$error, 4)`. 
+Based on the discussion in class about the effect of the 
+complexity of the base classifiers, 
+we now increase slightly their complexity: from
+stumps to trees with up to 2 splits:
+```{r boston00}
+twosplit <- rpart.control(cp=-1,maxdepth=2,minsplit=0,xval=0)
+set.seed(17)
+sim2 <- boosting(class ~ ., data=sim.tr, boos=FALSE, mfinal=300, control=twosplit)
+plot(errorevol(sim2, newdata=sim.te))
+```
+
+Note that the error rate improves noticeably to 
+`r round(predict(sim2, newdata=sim.te)$error, 4)`. 
+Interestingly, note as well that increasing the number 
+of splits of the base classifiers does not seem to 
+help. With 3-split trees:
+```{r boston00.more}
+threesplit <- rpart.control(cp=-1,maxdepth=3,minsplit=0,xval=0)
+set.seed(17)
+sim3 <- boosting(class ~ ., data=sim.tr, boos=FALSE, mfinal=300, control=threesplit)
+plot(errorevol(sim3, newdata=sim.te))
+```
+```{r boston001, echo=FALSE}
+foursplit <- rpart.control(cp=-1,maxdepth=4,minsplit=0,xval=0)
+set.seed(17)
+sim4 <- boosting(class ~ ., data=sim.tr, boos=FALSE, mfinal=300, control=foursplit)
+```
+the error rate is `r round(predict(sim3, newdata=sim.te)$error, 4)`,
+while with 4-split trees the error rate is `r round(predict(sim4, newdata=sim.te)$error, 4)`. 
+
+<!-- Note the large improvement in performance over the test set. -->
+<!-- What if we use 4-split trees instead?  -->
+<!-- ```{r boston001} -->
+<!-- foursplit <- rpart.control(cp=-1,maxdepth=4,minsplit=0,xval=0) -->
+<!-- set.seed(17) -->
+<!-- sim4 <- boosting(class ~ ., data=sim.tr, boos=FALSE, mfinal=300, control=foursplit) -->
+<!-- plot(errorevol(sim4, newdata=sim.te)) -->
+<!-- ``` -->
+
+The explanation for this is that the response variables 
+in the data set \texttt{boost.sim.csv} were in fact generated
+through the following relationship:
+```
+log [ P ( Y = 1 | X = x ) / P ( Y = -1 | X = x ) ] / 2
+ = [ max( x2 - 2, 0) - max( x1 + 1, 0) ] ( 1- x1 + x2 )
+```
+where $x = (x_1, x_2)^\top$. Since *stumps* (1-split trees) 
+are by definition functions of a single
+variable, boosting will not be able to approximate the above function using
+a linear combination of them, regardless of how many terms you use. Two-split
+trees, on the other hand, are able to model interactions between the two
+explanatory variables $X_1$ (`lon`) and
+$X_2$ (`lat`), and thus, with sufficient terms in the sum, we are able to 
+approximate the above function relatively well. 
 
 ## Gradient boosting
 
