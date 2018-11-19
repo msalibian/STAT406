@@ -300,7 +300,9 @@ set.seed(987)
 table(kcca(ncit, k = 8, family=kccaFamily("kmeans"), control=list(initcent="kmeanspp"))@cluster)
 ```
 A very good exercise would be 
-to determine which of these different partitions is better in terms 
+to determine which of these different partitions
+(the ones found with K++ and the one returned by 100 random starts of
+K-means) is better in terms 
 of the objective function being optimized to find the clusters.
 
 
