@@ -37,7 +37,9 @@ dd <- dist(t(X))
 tmp <- cmdscale(dd, k = 2)
 ```
 
-This is the data with which we will work: ![](README_files/figure-markdown_github/scatter-1.png)
+This is the data with which we will work:
+
+![](README_files/figure-markdown_github/scatter-1.png)
 
 We will now use the EM algorithm to find (Gaussian-ly distributed) clusters in the data. First we find initial maximum likelihood estimators (i.e. initial values for the EM algorithm), using a random partition of the data:
 

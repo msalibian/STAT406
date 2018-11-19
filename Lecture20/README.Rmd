@@ -73,6 +73,7 @@ tmp <- cmdscale(dd, k = 2)
 ```
 
 This is the data with which we will work: 
+
 ```{r scatter, echo=FALSE}
 plot(tmp, pch=19, col='gray50', cex=2, xlab='', ylab='')
 ```
