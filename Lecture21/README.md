@@ -1,7 +1,7 @@
 STAT406 - Lecture 21 notes
 ================
 Matias Salibian-Barrera
-2018-11-15
+2018-11-22
 
 LICENSE
 -------
@@ -215,3 +215,94 @@ plot(na.hc, labels = nams2)
 ```
 
 ![](README_files/figure-markdown_github/nations-2.png)
+
+#### UN Votes
+
+We revisit here the UN votes example (see Lecture 19). Using Euclidean distances we obtain the following 3 clusters:
+
+``` r
+X <- read.table(file = "../Lecture19/unvotes.csv", sep = ",", row.names = 1, 
+    header = TRUE)
+un.dis <- dist(t(X), method = "euclidean")
+un.hc <- hclust(un.dis, method = "ward.D2")
+plot(un.hc, cex = 0.5)
+un.hc.3 <- rect.hclust(un.hc, k = 3)
+```
+
+![](README_files/figure-markdown_github/unvotes-1.png)
+
+``` r
+lapply(un.hc.3, names)
+```
+
+    ## [[1]]
+    ##  [1] "Australia"   "Austria"     "Belgium"     "Bulgaria"    "Canada"     
+    ##  [6] "Denmark"     "Finland"     "France"      "Greece"      "Hungary"    
+    ## [11] "Iceland"     "Ireland"     "Israel"      "Italy"       "Japan"      
+    ## [16] "Luxembourg"  "Netherlands" "New.Zealand" "Norway"      "Poland"     
+    ## [21] "Portugal"    "Spain"       "Sweden"      "UK"          "Ukraine"    
+    ## [26] "USA"        
+    ## 
+    ## [[2]]
+    ##  [1] "Argentina"  "Bahamas"    "Chile"      "Colombia"   "Costa.Rica"
+    ##  [6] "Cyprus"     "Malta"      "Mexico"     "Panama"     "Paraguay"  
+    ## [11] "Peru"       "Uruguay"   
+    ## 
+    ## [[3]]
+    ##  [1] "Algeria"              "Bangladesh"           "Belarus"             
+    ##  [4] "Bolivia"              "Botswana"             "Brazil"              
+    ##  [7] "Brunei.Darussalam"    "Burkina.Faso"         "China"               
+    ## [10] "Cuba"                 "Ecuador"              "Egypt"               
+    ## [13] "Ethiopia"             "Ghana"                "Guyana"              
+    ## [16] "India"                "Indonesia"            "Jamaica"             
+    ## [19] "Jordan"               "Kenya"                "Kuwait"              
+    ## [22] "Libya"                "Malaysia"             "Mali"                
+    ## [25] "Nepal"                "Nigeria"              "Pakistan"            
+    ## [28] "Philippines"          "Russian.Federation"   "Singapore"           
+    ## [31] "Sri.Lanka"            "Sudan"                "Syrian.Arab.Republic"
+    ## [34] "Tanzania"             "Thailand"             "Togo"                
+    ## [37] "Trinidad.and.Tobago"  "Venezuela"            "Zambia"
+
+If we repeat the same exercise but using *L*<sub>1</sub> distances we get the following:
+
+``` r
+un.dis.l1 <- dist(t(X), method = "manhattan")
+un.hc.l1 <- hclust(un.dis.l1, method = "ward.D2")
+plot(un.hc.l1, cex = 0.5)
+un.hc.l1.3 <- rect.hclust(un.hc.l1, k = 3)
+```
+
+![](README_files/figure-markdown_github/unvotes.l1-1.png)
+
+``` r
+lapply(un.hc.l1.3, names)
+```
+
+    ## [[1]]
+    ##  [1] "Australia"   "Austria"     "Belgium"     "Bulgaria"    "Canada"     
+    ##  [6] "Cyprus"      "Denmark"     "Finland"     "France"      "Greece"     
+    ## [11] "Hungary"     "Iceland"     "Ireland"     "Israel"      "Italy"      
+    ## [16] "Japan"       "Luxembourg"  "Malta"       "Netherlands" "New.Zealand"
+    ## [21] "Norway"      "Poland"      "Portugal"    "Spain"       "Sweden"     
+    ## [26] "UK"          "Ukraine"     "USA"        
+    ## 
+    ## [[2]]
+    ##  [1] "Algeria"              "Bangladesh"           "Belarus"             
+    ##  [4] "Brunei.Darussalam"    "China"                "Cuba"                
+    ##  [7] "Egypt"                "India"                "Indonesia"           
+    ## [10] "Jordan"               "Kuwait"               "Libya"               
+    ## [13] "Malaysia"             "Pakistan"             "Russian.Federation"  
+    ## [16] "Sri.Lanka"            "Sudan"                "Syrian.Arab.Republic"
+    ## [19] "Venezuela"           
+    ## 
+    ## [[3]]
+    ##  [1] "Argentina"           "Bahamas"             "Bolivia"            
+    ##  [4] "Botswana"            "Brazil"              "Burkina.Faso"       
+    ##  [7] "Chile"               "Colombia"            "Costa.Rica"         
+    ## [10] "Ecuador"             "Ethiopia"            "Ghana"              
+    ## [13] "Guyana"              "Jamaica"             "Kenya"              
+    ## [16] "Mali"                "Mexico"              "Nepal"              
+    ## [19] "Nigeria"             "Panama"              "Paraguay"           
+    ## [22] "Peru"                "Philippines"         "Singapore"          
+    ## [25] "Tanzania"            "Thailand"            "Togo"               
+    ## [28] "Trinidad.and.Tobago" "Uruguay"             "Zambia"

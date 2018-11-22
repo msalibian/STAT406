@@ -244,7 +244,29 @@ plot(na.hc, labels=nams2)
 ```
 
 
+#### UN Votes
 
+We revisit here the UN votes example (see Lecture 19). Using Euclidean
+distances we obtain the following 3 clusters:
+
+```{r unvotes} 
+X <- read.table(file='../Lecture19/unvotes.csv', sep=',', row.names=1, header=TRUE) 
+un.dis <- dist(t(X), method='euclidean')
+un.hc <- hclust(un.dis, method='ward.D2')
+plot(un.hc, cex=.5)
+un.hc.3 <- rect.hclust(un.hc, k=3)
+lapply(un.hc.3, names)
+``` 
+
+If we repeat the same exercise but using $L_1$ distances we get the following:
+
+```{r unvotes.l1} 
+un.dis.l1 <- dist(t(X), method='manhattan')
+un.hc.l1 <- hclust(un.dis.l1, method='ward.D2')
+plot(un.hc.l1, cex=.5)
+un.hc.l1.3 <- rect.hclust(un.hc.l1, k=3)
+lapply(un.hc.l1.3, names)
+```
 
 
 
