@@ -11,7 +11,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-Preliminary lecture slides are [here](STAT406-18-lecture-20-preliminary.pdf).
+Lecture slides are [here](STAT406-18-lecture-20.pdf).
 
 Model based clustering
 ----------------------
