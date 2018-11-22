@@ -1,7 +1,7 @@
 STAT406 - Lecture 20 notes
 ================
 Matias Salibian-Barrera
-2018-11-19
+2018-11-22
 
 LICENSE
 -------
