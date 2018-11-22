@@ -359,7 +359,7 @@ set.seed(123)
 dat <- rbind(x, c(5, NA), c(NA, 5.5))
 ```
 
-Next, we compute initial values / estimates for the parameters of the model. These can be, for example, the sample mean and sample covariance matrix using only the fully observed data points:
+Next, we compute initial values for the estimates of the parameters of the model. These can be, for example, the sample mean and sample covariance matrix using only the fully observed data points:
 
 ``` r
 mu <- colMeans(dat, na.rm=TRUE)
