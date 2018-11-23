@@ -248,8 +248,10 @@ coordinates to use as our 2-dimensional grid:
 qv1 <- quantile(v1, c(.05, .25, .5, .75, .95))
 qv2 <- quantile(v2, c(.05, .25, .5, .75, .95))
 ```
-We can visualize the grid over the scatter plot of 
-all the 2-dimensional projections of the data:
+We can visualize the grid of these 5 x 5 = 25 points 
+over the scatter plot of all the 2-dimensional projections 
+of the data (their coordinates on the principal components
+basis):
 
 ```{r digits.p3}
 qv <- expand.grid(qv1, qv2)
@@ -257,13 +259,18 @@ plot(v1, v2, pch=19, cex=1, col='grey')
 points(qv[,1], qv[,2], pch=19, cex=1.5, col='red')
 ```
 
-We now find the projected points closest to each of the 5 x 5 = 25 points in the grid
+We now find the points in our data set (images) 
+with projections closest to each of the 5 x 5 = 25 points in the grid
+(note that these distances between points in the principal-subspace,
+which is in the 256 dimensional space) can be computed 
+in terms of their coordinates on the principal-basis only (which 
+are 2-dimensional points):
 ```{r digits.p4}
 vs <- cbind(v1, v2)
 cvs <- array(0, dim=dim(qv))
 for(j in 1:dim(qv)[1]) cvs[j,] <- vs[ which.min( apply(vs, 1, dist, b=qv[j,]) ), ]
 ```
-and identify these points in blue on our plot:
+We now add these points to our plot (we use color blue for them):
 
 ```{r digits.p5}
 plot(v1, v2, pch=19, cex=1, col='grey')

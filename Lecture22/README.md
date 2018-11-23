@@ -181,7 +181,7 @@ qv1 <- quantile(v1, c(0.05, 0.25, 0.5, 0.75, 0.95))
 qv2 <- quantile(v2, c(0.05, 0.25, 0.5, 0.75, 0.95))
 ```
 
-We can visualize the grid over the scatter plot of all the 2-dimensional projections of the data:
+We can visualize the grid of these 5 x 5 = 25 points over the scatter plot of all the 2-dimensional projections of the data (their coordinates on the principal components basis):
 
 ``` r
 qv <- expand.grid(qv1, qv2)
@@ -191,7 +191,7 @@ points(qv[, 1], qv[, 2], pch = 19, cex = 1.5, col = "red")
 
 ![](README_files/figure-markdown_github/digits.p3-1.png)
 
-We now find the projected points closest to each of the 5 x 5 = 25 points in the grid
+We now find the points in our data set (images) with projections closest to each of the 5 x 5 = 25 points in the grid (note that these distances between points in the principal-subspace, which is in the 256 dimensional space) can be computed in terms of their coordinates on the principal-basis only (which are 2-dimensional points):
 
 ``` r
 vs <- cbind(v1, v2)
@@ -200,7 +200,7 @@ for (j in 1:dim(qv)[1]) cvs[j, ] <- vs[which.min(apply(vs, 1, dist, b = qv[j,
     ])), ]
 ```
 
-and identify these points in blue on our plot:
+We now add these points to our plot (we use color blue for them):
 
 ``` r
 plot(v1, v2, pch = 19, cex = 1, col = "grey")
@@ -322,7 +322,7 @@ system.time(tmp <- alter.pca.k1(x))
 ```
 
     ##    user  system elapsed 
-    ##   0.709   1.125   0.294
+    ##   0.855   1.229   0.341
 
 ``` r
 a1 <- tmp$a
@@ -330,7 +330,7 @@ system.time(e1 <- svd(cov(x))$u[, 1])
 ```
 
     ##    user  system elapsed 
-    ##   2.835   1.519   1.460
+    ##   2.933   1.362   1.421
 
 ``` r
 a1 <- a1 * sign(e1[1] * a1[1])
