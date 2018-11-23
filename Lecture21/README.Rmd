@@ -77,7 +77,7 @@ d <- dist(x, method='manhattan')
 One implementation of hierarchical clustering methods in `R` is
 in the function `hclust` in package `cluster`. 
 We first use Ward's information criterion (corrected to 
-use squared distances). The  `plot` method for objects
+appropriately use squared distances). The  `plot` method for objects
 of class `hclust` produces the associated dendogram. The function `rect.hclust` 
 computes the height at which one shuld *cut* the dendogram to
 obtain a desired number *k* of clusters. Below we show 
@@ -86,7 +86,9 @@ the result for *K = 3* clusters:
 ```{r breweries.2}
 # hierarchical
 library(cluster)
+# show the dendogram
 plot(cl <- hclust(d, method='ward.D2'), main='', xlab='', sub='', hang=-1)
+# identify 3 clusters
 rect.hclust(cl, k=3, border='red')
 ```
 
@@ -95,41 +97,51 @@ and show *K = 3* clusters:
 
 ```{r breweries2}
 br.dis <- dist(x) # L2
-# compute hierarchical clustering using single linkage
 br.hc <- hclust(br.dis, method='single')
-# show the dendogram
 plot(br.hc)
-# identify 3 clusters
 br.hc.3 <- rect.hclust(br.hc, k=3)
 ```
 
 Note how these 3 clusters are somewhat different from the 
 ones found before. However, the *(V1, V4, V7)* cluster
 is present in both partitions, and also the triplet 
-*(V3, V6, V8)* stays together as well. You are welcome to explore
-other variants of this algorithm on this example. 
+*(V3, V6, V8)* stays together as well. 
+It is interesting to compare these clusters with those
+found by K-means (see previous notes), in particular,
+these dendograms resemble 
+the information on the silhouette plots to some extent. 
 
 
 #### Languages example
 
 The details of this example were discussed in class. Here we 
 present the results of single linkage, complete linkage and Ward's 
-criterion. Which distance / dissimilarity measure is used?
-
+criterion. 
+First read the available dissimilarities, and arrange them in a
+proper matrix:
 ```{r languages}
 dd <- read.table('languages.dat',  header=FALSE)
 names(dd) <- c('E', 'N', 'Da', 'Du', 'G', 'Fr', 'S', 'I', 'P', 'H', 'Fi')
 dd <- ( dd + t(dd) / 2)
 d <- as.dist(dd)
+```
+Now we compute a hierarchical clustering sequence using **single linkage**
 
-# hierarchical
-
+```{r langs2}
 plot(cl <- hclust(d, method='single'), main='', xlab='', sub='', hang=-1)
 rect.hclust(cl, k=4, border='red')
+```
 
+Compare it with **complete linkage**:
+
+```{r langs3}
 plot(cl <- hclust(d, method='complete'), main='', xlab='', sub='', hang=-1)
 rect.hclust(cl, k=4, border='red')
+```
 
+Finally, we use **Ward's criterion**: 
+
+```{r langs4}
 plot(cl <- hclust(d, method='ward.D2'), main='', xlab='', sub='', hang=-1)
 rect.hclust(cl, k=4, border='red')
 ```
@@ -189,7 +201,7 @@ nci.dis <- dist(t(nci), method='euclidean')
 nci.hc.s <- hclust(nci.dis, method='single')
 nci.hc.c <- hclust(nci.dis, method='complete')
 nci.hc.a <- hclust(nci.dis, method='average')
-nci.hc.w <- hclust(nci.dis, method='ward.D')
+nci.hc.w <- hclust(nci.dis, method='ward.D2')
 
 nci.nms <- rownames(nci)
 
