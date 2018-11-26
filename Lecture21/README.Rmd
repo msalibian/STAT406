@@ -38,26 +38,26 @@ agglomerative, for obvious reasons.
 The general algorithm can be described as follows:
 
 1. Set *K = n* (the number of observations in the data), and Start with *n* clusters;
-2. Merge 2 clusters to form *K-1* clusters;
-3. Set `K = K - 1` (i.e. `K--`, i.e. decrease *K* by one)
-4. If `K > 1` repeat from step 2 above. 
+2. While *K > 1*:
+    a. Merge 2 clusters to form *K-1* clusters;
+    b. Set `K = K - 1` (i.e. decrease *K* by one).
 
 The different versions (*flavours*) of this method are obtained 
 by varying the criteria to decide which 2 clusters to merge at each 
-run of step 2 above, and also which distance (or dissimilarity) measure
-is used.
+run of step 2(i) above, which depends on how we measure the distance
+(or dissimilarity)  between clusters.
 
 There are a few different tools to decide how many clusters may be present
 in the data following a hierarchical clustering algorithm. The most 
 commonly used is a graphical representation of the sequence of 
-clusters, called a dendogram. 
+clusters, called a *dendogram*. 
 
 Please refer to your class notes for details on the different
-merging criteria and the interpretation of a dendogram. Below
+merging criteria (i.e. deciding which clusters to combine
+at each step)
+and the interpretation of a dendogram. Below
 we will illustrate the use of these algorithms on a few
 examples. 
-
-
 
 #### Breweries example
 
@@ -66,10 +66,17 @@ attributes. The attributes were, e.g., Brewery has rich tradition; or
 Brewery makes very good Pils beer. Relative to each attribute, the
 informant had to assign each brewery a score on a 6-point scale
 ranging from 1=not true at all to 6=very true.
-We read the data, and compute the pairwise *L_1* distances between 
-the 9 breweries:
+We read the data, and use the function `dist` 
+to compute the pairwise *L_1* distances between 
+the 9 breweries. Note that the data are available
+columnwise ($p \times x$) so we first transpose
+it before we compute the distances. We also
+change the misleading column names assigned
+by `read.table`, which are not features but
+rather observation numbers:
 ```{r breweries}
 x <- read.table('../Lecture19/breweries.dat', header=FALSE)
+colnames(x) <- paste0('Brew-', 1:ncol(x))
 x <- t(x)
 d <- dist(x, method='manhattan')
 ```
@@ -115,31 +122,45 @@ the information on the silhouette plots to some extent.
 #### Languages example
 
 The details of this example were discussed in class. Here we 
-present the results of single linkage, complete linkage and Ward's 
-criterion. 
-First read the available dissimilarities, and arrange them in a
-proper matrix:
+present the results of three commonly used merging 
+criteria:
+*single* linkage, *complete* linkage, *average* linkage, and *Ward's* 
+criterion. As usual, we start by reading 
+the data, which in this case 
+are the specific dissimilarities between languages
+discussed in class, and we arrange them in a
+matrix that can be used by `hclust`:
 ```{r languages}
 dd <- read.table('languages.dat',  header=FALSE)
 names(dd) <- c('E', 'N', 'Da', 'Du', 'G', 'Fr', 'S', 'I', 'P', 'H', 'Fi')
 dd <- ( dd + t(dd) / 2)
 d <- as.dist(dd)
 ```
-Now we compute a hierarchical clustering sequence using **single linkage**
+Now we compute a hierarchical clustering sequence using **single linkage**,
+plot the corresponding dendogram and identify 4 clusters:
 
 ```{r langs2}
 plot(cl <- hclust(d, method='single'), main='', xlab='', sub='', hang=-1)
 rect.hclust(cl, k=4, border='red')
 ```
 
-Compare it with **complete linkage**:
+Compare the above with the results obtained with **complete linkage**:
 
 ```{r langs3}
 plot(cl <- hclust(d, method='complete'), main='', xlab='', sub='', hang=-1)
 rect.hclust(cl, k=4, border='red')
 ```
 
-Finally, we use **Ward's criterion**: 
+With **average linkage** we obtain:
+
+```{r langs3.1}
+plot(cl <- hclust(d, method='average'), main='', xlab='', sub='', hang=-1)
+rect.hclust(cl, k=4, border='red')
+```
+
+
+And finally, using **Ward's criterion** results in the following
+dendogram and 4 clusters:
 
 ```{r langs4}
 plot(cl <- hclust(d, method='ward.D2'), main='', xlab='', sub='', hang=-1)
@@ -173,49 +194,40 @@ rect.hclust(cl, k=4, border='red')
 <!-- # ``` -->
 <!-- #  -->
 
-
 #### Cancer example
 
 Here we revisit the Cancer example discussed before. We use Euclidean
 distances and Ward's information criterion. Below we show the 
-clusters identified when we stop the algorithm at *K = 8*. 
+clusters identified when we stop the algorithm at *K = 8*, which
+based on the dendogram seems to be a reasonable choice:
 
 ```{r cancer, fig.width=9}
 data(nci, package='ElemStatLearn')
-ncit <- t(nci)
-d <- dist(ncit)
-plot(cl <- hclust(d, method='ward.D2'), main='', xlab='', sub='', hang=-1, labels=rownames(nci))
-rect.hclust(cl, k=8, border='red')
+nci.dis <- dist(t(nci), method='euclidean')
+plot(nci.hc.w <- hclust(nci.dis, method='ward.D2'), main='', 
+     xlab='', sub='', hang=-1, labels=rownames(nci) )
+rect.hclust(nci.hc.w, k=8, border='red')
 ```
 
-For completeness, below we show the results obtained by the other linkage criteria, 
-including Ward's (without using squared distances). 
-
+For completeness, below we show the results obtained with the other linkage criteria, 
+including Ward's:
 
 ```{r cancer2, fig.width=9}
-# compute pairwise distances
-nci.dis <- dist(t(nci), method='euclidean')
-
-# compute hierarchical clustering using different
-# linkage types
 nci.hc.s <- hclust(nci.dis, method='single')
 nci.hc.c <- hclust(nci.dis, method='complete')
 nci.hc.a <- hclust(nci.dis, method='average')
-nci.hc.w <- hclust(nci.dis, method='ward.D2')
-
-nci.nms <- rownames(nci)
 
 # plot them
-plot(nci.hc.s, labels=nci.nms, cex=.5)
+plot(nci.hc.s, labels=colnames(nci), cex=.5)
 
-plot(nci.hc.c, labels=nci.nms, cex=.5)
+plot(nci.hc.c, labels=colnames(nci), cex=.5)
 
-plot(nci.hc.a, labels=nci.nms, cex=.5)
-
-plot(nci.hc.w, labels=nci.nms, cex=.5)
-# identify 8 clusters
-rect.hclust(nci.hc.w, k=8)
+plot(nci.hc.a, labels=colnames(nci), cex=.5)
 ```
+
+Note that with these 3 other criteria no clear structure
+seems apparent in the data. 
+
 
 <!-- #### UN Votes -->
 
@@ -229,10 +241,13 @@ rect.hclust(nci.hc.w, k=8)
 
 This is a smaller Political Science dataset. Twelve countries
 were assessed on their perceived "likeness" by Political Science 
-students. Note that in this example there are no measurable
-features, we only have access to the parwise dissimilarities. 
+students. Note that (as in the Languages example
+above) in this example we do not have raw observations (features),
+we only have access to the already determined parwise dissimilarities. 
 Below we show the results of using hierarchical clustering with complete and average 
-linkage merging criteria, which will produce identical clusters.
+linkage merging criteria, which produce identical clusters. You
+are encouraged to investigate what can be found with other 
+merging criteria. 
 
 ```{r nations}
 # read the pairwise dissimilarities
@@ -259,7 +274,7 @@ plot(na.hc, labels=nams2)
 #### UN Votes
 
 We revisit here the UN votes example (see Lecture 19). Using Euclidean
-distances we obtain the following 3 clusters:
+distances and Ward's criterion we obtain the following 3 clusters:
 
 ```{r unvotes} 
 X <- read.table(file='../Lecture19/unvotes.csv', sep=',', row.names=1, header=TRUE) 
@@ -270,7 +285,8 @@ un.hc.3 <- rect.hclust(un.hc, k=3)
 lapply(un.hc.3, names)
 ``` 
 
-If we repeat the same exercise but using $L_1$ distances we get the following:
+If we repeat the same exercise but using $L_1$ distances we obtain 
+different clusters. 
 
 ```{r unvotes.l1} 
 un.dis.l1 <- dist(t(X), method='manhattan')
@@ -280,5 +296,46 @@ un.hc.l1.3 <- rect.hclust(un.hc.l1, k=3)
 lapply(un.hc.l1.3, names)
 ```
 
+It is easier to compare these 2 sets of clusters
+if we show them on a map. We first find the 
+cluster labels corresponding to 3 clusters 
+using Euclidean and $L_1$ distances:
+```{r unvotes.labs}
+labs <- cutree(un.hc, k=3)
+labs.l1 <- cutree(un.hc.l1, k=3)
+```
+We can now use these labels to color a map, as
+we did previously. For the Euclidean distances
+we obtain:
 
+```{r unvotes.maps.1, results='hide'}
+library(rworldmap)
+library(countrycode)
+these <- countrycode(colnames(X), 'country.name', 'iso3c')
+malDF <- data.frame(country = these, cluster = labs)
+malMap <- joinCountryData2Map(malDF, joinCode = "ISO3", nameJoinColumn = "country")
+par(mai=c(0,0,0,0),xaxs="i",yaxs="i")
+mapCountryData(malMap, nameColumnToPlot="cluster", catMethod = "categorical",
+               missingCountryCol = 'white', addLegend=FALSE, mapTitle="",
+               colourPalette=c('darkgreen', 'hotpink', 'tomato', 'blueviolet', 'yellow'),
+               oceanCol='dodgerblue')
+```
+
+While with the $L_1$ distances we get:
+
+```{r unvotes.maps.2, include=FALSE}
+malDF <- data.frame(country = these, cluster = labs.l1)
+malMap <- joinCountryData2Map(malDF, joinCode = "ISO3", nameJoinColumn = "country")
+```
+```{r unvotes.maps.2.2, echo=FALSE}
+par(mai=c(0,0,0,0),xaxs="i",yaxs="i")
+mapCountryData(malMap, nameColumnToPlot="cluster", catMethod = "categorical",
+               missingCountryCol = 'white', addLegend=FALSE, mapTitle="",
+               colourPalette=c('darkgreen', 'hotpink', 'tomato', 'blueviolet', 'yellow'),
+               oceanCol='dodgerblue')
+```
+
+Recall that, as discussed in class, the analyses above may be 
+questionable, because these distance measures do not take into
+account the actual nature of the available features. 
 
