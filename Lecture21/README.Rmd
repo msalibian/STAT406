@@ -18,7 +18,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-Preliminary lecture slides are [here](STAT406-18-lecture-21-preliminary.pdf).
+Lecture slides are [here](STAT406-18-lecture-21.pdf).
 
 
 ## Hierarchical clustering.
