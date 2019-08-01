@@ -1,7 +1,7 @@
 STAT406 - Lecture 1 notes
 ================
 Matias Salibian-Barrera
-2018-09-06
+2019-08-01
 
 #### LICENSE
 
@@ -10,7 +10,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-The lecture slides are [here](STAT406-18-lecture-1.pdf).
+The lecture slides are [here](STAT406-19-lecture-1.pdf).
 
 Predictions using a linear model
 --------------------------------
@@ -248,12 +248,12 @@ x.te$pr.reduced <- predict(reduced, newdata=x.te)
 with(x.te, mean( (MORT - pr.full)^2 ))
 ```
 
-    ## [1] 3311.107
+    ## [1] 2194.79
 
 ``` r
 with(x.te, mean( (MORT - pr.reduced)^2 ))
 ```
 
-    ## [1] 1642.169
+    ## [1] 1393.885
 
 Note that the estimated mean squared prediction error of the reduced model is again considerably smaller than that of the full model (even though the latter always fits the training set better than the reduced one).
