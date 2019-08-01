@@ -7,25 +7,17 @@ Public repository for STAT406 @ UBC - "Elements of Statistical Learning".
 The notes in this repository are released under the "Creative Commons Attribution-ShareAlike 4.0 International" license. See the **human-readable version** [here](https://creativecommons.org/licenses/by-sa/4.0/) and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/legalcode).
 
 ## Course outline
-The course outline is available [here](STAT406-18-19-MSB.pdf).
+The course outline will be available [here](.).
 
-## (UPDATED) Tentative weekly schedule (including Quizzes and Midterms)
-The tentative week-by-week schedule is [here](Weekly-schedule-18-19-detailed-3.pdf).
+## Tentative weekly schedule
+The tentative week-by-week schedule will be available [here](.).
 
-## PIAZZA
-You can register in the course's [PIAZZA](https://www.piazza.com) page via
-[Canvas](https://canvas.ubc.ca).
-
-## WebWork
-In order to complete the WebWork quizzes you need to register via
-[Canvas](https://canvas.ubc.ca): go to the course Canvas page, click on
-*Assignments*, then on *WebWork Link*, and finally click on *Load WebWork Link on a new window*.
-This is a **necessary** step (don't shoot the messenger!) but you only
-need to do this **once**.
-
-## Weekly reading and other resources
+## Weekly reading
 This is a list of **strongly** recommended **pre-class** reading. **[JWHT13]**
 and **[HTF09]** indicate two of the reference books listed below.
+The list will be updated / edited as the Term progresses. Make sure you
+double check the recommended pre-class reading approximately one week
+in advance, as it may have changed.
 
 * Week 1 (L1): Review of Linear Regression
 	* Sections 2.1, 2.1.1, 2.1.2, 2.1.3, 2.2, 2.2.1 from [JWHT13]
@@ -89,12 +81,23 @@ The Elements of Statistical Learning. 2009. Second Edition. Springer-Verlag New 
 Modern Applied Statistics with S. 2002. Fourth edition, Springer, New York.
 	* [Book page](https://www.stats.ox.ac.uk/pub/MASS4/), [Publisher page](http://link.springer.com/book/10.1007%2F978-0-387-21706-2)
 
+## PIAZZA and WebWork
+- You can register in the course's [PIAZZA](https://www.piazza.com) page via
+[Canvas](https://canvas.ubc.ca).
+- In order to use WebWork to practice with the quizzes you need to ...
+(more to come later).
+<!-- register via
+[Canvas](https://canvas.ubc.ca): go to the course Canvas page, click on
+*Assignments*, then on *WebWork Link*, and finally click on *Load WebWork Link on a new window*.
+This is a **necessary** step (don't shoot the messenger!) but you only
+need to do this **once**. -->
 
 ## Useful tools
 - [R](http://www.cran.r-project.org/): This is the software we will use in the course. I will assume that you are familiar with it (in particular, that you know how to write **your own functions** and **loops**). If needed, there are plenty of resources on line to learn R.
 - [RStudio](https://www.rstudio.com/products/RStudio/): The IDE (integrated development environment) of choice for R. Not necessary, but helpful.
 - [Jupyter Notebooks](https://jupyter.org). "The Jupyter Notebook is an open-source web application that allows you to create and share documents that contain live code, equations, visualizations and narrative text."
-You can use these to interactively run and play with the lecture notes and the code to reproduce all the examples I use in class. This is not necessary, but may be helpful. There are two options to run notebooks: locally on your own computer or use a remote server:
-  1. Follow the instructions
+You can use these to interactively run and play with the lecture notes and the code to reproduce all the examples I use in class. This is not necessary, but may be helpful. There are two options to run notebooks: (1) locally on your own computer; or (2) on a remote server:
+    1. Follow the instructions
 [here](https://jupyter.org/install.html) to install Jupyter on your laptop. You will also need to follow [these instructions](https://www.datacamp.com/community/blog/jupyter-notebook-r) to install the `R kernel` for Jupyter.
-  2. Alternatively, you can run the notebooks on the [syzygy](https://ubc.syzygy.ca/) server. There are Julia, Python 2, Python 3, and R kernels available (although we will only use the R one). Sign in with your UBC CWL. Once you are logged in, use [this link](https://ubc.syzygy.ca/jupyter/user-redirect/git-pull?repo=https://github.com/msalibian/STAT406) to clone this repository (STAT406) (including all notebooks) directly onto your [syzygy](https://ubc.syzygy.ca/) home directory. You ~~may~~ **will** need to do this regularly throughout the Term.
+    2. Alternatively, you can run the notebooks on the [syzygy](https://ubc.syzygy.ca/) server. There are Julia, Python 2, Python 3, and R kernels available (although we will only use the R one). Sign in with your UBC CWL. Once you are logged in, use [this link](https://ubc.syzygy.ca/jupyter/user-redirect/git-pull?repo=https://github.com/msalibian/STAT406) to clone this repository (STAT406) (including all notebooks) directly onto your [syzygy](https://ubc.syzygy.ca/) home directory. You  **will** need to do this regularly throughout the Term,
+	as the notebooks may (will?) change during the Term.
