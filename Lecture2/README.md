@@ -1,7 +1,7 @@
 STAT406 - Lecture 2 notes
 ================
 Matias Salibian-Barrera
-2018-09-11
+2019-08-01
 
 #### LICENSE
 
@@ -10,7 +10,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-The lecture slides are [here](STAT406-18-lecture-2.pdf).
+The lecture slides are [here](STAT406-19-lecture-2.pdf).
 
 Predictions using a linear model
 --------------------------------
@@ -117,13 +117,13 @@ We now compute the estimated mean squared prediction error of each model:
 mean( (xs$MORT - pr.full)^2 )
 ```
 
-    ## [1] 2328.806
+    ## [1] 2227.21
 
 ``` r
 mean( (xs$MORT - pr.reduced)^2 )
 ```
 
-    ## [1] 1854.591
+    ## [1] 2003.857
 
 This method is clearly faster than leave-one-out CV, but the results may depend on the specific fold partition, and on the number **K** of folds used.
 
