@@ -7,10 +7,10 @@ Public repository for STAT406 @ UBC - "Elements of Statistical Learning".
 The notes in this repository are released under the "Creative Commons Attribution-ShareAlike 4.0 International" license. See the **human-readable version** [here](https://creativecommons.org/licenses/by-sa/4.0/) and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/legalcode).
 
 ## Course outline
-The course outline will be available [here](https://github.com/msalibian/STAT406).
+The course syllabus is [here](STAT406-19-20-Syllabus.pdf).
 
 ## Tentative weekly schedule
-The tentative week-by-week schedule will be available [here](https://github.com/msalibian/STAT406).
+The tentative week-by-week schedule is [here](Weekly-schedule-19-20-detailed.pdf).
 
 ## Weekly reading
 This is a list of **strongly** recommended **pre-class** reading. **[JWHT13]**
