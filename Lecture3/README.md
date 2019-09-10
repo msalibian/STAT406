@@ -14,7 +14,7 @@ thing**
 
 ## Lecture slides
 
-  - The lecture slides will be here.
+  - The lecture slides are [here](STAT406-19-lecture3.pdf)
   - The activity hand-out is [here](lecture3-activity.pdf).
 
 ## Cross-validation when the model is chosen using the data
