@@ -14,7 +14,7 @@ thing**
 
 ## Lecture slides
 
-  - The lecture slides are [here](STAT406-18-lecture-4.pdf).
+  - The lecture slides are [here](STAT406-19-lecture-4.pdf).
   - A reference paper for a formal derivation of AIC: Cavanaugh, J.E.
     (1997). Unifying the derivations for the Akaike and corrected Akaike
     information criteria. *Statistics & Probability Letters*, **33**(2),
