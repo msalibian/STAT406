@@ -18,7 +18,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-* The lecture slides are [here](STAT406-18-lecture-3.pdf).
+* The lecture slides will be here.
 * The activity hand-out is [here](lecture3-activity.pdf).
 
 ## Cross-validation when the model is chosen using the data
