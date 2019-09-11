@@ -17,7 +17,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-Preliminary lecture slides are [here](STAT406-18-lecture-5.pdf).
+Preliminary lecture slides will be here. <!-- [here](STAT406-19-lecture-5.pdf). -->
 
 ## Ridge regression 
 
@@ -26,7 +26,7 @@ issue consider the following simple experiment. As in the previous lecture,
 we apply stepwise on 5 randomly selected folds of the data, and look at the
 models selected in each of them.
 ```{r stepvariable, warning=FALSE, message=FALSE}
-airp <- read.table('../lecture1/rutgers-lib-30861_CSV-1.csv', header=TRUE, sep=',')
+airp <- read.table('../Lecture1/rutgers-lib-30861_CSV-1.csv', header=TRUE, sep=',')
 library(MASS)
 k <- 5
 n <- nrow(airp)
@@ -76,7 +76,7 @@ We also specify a range of possible values of the penalty
 coefficient (below we use a grid of 50 values between 
 exp(-3) and exp(10)). 
 ```{r ridge.air1, warning=FALSE, message=FALSE, fig.width=5, fig.height=5}
-airp <- read.table('../lecture1/rutgers-lib-30861_CSV-1.csv', header=TRUE, sep=',')
+airp <- read.table('../Lecture1/rutgers-lib-30861_CSV-1.csv', header=TRUE, sep=',')
 library(glmnet)
 # alpha = 0 - Ridge
 # alpha = 1 - LASSO

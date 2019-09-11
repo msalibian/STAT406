@@ -1,7 +1,7 @@
 STAT406 - Lecture 5 notes
 ================
 Matias Salibian-Barrera
-2018-09-20
+2019-09-11
 
 #### LICENSE
 
@@ -10,7 +10,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-Preliminary lecture slides are [here](STAT406-18-lecture-5.pdf).
+Preliminary lecture slides will be here. <!-- [here](STAT406-19-lecture-5.pdf). -->
 
 Ridge regression
 ----------------
@@ -18,7 +18,7 @@ Ridge regression
 Variable selection methods like stepwise can be highly variable. To illustrate this issue consider the following simple experiment. As in the previous lecture, we apply stepwise on 5 randomly selected folds of the data, and look at the models selected in each of them.
 
 ``` r
-airp <- read.table('../lecture1/rutgers-lib-30861_CSV-1.csv', header=TRUE, sep=',')
+airp <- read.table('../Lecture1/rutgers-lib-30861_CSV-1.csv', header=TRUE, sep=',')
 library(MASS)
 k <- 5
 n <- nrow(airp)
@@ -33,11 +33,11 @@ for(j in 1:k) {
 }
 ```
 
-    ## NONW + JANT + EDUC + SO. + PREC + JULT
-    ## NONW + PREC + SO. + DENS + HOUS + WWDRK
-    ## NONW + EDUC + SO. + PREC + JANT + JULT
-    ## NONW + JANT + SO. + PREC + DENS + JULT
-    ## NONW + EDUC + SO. + JANT + HUMID + POPN
+    ## NONW + EDUC + JANT + OVR65 + SO.
+    ## NONW + EDUC + PREC + SO. + JULT
+    ## NONW + EDUC + JANT + SO. + PREC
+    ## NONW + SO. + JANT + PREC + DENS
+    ## NONW + JANT + EDUC + DENS + POPN + JULT + PREC + OVR65
 
 Although many variables appear in more than one model, only `NONW` and `SO.` are in all of them, and `JANT` and `PREC` in 4 out of the 5. There are also several that appear in only one model (`HOUS`, `WWDRK` and `POPN`). <!-- `EDUC` 3 --> <!-- `JULT` in 3,  --> <!-- `DENS` in 2 --> <!-- and  --> This variability may in turn impact (negatively) the accuracy of the resulting predictions.
 
@@ -46,7 +46,7 @@ A different approach to dealing with potentially correlated explanatory variable
 The first proposal for a regularized / penalized estimator for linear regression models is Ridge Regression. We will use the function `glmnet` in package `glmnet` to compute the Ridge Regression estimator. Note that this function implements a larger family of regularized estimators, and in order to obtain a Ridge Regression estimator we need to set the argument `alpha = 0` of `glmnet()`. <!-- We use Ridge Regression with the air pollution data to obtain a --> <!-- more stable predictor. --> We also specify a range of possible values of the penalty coefficient (below we use a grid of 50 values between exp(-3) and exp(10)).
 
 ``` r
-airp <- read.table('../lecture1/rutgers-lib-30861_CSV-1.csv', header=TRUE, sep=',')
+airp <- read.table('../Lecture1/rutgers-lib-30861_CSV-1.csv', header=TRUE, sep=',')
 library(glmnet)
 # alpha = 0 - Ridge
 # alpha = 1 - LASSO
@@ -96,13 +96,13 @@ for(j in 1:20) {
 (op.la <- op.la / 20)
 ```
 
-    ## [1] 10.39156
+    ## [1] 11.44547
 
 ``` r
 log(op.la)
 ```
 
-    ## [1] 2.340994
+    ## [1] 2.437594
 
 This value is reasonably close to the ones we saw in the plots above.
 
