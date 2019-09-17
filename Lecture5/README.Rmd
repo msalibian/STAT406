@@ -17,7 +17,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-Preliminary lecture slides will be here. <!-- [here](STAT406-19-lecture-5.pdf). -->
+Lecture slides are [here](STAT406-19-lecture-5.pdf).
 
 ## Ridge regression 
 
