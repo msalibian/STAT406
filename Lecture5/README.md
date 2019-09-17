@@ -49,9 +49,8 @@ for(j in 1:k) {
 Although many variables appear in more than one model, only `NONW` and
 `SO.` are in all of them, and `JANT` and `PREC` in 4 out of the 5. There
 are also several that appear in only one model (`HOUS`, `WWDRK` and
-`POPN`). <!-- `EDUC` 3 --> <!-- `JULT` in 3,  --> <!-- `DENS` in 2 -->
-<!-- and  --> This variability may in turn impact (negatively) the
-accuracy of the resulting predictions.
+`POPN`). This variability may in turn impact (negatively) the accuracy
+of the resulting predictions.
 
 A different approach to dealing with potentially correlated explanatory
 variables (with the goal of obtaining less variable / more accurate
