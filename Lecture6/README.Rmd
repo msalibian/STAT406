@@ -17,7 +17,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-Preliminary lecture slides are [here](STAT406-18-lecture-6.pdf).
+Lecture slides are [here](STAT406-19-lecture-6.pdf).
 
 ## Effective degrees of freedom 
 
@@ -50,9 +50,9 @@ Regression estimator computed with a penalty / regularization
 parameter equal to **b**, the corresponding EDF are the sum of the 
 ratio of each eigenvalue of **X'X** with respect to itself plus **b**
 (see the formula on the lecture slides). We compute the EDF 
-of the Ridge Regression fit to the air pollution data when 
-the penalty parameter is considered to be fixed at the  
-average optimal value over 20 runs of 5-fold CV:
+of the Ridge Regression fit to the air pollution data when the 
+penalty parameter is considered to be fixed at the average optimal value 
+over 20 runs of 5-fold CV:
 
 ```{r ridge2, warning=FALSE, message=FALSE}
 airp <- read.table('../Lecture1/rutgers-lib-30861_CSV-1.csv', header=TRUE, sep=',')
@@ -110,11 +110,8 @@ this is not generally true.
 The sequence of solutions changing by value of the penalty parameter
 is often used as a way to rank (or "sequence"") the explanatory variables, listing them
 in the order in which they "enter" (their estimated coefficient changes from 
-zero to a non-zero value). 
-<!-- Varying the value of the penalty term we obtain a path of solutions (much like -->
-<!-- we did in ridge regression), where the vector of estimated regression -->
-<!-- coefficients becomes sparser as the penalty gets stronger.  -->
-We can also estimate the MSPE of each solution (on a finite
+zero to a non-zero value). We can also estimate the MSPE of 
+each solution (on a finite
 grid of values of the penalty parameter) to select one with
 good prediction properties. If any of the 
 estimated regression coefficients in the selected solution are exactly zero it
