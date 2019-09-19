@@ -41,13 +41,10 @@ that produces a solution of all zeroes, whereas for the L2 penalizations
 this is not generally true. 
 
 The sequence of solutions changing by value of the penalty parameter
-is often used as a way to rank (or "sequence"") the explanatory variables, listing them
+is often used as a way to rank (or "sequence") the explanatory variables, listing them
 in the order in which they "enter" (their estimated coefficient changes from 
-zero to a non-zero value). 
-<!-- Varying the value of the penalty term we obtain a path of solutions (much like -->
-<!-- we did in ridge regression), where the vector of estimated regression -->
-<!-- coefficients becomes sparser as the penalty gets stronger.  -->
-We can also estimate the MSPE of each solution (on a finite
+zero to a non-zero value). We can 
+also estimate the MSPE of each solution (on a finite
 grid of values of the penalty parameter) to select one with
 good prediction properties. If any of the 
 estimated regression coefficients in the selected solution are exactly zero it
@@ -176,7 +173,7 @@ We now use 50 runs of 5-fold cross-validation to
 estimate (and compare) the MSPEs of the different 
 estimators / predictors:
 
-```{r mspecredit, warning=FALSE, message=FALSE, fig.width=5, fig.height=5, tidy=TRUE}
+```{r mspecredit, warning=FALSE, message=FALSE, fig.width=5, fig.height=5, tidy=TRUE, cache=TRUE}
 library(MASS)
 n <- nrow(xm)
 k <- 5
@@ -316,7 +313,7 @@ we have considered so far: a full linear model, a model selected via stepwise + 
 ridge regression and LASSO. As usual, we use 50 runs of 5-fold CV, and obtain
 the following boxplots:
 
-```{r bigcompare, fig.width=5, fig.height=5, warning=FALSE, message=FALSE, echo=FALSE}
+```{r bigcompare, fig.width=5, fig.height=5, warning=FALSE, message=FALSE, echo=FALSE, cache=TRUE}
 library(MASS)
 n <- nrow(xm)
 k <- 5
@@ -430,7 +427,7 @@ presentation.
 ### Compare MSPE's of Full, LASSO, Ridge, EN and stepwise
 
 
-```{r bigcompare2, fig.width=5, fig.height=5, warning=FALSE, message=FALSE, echo=FALSE}
+```{r bigcompare2, fig.width=5, fig.height=5, warning=FALSE, message=FALSE, cache=TRUE, echo=FALSE}
 ii <- (1:n) %% k + 1
 set.seed(123)
 N <- 50

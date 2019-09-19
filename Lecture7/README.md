@@ -37,17 +37,14 @@ finite value of the penalty term that produces a solution of all zeroes,
 whereas for the L2 penalizations this is not generally true.
 
 The sequence of solutions changing by value of the penalty parameter is
-often used as a way to rank (or “sequence”“) the explanatory variables,
-listing them in the order in which they”enter" (their estimated
-coefficient changes from zero to a non-zero value).
-<!-- Varying the value of the penalty term we obtain a path of solutions (much like -->
-<!-- we did in ridge regression), where the vector of estimated regression -->
-<!-- coefficients becomes sparser as the penalty gets stronger.  --> We
-can also estimate the MSPE of each solution (on a finite grid of values
-of the penalty parameter) to select one with good prediction properties.
-If any of the estimated regression coefficients in the selected solution
-are exactly zero it is commonly said that those explanatory variables
-are not included in the chosen model.
+often used as a way to rank (or “sequence”) the explanatory variables,
+listing them in the order in which they “enter” (their estimated
+coefficient changes from zero to a non-zero value). We can also estimate
+the MSPE of each solution (on a finite grid of values of the penalty
+parameter) to select one with good prediction properties. If any of the
+estimated regression coefficients in the selected solution are exactly
+zero it is commonly said that those explanatory variables are not
+included in the chosen model.
 
 There are two main implementation of the LASSO in `R`, one is via the
 `glmnet` function (in package `glmnet`), and the other is with the
