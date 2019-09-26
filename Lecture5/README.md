@@ -1,7 +1,7 @@
 STAT406 - Lecture 5 notes
 ================
 Matias Salibian-Barrera
-2019-09-17
+2019-09-26
 
 #### LICENSE
 
@@ -21,8 +21,7 @@ Lecture slides are [here](STAT406-19-lecture-5.pdf).
 Variable selection methods like stepwise can be highly variable. To
 illustrate this issue consider the following simple experiment. As in
 the previous lecture, we apply stepwise on 5 randomly selected folds of
-the data, and look at the models selected in each of
-them.
+the data, and look at the models selected in each of them.
 
 ``` r
 airp <- read.table('../Lecture1/rutgers-lib-30861_CSV-1.csv', header=TRUE, sep=',')
@@ -69,8 +68,7 @@ argument `alpha = 0` of `glmnet()`.
 <!-- We use Ridge Regression with the air pollution data to obtain a -->
 <!-- more stable predictor. --> We also specify a range of possible
 values of the penalty coefficient (below we use a grid of 50 values
-between exp(-3) and
-exp(10)).
+between exp(-3) and exp(10)).
 
 ``` r
 airp <- read.table('../Lecture1/rutgers-lib-30861_CSV-1.csv', header=TRUE, sep=',')
@@ -86,8 +84,7 @@ a <- glmnet(x=xm, y=y, lambda=rev(lambdas),
 
 The returned object contains the estimated regression coefficients for
 each possible value of the regularization parameter. We can look at them
-using the `plot` method for objects of class `glmnet` as
-follows:
+using the `plot` method for objects of class `glmnet` as follows:
 
 ``` r
 plot(a, xvar='lambda', label=TRUE, lwd=6, cex.axis=1.5, cex.lab=1.2, ylim=c(-20, 20))
