@@ -1,7 +1,7 @@
 STAT406 - Lecture 8 notes
 ================
 Matias Salibian-Barrera
-2019-09-26
+2019-09-27
 
 #### LICENSE
 
@@ -14,8 +14,7 @@ thing**
 
 ## Lecture slides
 
-  - Lecture slides will be here
-    <!-- [here](STAT406-18-lecture-8.pdf). -->
+  - Lecture slides are [here](STAT406-18-lecture-8.pdf).
 
 # Non-parametric regression
 
