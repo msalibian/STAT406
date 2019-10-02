@@ -193,12 +193,16 @@ For an accessible discussion, see for example Section 4.1 of
 Given the chosen knots and the degree of the splines
 (linear, quadratic, cubic, etc.) the set (linear space) 
 of functions we are using to construct our regression estimate
-does not depend on the basis we use. As a consequence,
+does not depend on the specific basis we use
+(in other words: these are different bases that span
+the same linear space of functions). As a consequence,
 the estimated regression function should be the same regardless of the basis we use 
-(provided we do not run into serious numerical issues). To illustrate this fact, we will 
-use a B-spline basis with the same 5 knots as above, and compare the estimated regression 
+(provided we do not run into serious numerical issues
+with our naive basis). To illustrate this fact, 
+we will use a B-spline basis with the same 5 knots as above, 
+and compare the estimated regression 
 function with the one we obtained above 
-using our **poor people** naive basis. The plot below overlays both
+using our **poor people naive basis**. The plot below overlays both
 fits (the naive one with a thick pink line as above, and the one
 using b-splines with a thinner blue line):
 
@@ -211,10 +215,11 @@ lines(predict(ppm2)[order(range)] ~ sort(range), data=lidar, lwd=3, col='darkblu
 ```
 
 As expected, both fits provide the same estimated regression function, although
-its coefficients will be different:
+its coefficients are naturally different (**but their lengths are the same**, 
+is this a coincidence, or will it always happen?)
 ```{r bsplines.coef}
-coef(ppm)
-coef(ppm2)
+as.vector( coef(ppm) )
+as.vector( coef(ppm2) )
 ```
 Note that, because we are 
 using a set of linear splines, our estimated regression functions will always be piecewise 
@@ -224,12 +229,14 @@ regression estimators below we will use higher-order splines.
 
 ### Higher order splines (quadratic, cubic, etc.)
 
-Here we directly use the function `bs` to evaluate the desired
-spline basis on the observed values of the explanatory variable (in this case `range`). 
+In what follows (as above) we will use the function `bs` to evaluate the desired
+spline basis on the observed values of the explanatory variable (in this case `range`).
+
 We use the arguments `degree = 2` and `knots = kn` to indicate we want a 
 quadratic spline basis with knots located at the elements of the vector `kn`. 
 As before, we then simply use `lm` 
-to estimate the coefficients, and overlay the estimated regression function over the data: 
+to estimate the coefficients, and overlay the estimated regression 
+function over the data: 
 
 ```{r bsplines2, fig.width=5, fig.height=5, message=FALSE, warning=FALSE}
 plot(logratio ~ range, data=lidar, pch=19, col='gray', cex=1.5)
@@ -241,7 +248,8 @@ A useful consequence of the fact that these regression estimators are in fact
 just linear regression estimators
 (but using a richer / more flexible basis than just the straight
 predictors) is that we can easily compute (pointwise) standard errors
-for the fitted regression curve, as follows. We first fit and plot a quadratic 
+for the fitted regression curve, as follows. We first fit and 
+plot a quadratic 
 spline using the same 5 knots as before:
 ```{r bsplines.se1, fig.width=5, fig.height=5, message=FALSE, warning=FALSE, eval=FALSE}
 plot(logratio~range, data=lidar, pch=19, col='gray', cex=1.5)
@@ -409,7 +417,9 @@ plot(logratio ~ range, data=lidar, pch=19, col='gray', cex=1.5)
 lines(tmp.cv$y ~ tmp.cv$x, lwd=6, col='blue')
 ```
 
-Note that the optimal value found for the regularization parameter (`spar`) is 
+#### Sanity check (always a good idea)
+
+Note that the optimal value found for the regularization parameter (`spar`) is
 also returned in the element 
 `$spar` of the object returned by `smooth.spline`. Just as a **sanity check**
 we can now call `smooth.spline` with `cv = FALSE` and manually set

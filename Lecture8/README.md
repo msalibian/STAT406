@@ -1,7 +1,7 @@
 STAT406 - Lecture 8 notes
 ================
 Matias Salibian-Barrera
-2019-09-27
+2019-10-02
 
 #### LICENSE
 
@@ -189,15 +189,16 @@ an accessible discussion, see for example Section 4.1 of
 
 Given the chosen knots and the degree of the splines (linear, quadratic,
 cubic, etc.) the set (linear space) of functions we are using to
-construct our regression estimate does not depend on the basis we use.
-As a consequence, the estimated regression function should be the same
-regardless of the basis we use (provided we do not run into serious
-numerical issues). To illustrate this fact, we will use a B-spline basis
-with the same 5 knots as above, and compare the estimated regression
-function with the one we obtained above using our **poor people** naive
-basis. The plot below overlays both fits (the naive one with a thick
-pink line as above, and the one using b-splines with a thinner blue
-line):
+construct our regression estimate does not depend on the specific basis
+we use (in other words: these are different bases that span the same
+linear space of functions). As a consequence, the estimated regression
+function should be the same regardless of the basis we use (provided we
+do not run into serious numerical issues with our naive basis). To
+illustrate this fact, we will use a B-spline basis with the same 5 knots
+as above, and compare the estimated regression function with the one we
+obtained above using our **poor people naive basis**. The plot below
+overlays both fits (the naive one with a thick pink line as above, and
+the one using b-splines with a thinner blue line):
 
 ``` r
 library(splines)
@@ -210,29 +211,22 @@ lines(predict(ppm2)[order(range)] ~ sort(range), data=lidar, lwd=3, col='darkblu
 ![](README_files/figure-gfm/bsplines1-1.png)<!-- -->
 
 As expected, both fits provide the same estimated regression function,
-although its coefficients will be different:
+although its coefficients are naturally different (**but their lengths
+are the same**, is this a coincidence, or will it always happen?)
 
 ``` r
-coef(ppm)
+as.vector( coef(ppm) )
 ```
 
-    ##   (Intercept)            x1            x2            x3            x4 
-    ##  0.0269095640  0.0002488169 -0.0003235802 -0.0082773735  0.0063779378 
-    ##            x5            x6 
-    ##  0.0007385513 -0.0001847752
+    ## [1]  0.0269095640  0.0002488169 -0.0003235802 -0.0082773735  0.0063779378
+    ## [6]  0.0007385513 -0.0001847752
 
 ``` r
-coef(ppm2)
+as.vector( coef(ppm2) )
 ```
 
-    ##                        (Intercept) bs(range, degree = 1, knots = kn)1 
-    ##                        -0.04515276                        -0.01010104 
-    ## bs(range, degree = 1, knots = kn)2 bs(range, degree = 1, knots = kn)3 
-    ##                        -0.00657875                        -0.02093988 
-    ## bs(range, degree = 1, knots = kn)4 bs(range, degree = 1, knots = kn)5 
-    ##                        -0.48762440                        -0.60636798 
-    ## bs(range, degree = 1, knots = kn)6 
-    ##                        -0.68496471
+    ## [1] -0.04515276 -0.01010104 -0.00657875 -0.02093988 -0.48762440 -0.60636798
+    ## [7] -0.68496471
 
 Note that, because we are using a set of linear splines, our estimated
 regression functions will always be piecewise linear (i.e. linear
@@ -243,13 +237,14 @@ higher-order splines.
 
 ### Higher order splines (quadratic, cubic, etc.)
 
-Here we directly use the function `bs` to evaluate the desired spline
-basis on the observed values of the explanatory variable (in this case
-`range`). We use the arguments `degree = 2` and `knots = kn` to indicate
-we want a quadratic spline basis with knots located at the elements of
-the vector `kn`. As before, we then simply use `lm` to estimate the
-coefficients, and overlay the estimated regression function over the
-data:
+In what follows (as above) we will use the function `bs` to evaluate the
+desired spline basis on the observed values of the explanatory variable
+(in this case `range`).
+
+We use the arguments `degree = 2` and `knots = kn` to indicate we want a
+quadratic spline basis with knots located at the elements of the vector
+`kn`. As before, we then simply use `lm` to estimate the coefficients,
+and overlay the estimated regression function over the data:
 
 ``` r
 plot(logratio ~ range, data=lidar, pch=19, col='gray', cex=1.5)
@@ -475,6 +470,8 @@ lines(tmp.cv$y ~ tmp.cv$x, lwd = 6, col = "blue")
 ```
 
 ![](README_files/figure-gfm/smoothing.cv1-1.png)<!-- -->
+
+#### Sanity check (always a good idea)
 
 Note that the optimal value found for the regularization parameter
 (`spar`) is also returned in the element `$spar` of the object returned
