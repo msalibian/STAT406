@@ -17,7 +17,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-Lecture slides are [here](STAT406-18-lecture-10.pdf).
+Lecture slides are [here](STAT406-19-lecture-10.pdf).
 
 ## Regression trees 
 
@@ -135,7 +135,7 @@ Regression trees provide an alternative non-regression
 estimator that works well, even with many available features. 
 As discussed in class, the basic idea is to approximate the
 regression function by a linear combination of "simple" 
-functions (i.e. functions $h(x) = I( x \in A )$ which equals
+functions (i.e. functions $h(x) = I( x \in A )$ which equal
 1 if the argument *x* belongs to the set *A*, and 0 otherwise. 
 Each function has its own support set *A*. Furthermore, 
 this linear combination is not estimated at once, but
@@ -152,7 +152,7 @@ use we will consider the `Boston` data set, that contains
 information on housing in the US city of Boston. The 
 corresponding help page contains more information. 
 
-**To simplify the comparison here** of the predictions obtained
+**Here, to simplify the comparison** of the predictions obtained
 by trees and other regression estimators, instead of using
 K-fold CV, we start by randomly splitting the 
 available data into a training and a test set:
