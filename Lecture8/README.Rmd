@@ -18,6 +18,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 ## Lecture slides
 
 * Lecture slides are [here](STAT406-18-lecture-8.pdf). 
+* [Notes regarding natural cubic splines as a regularized L^2 problem](Natural-cubic-splines-as-regularized-linear-regression.pdf).
 
 # Non-parametric regression
 
