@@ -51,13 +51,13 @@ library(rpart)
 data(Boston, package='MASS')
 # split data into a training and
 # a test set
-set.seed(123456) 
+set.seed(123) 
 n <- nrow(Boston)
 ii <- sample(n, floor(n/4))
 dat.te <- Boston[ ii, ]
 dat.tr <- Boston[ -ii, ]
 
-myc <- rpart.control(minsplit=3, cp=1e-8, xval=10)
+myc <- rpart.control(minsplit=2, cp=1e-5, xval=10)
 set.seed(123)
 bos.to <- rpart(medv ~ ., data=dat.tr, method='anova',
                 control=myc)
@@ -89,12 +89,12 @@ optimal value *programatically* as follows:
 ```{r prune4.2, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 ( b <- bos.to$cptable[which.min(bos.to$cptable[,"xerror"]),"CP"] )
 ```
-> **R coding digression**: Note that above we could also have used the following:
-> ```{r prune4.alt, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
-> tmp <- bos.to$cptable[,"xerror"]
-> (b <- bos.to$cptable[ max( which(tmp == min(tmp)) ), "CP"] )
-> ```
-> What is the difference between `which.min(a)` and `max( which( a == min(a) ) )`?
+<!-- > **R coding digression**: Note that above we could also have used the following: -->
+<!-- > ```{r prune4.alt, fig.width=6, fig.height=6, message=FALSE, warning=FALSE} -->
+<!-- > tmp <- bos.to$cptable[,"xerror"] -->
+<!-- > (b <- bos.to$cptable[ max( which(tmp == min(tmp)) ), "CP"] ) -->
+<!-- > ``` -->
+<!-- > What is the difference between `which.min(a)` and `max( which( a == min(a) ) )`? -->
 
 We can now use the function 
 `prune` on the `rpart` object setting the complexity parameter
@@ -126,33 +126,35 @@ of the alternative methods we have seen in class so far,
 #### Why is the pruned tree not a subtree of the "default" one?
 
 Note that the pruned tree above is not a subtree of the one
-constructed using the default stopping criteria. In particular, note 
-that the node to the right of the cut "lstat >= 14.4" is split 
-with the cut "dis >= 1.385", whereas in the original tree, 
-the corresponding node was split using "lstat >= 4.91":
-```{r prune6, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
-set.seed(123)
-bos.t <- rpart(medv ~ ., data=dat.tr, method='anova')
-plot(bos.t, uniform=FALSE, margin=0.01)
-text(bos.t, pretty=TRUE)
-```
+constructed using the default stopping criteria. 
 
-Although "intuitively" one may say that building an overfitting tree
-means "running the tree algorithm longer" (in other words, relaxing the 
-stopping rules will just make the splitting algorithm run longer), this 
-is not the case. The reason for this difference is that one 
-of the default "stopping" criteria is to set a limit on the minimum 
-size of a child node. This default limit in `rpart` is 7
-(`round(20/3)`). When we relaxed the tree building criteria this limit was reduced 
-(to 1) and thus the "default" tree is not in fact a subtree of the large tree
-(that is later pruned). In particular, note that 
-the split "dis >= 1.38485" leaves a node with only 4 observations, 
-which means that this split would not have been considered
-when building the "default" tree. You can verify this by inspecting the 
-pruned tree
-```{r prunecheck, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
-bos.t3
-```
+> This description is outdated. Will be updated soon. In particular, note 
+> that the node to the right of the cut "lstat >= 14.4" is split 
+> with the cut "dis >= 1.385", whereas in the original tree, 
+> the corresponding node was split using "lstat >= 4.91":
+> ```{r prune6, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+> set.seed(123)
+> bos.t <- rpart(medv ~ ., data=dat.tr, method='anova')
+> plot(bos.t, uniform=FALSE, margin=0.01)
+> text(bos.t, pretty=TRUE)
+> ```
+> 
+> Although "intuitively" one may say that building an overfitting tree
+> means "running the tree algorithm longer" (in other words, relaxing the 
+> stopping rules will just make the splitting algorithm run longer), this 
+> is not the case. The reason for this difference is that one 
+> of the default "stopping" criteria is to set a limit on the minimum 
+> size of a child node. This default limit in `rpart` is 7
+> (`round(20/3)`). When we relaxed the tree building criteria this limit was reduced 
+> (to 1) and thus the "default" tree is not in fact a subtree of the large tree
+> (that is later pruned). In particular, note that 
+> the split "dis >= 1.38485" leaves a node with only 4 observations, 
+> which means that this split would not have been considered
+> when building the "default" tree. You can verify this by inspecting the 
+> pruned tree
+> ```{r prunecheck, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+> bos.t3
+> ```
 
 <!-- Note that pruning doesn't always improve a tree. For example,  -->
 <!-- if we prune the first tree we fit in this example: -->
@@ -250,7 +252,7 @@ tree to each portion. We then display both trees.
 # Instability of trees...
 library(rpart)
 data(Boston, package='MASS')
-set.seed(654321)
+set.seed(123)
 n <- nrow(Boston)
 ii <- sample(n, floor(n/2))
 dat.t1 <- Boston[ -ii, ]
