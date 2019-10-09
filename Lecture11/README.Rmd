@@ -57,7 +57,7 @@ ii <- sample(n, floor(n/4))
 dat.te <- Boston[ ii, ]
 dat.tr <- Boston[ -ii, ]
 
-myc <- rpart.control(minsplit=2, cp=1e-5, xval=10)
+myc <- rpart.control(minsplit=2, cp=1e-5, xval=5)
 set.seed(123)
 bos.to <- rpart(medv ~ ., data=dat.tr, method='anova',
                 control=myc)
@@ -104,9 +104,9 @@ bos.t3 <- prune(bos.to, cp=b)
 ```
 
 This is how the optimally pruned tree looks:
-```{r prune4.5, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+```{r prune4.5, fig.width=8, fig.height=8, message=FALSE, warning=FALSE}
 plot(bos.t3, uniform=FALSE, margin=0.01)
-text(bos.t3, pretty=TRUE)
+text(bos.t3, pretty=FALSE)
 ```
 
 Finally, we can verify that the predictions of the pruned 
