@@ -89,6 +89,12 @@ optimal value *programatically* as follows:
 ```{r prune4.2, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 ( b <- bos.to$cptable[which.min(bos.to$cptable[,"xerror"]),"CP"] )
 ```
+> **R coding digression**: Note that above we could also have used the following:
+> ```{r prune4.alt, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+> tmp <- bos.to$cptable[,"xerror"]
+> (b <- bos.to$cptable[ max( which(tmp == min(tmp)) ), "CP"] )
+> ```
+> What is the difference between `which.min(a)` and `max( which( a == min(a) ) )`?
 
 We can now use the function 
 `prune` on the `rpart` object setting the complexity parameter
@@ -207,7 +213,7 @@ pruned later:
 
 ```{r prunetree2, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 set.seed(123)
-bos.to2 <- tree(medv ~ ., data=dat.tr, control=tree.control(nobs=nrow(dat.tr), mincut=1, minsize=2, mindev=1e-10))
+bos.to2 <- tree(medv ~ ., data=dat.tr, control=tree.control(nobs=nrow(dat.tr), mincut=1, minsize=2, mindev=1e-5))
 plot(bos.to2)
 ```
 
@@ -224,7 +230,7 @@ plot(tt)
 Finally, we use the function `prune.tree` to prune the larger tree
 at the "optimal" size, as estimated by `cv.tree` above:
 ```{r prunetree3.2, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
-bos.pr2 <- prune.tree(bos.to2, k = tt$k[ which.min(tt$dev) ])
+bos.pr2 <- prune.tree(bos.to2, k = tt$k[ max( which(tt$dev == min(tt$dev)) ) ])
 plot(bos.pr2); text(bos.pr2)
 ```
 
