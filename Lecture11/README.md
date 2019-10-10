@@ -5,21 +5,43 @@ Matias Salibian-Barrera
 
 #### LICENSE
 
-These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 International" license. See the **human-readable version** [here](https://creativecommons.org/licenses/by-sa/4.0/) and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/legalcode).
+These notes are released under the “Creative Commons
+Attribution-ShareAlike 4.0 International” license. See the
+**human-readable version**
+[here](https://creativecommons.org/licenses/by-sa/4.0/) and the **real
+thing**
+[here](https://creativecommons.org/licenses/by-sa/4.0/legalcode).
 
-Lecture slides
---------------
+## Lecture slides
 
 Lecture slides are [here](STAT406-18-lecture-11.pdf).
 
-Pruning regression trees with `rpart`
--------------------------------------
+## Pruning regression trees with `rpart`
 
-***Important note**: As discussed in class, the K-fold CV methodology implemented in the package `rpart` seems to consider a sequence of trees (or, equivalently, of complexity parameters) based on the full training set. For more details refer to the corresponding documentation: pages 12 and ff of the package vignette, which can be accessed from `R` using the command `vignette('longintro', package='rpart')`. For an alternative implementation of CV-based pruning, please see also the Section **"Pruning regression trees with `tree`"** below.*
+***Important note**: As discussed in class, the K-fold CV methodology
+implemented in the package `rpart` seems to consider a sequence of trees
+(or, equivalently, of complexity parameters) based on the full training
+set. For more details refer to the corresponding documentation: pages 12
+and ff of the package vignette, which can be accessed from `R` using the
+command `vignette('longintro', package='rpart')`. For an alternative
+implementation of CV-based pruning, please see also the Section
+**“Pruning regression trees with `tree`”** below.*
 
-The stopping criteria generally used when fitting regression trees do not take into account explicitly the complexity of the tree. Hence, we may end up with either an overfitting tree, or a very simple one, which typically results in a decline in the quality of the corresponding predictions. As discussed in class, one solution is to purposedly grow / train a very large overfitting tree, and then prune it. One can also estimate the corresponding MSPE of each tree in the prunning sequence and choose an optimal one. The function `rpart` implements this approach, and we illustrate it below.
+The stopping criteria generally used when fitting regression trees do
+not take into account explicitly the complexity of the tree. Hence, we
+may end up with either an overfitting tree, or a very simple one, which
+typically results in a decline in the quality of the corresponding
+predictions. As discussed in class, one solution is to purposedly grow /
+train a very large overfitting tree, and then prune it. One can also
+estimate the corresponding MSPE of each tree in the prunning sequence
+and choose an optimal one. The function `rpart` implements this
+approach, and we illustrate it below.
 
-We force `rpart` to build a very large tree via the arguments of the function `rpart.control`. At the same time, to obtain a good picture of the evolution of MSPE for different subtrees, we set the smallest complexity parameter to be considered by the cross-validation experiment to a very low value (here we use `1e-8`).
+We force `rpart` to build a very large tree via the arguments of the
+function `rpart.control`. At the same time, to obtain a good picture of
+the evolution of MSPE for different subtrees, we set the smallest
+complexity parameter to be considered by the cross-validation experiment
+to a very low value (here we use `1e-8`).
 
 ``` r
 library(rpart)
@@ -39,7 +61,7 @@ bos.to <- rpart(medv ~ ., data=dat.tr, method='anova',
 plot(bos.to, compress=TRUE) # type='proportional')
 ```
 
-![](README_files/figure-markdown_github/prune-1.png)
+![](README_files/figure-gfm/prune-1.png)<!-- -->
 
 Not surprisingly, the predictions of this large tree are not very good:
 
@@ -51,7 +73,14 @@ with(dat.te, mean((medv - pr.to)^2) )
 
     ## [1] 15.11998
 
-To prune we explore the *CP table* returned in the `rpart` object to find the value of the complexity parameter with optimal estimated prediction error. The estimated prediction error of each subtree (corresponding to each value of `CP`) is contained in the column `xerror`, and the associated standard deviation is in column `xstd`. We would like to find the value of `CP` that yields a corresponding pruned tree with smallest estimated prediction error. The function `printcp` shows the CP table corresponding to an `rpart` object:
+To prune we explore the *CP table* returned in the `rpart` object to
+find the value of the complexity parameter with optimal estimated
+prediction error. The estimated prediction error of each subtree
+(corresponding to each value of `CP`) is contained in the column
+`xerror`, and the associated standard deviation is in column `xstd`. We
+would like to find the value of `CP` that yields a corresponding pruned
+tree with smallest estimated prediction error. The function `printcp`
+shows the CP table corresponding to an `rpart` object:
 
 ``` r
 printcp(bos.to)
@@ -276,7 +305,8 @@ printcp(bos.to)
     ## 204 1.0683e-05    230 0.00032704 0.22792 0.037149
     ## 205 1.0000e-05    231 0.00031636 0.22792 0.037149
 
-It is probably better and easier to find this optimal value *programatically* as follows:
+It is probably better and easier to find this optimal value
+*programatically* as follows:
 
 ``` r
 ( b <- bos.to$cptable[which.min(bos.to$cptable[,"xerror"]),"CP"] )
@@ -285,12 +315,19 @@ It is probably better and easier to find this optimal value *programatically* as
     ## [1] 0.002515355
 
 <!-- > **R coding digression**: Note that above we could also have used the following: -->
+
 <!-- > ```{r prune4.alt, fig.width=6, fig.height=6, message=FALSE, warning=FALSE} -->
+
 <!-- > tmp <- bos.to$cptable[,"xerror"] -->
+
 <!-- > (b <- bos.to$cptable[ max( which(tmp == min(tmp)) ), "CP"] ) -->
+
 <!-- > ``` -->
+
 <!-- > What is the difference between `which.min(a)` and `max( which( a == min(a) ) )`? -->
-We can now use the function `prune` on the `rpart` object setting the complexity parameter to the estimated optimal value found above:
+
+We can now use the function `prune` on the `rpart` object setting the
+complexity parameter to the estimated optimal value found above:
 
 ``` r
 bos.t3 <- prune(bos.to, cp=b)
@@ -303,9 +340,10 @@ plot(bos.t3, uniform=FALSE, margin=0.01)
 text(bos.t3, pretty=FALSE)
 ```
 
-![](README_files/figure-markdown_github/prune4.5-1.png)
+![](README_files/figure-gfm/prune4.5-1.png)<!-- -->
 
-Finally, we can verify that the predictions of the pruned tree on the test set are better than before:
+Finally, we can verify that the predictions of the pruned tree on the
+test set are better than before:
 
 ``` r
 # predictions are better
@@ -315,112 +353,127 @@ with(dat.te, mean((medv - pr.t3)^2) )
 
     ## [1] 10.94228
 
-Again, it would be a **very good exercise** for you to compare the MSPE of the pruned tree with that of several of the alternative methods we have seen in class so far, **without using a training / test split**.
+Again, it would be a **very good exercise** for you to compare the MSPE
+of the pruned tree with that of several of the alternative methods we
+have seen in class so far, **without using a training / test split**.
 
-#### Why is the pruned tree not a subtree of the "default" one?
+<!-- #### Why is the pruned tree not a subtree of the "default" one? -->
 
-Note that the pruned tree above is not a subtree of the one constructed using the default stopping criteria.
+<!-- Note that the pruned tree above is not a subtree of the one -->
 
-> This description is outdated. Will be updated soon. In particular, note that the node to the right of the cut "lstat &gt;= 14.4" is split with the cut "dis &gt;= 1.385", whereas in the original tree, the corresponding node was split using "lstat &gt;= 4.91":
->
-> ``` r
-> set.seed(123)
-> bos.t <- rpart(medv ~ ., data=dat.tr, method='anova')
-> plot(bos.t, uniform=FALSE, margin=0.01)
-> text(bos.t, pretty=TRUE)
-> ```
->
-> ![](README_files/figure-markdown_github/prune6-1.png)
->
-> Although "intuitively" one may say that building an overfitting tree means "running the tree algorithm longer" (in other words, relaxing the stopping rules will just make the splitting algorithm run longer), this is not the case. The reason for this difference is that one of the default "stopping" criteria is to set a limit on the minimum size of a child node. This default limit in `rpart` is 7 (`round(20/3)`). When we relaxed the tree building criteria this limit was reduced (to 1) and thus the "default" tree is not in fact a subtree of the large tree (that is later pruned). In particular, note that the split "dis &gt;= 1.38485" leaves a node with only 4 observations, which means that this split would not have been considered when building the "default" tree. You can verify this by inspecting the pruned tree
->
-> ``` r
-> bos.t3
-> ```
->
->     ## n= 380 
->     ## 
->     ## node), split, n, deviance, yval
->     ##       * denotes terminal node
->     ## 
->     ##   1) root 380 34399.920000 22.71868  
->     ##     2) lstat>=5.44 318 13490.690000 19.84151  
->     ##       4) lstat>=14.395 138  2992.937000 15.08696  
->     ##         8) crim>=5.7819 64  1008.790000 12.18750  
->     ##          16) lstat>=20.195 37   343.816800 10.41892  
->     ##            32) nox>=0.675 26   147.105000  9.15000 *
->     ##            33) nox< 0.675 11    55.896360 13.41818 *
->     ##          17) lstat< 20.195 27   390.646700 14.61111  
->     ##            34) age< 97.1 20   159.208000 13.36000 *
->     ##            35) age>=97.1 7   110.688600 18.18571  
->     ##              70) dis>=1.52745 6     9.473333 16.63333 *
->     ##              71) dis< 1.52745 1     0.000000 27.50000 *
->     ##         9) crim< 5.7819 74   980.777800 17.59459  
->     ##          18) age>=85.1 54   548.055000 16.61667  
->     ##            36) crim>=0.171455 42   258.064000 15.61190 *
->     ##            37) crim< 0.171455 12    99.186670 20.13333 *
->     ##          19) age< 85.1 20   241.645500 20.23500  
->     ##            38) rm< 6.5905 19   126.365300 19.68421 *
->     ##            39) rm>=6.5905 1     0.000000 30.70000 *
->     ##       5) lstat< 14.395 180  4986.468000 23.48667  
->     ##        10) rm< 7.0745 165  2543.792000 22.54848  
->     ##          20) dis>=1.22715 164  1785.611000 22.38110  
->     ##            40) rm< 6.5445 135  1134.983000 21.66593  
->     ##              80) lstat>=7.81 105   858.721900 21.05238  
->     ##               160) tax>=208 101   519.122400 20.77228 *
->     ##               161) tax< 208 4   131.587500 28.12500  
->     ##                 322) crim>=0.070265 2    18.605000 23.35000 *
->     ##                 323) crim< 0.070265 2    21.780000 32.90000 *
->     ##              81) lstat< 7.81 30    98.394670 23.81333 *
->     ##            41) rm>=6.5445 29   260.146900 25.71034 *
->     ##          21) dis< 1.22715 1     0.000000 50.00000 *
->     ##        11) rm>=7.0745 15   699.909300 33.80667  
->     ##          22) crim>=10.21718 1     0.000000 15.00000 *
->     ##          23) crim< 10.21718 14   320.955000 35.15000  
->     ##            46) rm< 8.031 13    83.469230 34.00769 *
->     ##            47) rm>=8.031 1     0.000000 50.00000 *
->     ##     3) lstat< 5.44 62  4774.874000 37.47581  
->     ##       6) rm< 7.433 40  1535.668000 32.89250  
->     ##        12) tax< 534 37   586.478900 31.50541  
->     ##          24) rm< 6.785 15   124.809300 27.97333 *
->     ##          25) rm>=6.785 22   146.945900 33.91364 *
->     ##        13) tax>=534 3     0.000000 50.00000 *
->     ##       7) rm>=7.433 22   871.178200 45.80909  
->     ##        14) crim>=2.742235 1     0.000000 21.90000 *
->     ##        15) crim< 2.742235 21   272.312400 46.94762 *
+<!-- constructed using the default stopping criteria.  -->
+
+<!-- This description is outdated. Will be updated soon. In particular, note  -->
+
+<!-- that the node to the right of the cut "lstat >= 14.4" is split  -->
+
+<!-- with the cut "dis >= 1.385", whereas in the original tree,  -->
+
+<!-- the corresponding node was split using "lstat >= 4.91": -->
+
+<!-- ```{r prune6, fig.width=6, fig.height=6, message=FALSE, warning=FALSE} -->
+
+<!-- set.seed(123) -->
+
+<!-- bos.t <- rpart(medv ~ ., data=dat.tr, method='anova') -->
+
+<!-- plot(bos.t, uniform=FALSE, margin=0.01) -->
+
+<!-- text(bos.t, pretty=TRUE) -->
+
+<!-- ``` -->
+
+<!-- Although "intuitively" one may say that building an overfitting tree -->
+
+<!-- means "running the tree algorithm longer" (in other words, relaxing the  -->
+
+<!-- stopping rules will just make the splitting algorithm run longer), this  -->
+
+<!-- is not the case. The reason for this difference is that one  -->
+
+<!-- of the default "stopping" criteria is to set a limit on the minimum  -->
+
+<!-- size of a child node. This default limit in `rpart` is 7 -->
+
+<!-- (`round(20/3)`). When we relaxed the tree building criteria this limit was reduced  -->
+
+<!-- (to 1) and thus the "default" tree is not in fact a subtree of the large tree -->
+
+<!-- (that is later pruned). In particular, note that  -->
+
+<!-- the split "dis >= 1.38485" leaves a node with only 4 observations,  -->
+
+<!-- which means that this split would not have been considered -->
+
+<!-- when building the "default" tree. You can verify this by inspecting the  -->
+
+<!-- pruned tree -->
+
+<!-- ```{r prunecheck, fig.width=6, fig.height=6, message=FALSE, warning=FALSE} -->
+
+<!-- bos.t3 -->
+
+<!-- ``` -->
 
 <!-- Note that pruning doesn't always improve a tree. For example,  -->
+
 <!-- if we prune the first tree we fit in this example: -->
+
 <!-- ```{r prune8, fig.width=6, fig.height=6, message=FALSE, warning=FALSE} -->
+
 <!-- # what if we prune the original tree? -->
+
 <!-- set.seed(123) -->
+
 <!-- bos.t <- rpart(medv ~ ., data=dat.tr, method='anova') -->
+
 <!-- b <- bos.t$cptable[which.min(bos.t$cptable[,"xerror"]),"CP"] -->
+
 <!-- bos.t4 <- prune(bos.t, cp=b) -->
+
 <!-- ``` -->
+
 <!-- We obtain the same tree as before: -->
+
 <!-- ```{r prune10, fig.width=6, fig.height=6, message=FALSE, warning=FALSE} -->
+
 <!-- plot(bos.t4, uniform=FALSE, margin=0.01) -->
+
 <!-- text(bos.t4, pretty=TRUE) -->
+
 <!-- ``` -->
+
 <!-- Below is the original tree: -->
+
 <!-- ```{r prune6, fig.width=6, fig.height=6, message=FALSE, warning=FALSE} -->
+
 <!-- plot(bos.t, uniform=FALSE, margin=0.01) -->
+
 <!-- text(bos.t, pretty=TRUE) -->
+
 <!-- ``` -->
+
 #### Pruning regression trees with `tree`
 
-The implementation of trees in the `R` package `tree` follows the original CV-based pruning strategy, as discussed in Section 3.4 of the book
+The implementation of trees in the `R` package `tree` follows the
+original CV-based pruning strategy, as discussed in Section 3.4 of the
+book
 
-> Breiman, Leo. (1984). Classification and regression trees. Wadsworth International Group
+> Breiman, Leo. (1984). Classification and regression trees. Wadsworth
+> International Group
 
 or Section 7.2 of:
 
-> Ripley, Brian D. (1996). Pattern recognition and neural networks. Cambridge University Press
+> Ripley, Brian D. (1996). Pattern recognition and neural networks.
+> Cambridge University Press
 
 Both books are available in electronic form from the UBC Library.
 
-We now use the function `tree::tree()` to fit the same regression tree as above. Note that the default stopping criteria in this implementation of regression trees is different from the one in `rpart::rpart()`, hence to obtain the same results as above we need to modify the default stopping criteria using the argument `control`:
+We now use the function `tree::tree()` to fit the same regression tree
+as above. Note that the default stopping criteria in this implementation
+of regression trees is different from the one in `rpart::rpart()`, hence
+to obtain the same results as above we need to modify the default
+stopping criteria using the argument `control`:
 
 ``` r
 library(tree)
@@ -433,9 +486,10 @@ We plot the resulting tree
 plot(bos.t2); text(bos.t2)
 ```
 
-![](README_files/figure-markdown_github/prunetree1-1.png)
+![](README_files/figure-gfm/prunetree1-1.png)<!-- -->
 
-As discussed before, we now fit a very large tree, which will be pruned later:
+As discussed before, we now fit a very large tree, which will be pruned
+later:
 
 ``` r
 set.seed(123)
@@ -443,9 +497,12 @@ bos.to2 <- tree(medv ~ ., data=dat.tr, control=tree.control(nobs=nrow(dat.tr), m
 plot(bos.to2)
 ```
 
-![](README_files/figure-markdown_github/prunetree2-1.png)
+![](README_files/figure-gfm/prunetree2-1.png)<!-- -->
 
-We now use the function `tree:cv.tree()` to estimate the MSPE of the subtrees of `bos.to2`, using 5-fold CV, and plot the estimated MSPE (here labeled as "deviance") as a function of the complexity parameter (or, equivalently, the size of the tree):
+We now use the function `tree:cv.tree()` to estimate the MSPE of the
+subtrees of `bos.to2`, using 5-fold CV, and plot the estimated MSPE
+(here labeled as “deviance”) as a function of the complexity parameter
+(or, equivalently, the size of the tree):
 
 ``` r
 set.seed(123)
@@ -453,23 +510,47 @@ tt <- cv.tree(bos.to2, K = 5)
 plot(tt)
 ```
 
-![](README_files/figure-markdown_github/prunetree3-1.png)
+![](README_files/figure-gfm/prunetree3-1.png)<!-- -->
 
-Finally, we use the function `prune.tree` to prune the larger tree at the "optimal" size, as estimated by `cv.tree` above:
+Finally, we use the function `prune.tree` to prune the larger tree at
+the “optimal” size, as estimated by `cv.tree` above:
 
 ``` r
 bos.pr2 <- prune.tree(bos.to2, k = tt$k[ max( which(tt$dev == min(tt$dev)) ) ])
 plot(bos.pr2); text(bos.pr2)
 ```
 
-![](README_files/figure-markdown_github/prunetree3.2-1.png)
+![](README_files/figure-gfm/prunetree3.2-1.png)<!-- -->
 
-Compare this pruned tree with the one obtained with the regression trees implementation in `rpart`.
+Compare this pruned tree with the one obtained with the regression trees
+implementation in `rpart`. In particular, we can compare the predictions
+of this other pruned tree on the test set:
 
-Instability of regression trees
--------------------------------
+``` r
+# predictions are worse than the rpart-pruned tree
+pr.tree <- predict(bos.pr2, newdata=dat.te, type='vector')
+with(dat.te, mean((medv - pr.tree)^2) )
+```
 
-Trees can be rather unstable, in the sense that small changes in the training data set may result in relatively large differences in the fitted trees. As a simple illustration we randomly split the `Boston` data used before into two halves and fit a regression tree to each portion. We then display both trees.
+    ## [1] 12.3009
+
+Note that the predictions of the tree pruned with the `tree` package
+seem to be worse than those of the tree pruned with the `rpart` package.
+**Does this mean that `rpart` gives trees with better predictions than
+`tree` for data coming from the process than generated our training
+set?** **Or could it all be an artifact of the specific test set we
+used?** **Can you think of an experiment to verify this claim?** Again,
+it would be a **very good exercise** for you to check which fit (`tree`
+or `rpart`) gives pruned trees with better prediction properties in this
+case.
+
+## Instability of regression trees
+
+Trees can be rather unstable, in the sense that small changes in the
+training data set may result in relatively large differences in the
+fitted trees. As a simple illustration we randomly split the `Boston`
+data used before into two halves and fit a regression tree to each
+portion. We then display both trees.
 
 ``` r
 # Instability of trees...
@@ -484,7 +565,7 @@ plot(bos.t1, uniform=FALSE, margin=0.01)
 text(bos.t1, pretty=TRUE, cex=.8)
 ```
 
-![](README_files/figure-markdown_github/inst1-1.png)
+![](README_files/figure-gfm/inst1-1.png)<!-- -->
 
 ``` r
 dat.t2 <- Boston[ ii, ]
@@ -493,9 +574,13 @@ plot(bos.t2, uniform=FALSE, margin=0.01)
 text(bos.t2, pretty=TRUE, cex=.8)
 ```
 
-![](README_files/figure-markdown_github/inst2-1.png)
+![](README_files/figure-gfm/inst2-1.png)<!-- -->
 
-Although we would expect both random halves of the same (moderately large) training set to beat least qualitatively similar, Note that the two trees are rather different. To compare with a more stable predictor, we fit a linear regression model to each half, and look at the two sets of estimated coefficients side by side:
+Although we would expect both random halves of the same (moderately
+large) training set to beat least qualitatively similar, Note that the
+two trees are rather different. To compare with a more stable predictor,
+we fit a linear regression model to each half, and look at the two sets
+of estimated coefficients side by side:
 
 ``` r
 # bos.lmf <- lm(medv ~ ., data=Boston)
@@ -521,189 +606,373 @@ round(coef(bos.lm2),2))
     ## black         0.01   0.01
     ## lstat        -0.31  -0.66
 
-Note that most of the estimated regression coefficients are similar, and all of them are at least qualitatively comparable.
+Note that most of the estimated regression coefficients are similar, and
+all of them are at least qualitatively comparable.
 
-Bagging
--------
+## Bagging
 
-One strategy to obtain more stable predictors is called **Bootstrap AGGregatING** (bagging). It can be applied to many predictors (not only trees), and it generally results in larger improvements in prediction quality when it is used with predictors that are flexible (low bias), but highly variable.
+One strategy to obtain more stable predictors is called **Bootstrap
+AGGregatING** (bagging). It can be applied to many predictors (not only
+trees), and it generally results in larger improvements in prediction
+quality when it is used with predictors that are flexible (low bias),
+but highly variable.
 
-The justification and motivation were discussed in class. Intuitively we are averaging the predictions obtained from an estimate of the "average prediction" we would have computed had we had access to several (many?) independent training sets (samples).
+The justification and motivation were discussed in class. Intuitively we
+are averaging the predictions obtained from an estimate of the “average
+prediction” we would have computed had we had access to several (many?)
+independent training sets (samples).
 
-There are several (many?) `R` packages implementing bagging for different predictors, with varying degrees of flexibility (the implementations) and user-friendliness. However, for pedagogical and illustrative purposes, in these notes I will *bagg* by hand.
+There are several (many?) `R` packages implementing bagging for
+different predictors, with varying degrees of flexibility (the
+implementations) and user-friendliness. However, for pedagogical and
+illustrative purposes, in these notes I will *bagg* by hand.
 
 <!-- ### Bagging by hand -->
+
 <!-- Again, to simplify the discussion and presentation, in order to evaluate  -->
+
 <!-- prediction quality I will split the  -->
+
 <!-- data (`Boston`) into a training and a test set. We do this now: -->
+
 <!-- ```{r bag1, fig.width=5, fig.height=5, message=FALSE, warning=FALSE} -->
+
 <!-- set.seed(123456) -->
+
 <!-- n <- nrow(Boston) -->
+
 <!-- ii <- sample(n, floor(n/4)) -->
+
 <!-- dat.te <- Boston[ ii, ] -->
+
 <!-- dat.tr <- Boston[ -ii, ] -->
+
 <!-- ``` -->
+
 <!-- I will now train $N = 5$ trees and average their predictions.  -->
+
 <!-- Note that, in order to illustrate the process more -->
+
 <!-- clearly, I will compute and store the $N \times n_e$ -->
+
 <!-- predictions, where $n_e$ denotes the number of observations in  -->
+
 <!-- the test set. This is not the best (most efficient) way of implementing *bagging*, -->
+
 <!-- but the main purpose here is to understand **what** we are doing. Also note that -->
+
 <!-- an alternative (better in terms of reusability of the -->
+
 <!-- ensamble, but maybe still not the most efficient option) would be -->
+
 <!-- to store the $N$ trees directly. This would also allow for -->
+
 <!-- more elegant and easy to read code. Once again, this approach  -->
+
 <!-- will be sacrificed in the altar of clarity of presentation and  -->
+
 <!-- pedagogy (but do try it yourself!) -->
+
 <!-- First create an array where we will store all the predictions: -->
+
 <!-- ```{r bag2, fig.width=5, fig.height=5, message=FALSE, warning=FALSE} -->
+
 <!-- N <- 5 -->
+
 <!-- myps <- array(NA, dim=c(nrow(dat.te), N)) -->
+
 <!-- con <- rpart.control(minsplit=3, cp=1e-3, xval=1) -->
+
 <!-- ``` -->
+
 <!-- The last object (`con`) contains my options to train large -->
+
 <!-- (potentially overfitting) trees.  -->
+
 <!-- ```{r bag3, fig.width=5, fig.height=5, message=FALSE, warning=FALSE} -->
+
 <!-- n.tr <- nrow(dat.tr) -->
+
 <!-- set.seed(123456) -->
+
 <!-- for(j in 1:N) { -->
+
 <!--   ii <- sample(n.tr, replace=TRUE) -->
+
 <!--   tmp <- rpart(medv ~ ., data=dat.tr[ii, ], method='anova', control=con) -->
+
 <!--   myps[,j] <- predict(tmp, newdata=dat.te, type='vector') -->
+
 <!-- } -->
+
 <!-- pr.bagg <- rowMeans(myps) -->
+
 <!-- with(dat.te, mean( (medv - pr.bagg)^2 ) ) -->
+
 <!-- ``` -->
+
 <!-- And compare with predictions from the pruned tree, and the -->
+
 <!-- ones from other predictors discussed in the previous note: -->
+
 <!-- ```{r bag4, fig.width=5, fig.height=5, message=FALSE, warning=FALSE} -->
+
 <!-- myc <- rpart.control(minsplit=3, cp=1e-8, xval=10) -->
+
 <!-- set.seed(123) -->
+
 <!-- bos.to <- rpart(medv ~ ., data=dat.tr, method='anova', -->
+
 <!--                 control=myc) -->
+
 <!-- b <- bos.to$cptable[which.min(bos.to$cptable[,"xerror"]),"CP"] -->
+
 <!-- bos.t3 <- prune(bos.to, cp=b) -->
+
 <!-- pr.t3 <- predict(bos.t3, newdata=dat.te, type='vector') -->
+
 <!-- with(dat.te, mean((medv - pr.t3)^2) ) -->
+
 <!-- ``` -->
+
 <!-- What if we *bagg* $N = 10$ trees?  -->
+
 <!-- ```{r bag10, fig.width=5, fig.height=5, message=FALSE, warning=FALSE, echo=FALSE} -->
+
 <!-- N <- 10 -->
+
 <!-- myps <- array(NA, dim=c(nrow(dat.te), N)) -->
+
 <!-- n.tr <- nrow(dat.tr) -->
+
 <!-- set.seed(123456) -->
+
 <!-- for(j in 1:N) { -->
+
 <!--   ii <- sample(n.tr, replace=TRUE) -->
+
 <!--   tmp <- rpart(medv ~ ., data=dat.tr[ii, ], method='anova', control=con) -->
+
 <!--   myps[,j] <- predict(tmp, newdata=dat.te, type='vector') -->
+
 <!-- } -->
+
 <!-- pr.bagg <- rowMeans(myps) -->
+
 <!-- with(dat.te, mean( (medv - pr.bagg)^2 ) ) -->
+
 <!-- ``` -->
+
 <!-- or $N = 100$ trees?  -->
+
 <!-- ```{r bag100, fig.width=5, fig.height=5, message=FALSE, warning=FALSE, echo=FALSE} -->
+
 <!-- N <- 100 -->
+
 <!-- myps <- array(NA, dim=c(nrow(dat.te), N)) -->
+
 <!-- n.tr <- nrow(dat.tr) -->
+
 <!-- set.seed(123456) -->
+
 <!-- for(j in 1:N) { -->
+
 <!--   ii <- sample(n.tr, replace=TRUE) -->
+
 <!--   tmp <- rpart(medv ~ ., data=dat.tr[ii, ], method='anova', control=con) -->
+
 <!--   myps[,j] <- predict(tmp, newdata=dat.te, type='vector') -->
+
 <!-- } -->
+
 <!-- pr.bagg <- rowMeans(myps) -->
+
 <!-- with(dat.te, mean( (medv - pr.bagg)^2 ) ) -->
+
 <!-- ``` -->
+
 <!-- or $N = 1000$ trees?  -->
+
 <!-- ```{r bag1000, fig.width=5, fig.height=5, message=FALSE, warning=FALSE, echo=FALSE} -->
+
 <!-- N <- 1000 -->
+
 <!-- myps <- array(NA, dim=c(nrow(dat.te), N)) -->
+
 <!-- n.tr <- nrow(dat.tr) -->
+
 <!-- set.seed(123456) -->
+
 <!-- for(j in 1:N) { -->
+
 <!--   ii <- sample(n.tr, replace=TRUE) -->
+
 <!--   tmp <- rpart(medv ~ ., data=dat.tr[ii, ], method='anova', control=con) -->
+
 <!--   myps[,j] <- predict(tmp, newdata=dat.te, type='vector') -->
+
 <!-- } -->
+
 <!-- pr.bagg <- rowMeans(myps) -->
+
 <!-- with(dat.te, mean( (medv - pr.bagg)^2 ) ) -->
+
 <!-- ``` -->
+
 <!-- Should we consider higher values of $N$? How about other -->
+
 <!-- training / test splits? Should we use CV instead?  -->
+
 <!-- Another split: -->
+
 <!-- ```{r anothersplit, fig.width=5, fig.height=5, message=FALSE, warning=FALSE, echo=FALSE} -->
+
 <!-- set.seed(123) -->
+
 <!-- n <- nrow(Boston) -->
+
 <!-- ii <- sample(n, floor(n/4)) -->
+
 <!-- dat.te <- Boston[ ii, ] -->
+
 <!-- dat.tr <- Boston[ -ii, ] -->
+
 <!-- for(N in c(5, 10, 100, 1000)) { -->
+
 <!-- myps <- array(NA, dim=c(nrow(dat.te), N)) -->
+
 <!-- n.tr <- nrow(dat.tr) -->
+
 <!-- set.seed(123456) -->
+
 <!-- for(j in 1:N) { -->
+
 <!--   ii <- sample(n.tr, replace=TRUE) -->
+
 <!--   tmp <- rpart(medv ~ ., data=dat.tr[ii, ], method='anova', control=con) -->
+
 <!--   myps[,j] <- predict(tmp, newdata=dat.te, type='vector') -->
+
 <!-- } -->
+
 <!-- pr.bagg <- rowMeans(myps) -->
+
 <!-- print(c(N, with(dat.te, mean( (medv - pr.bagg)^2 ) ))) -->
+
 <!-- } -->
+
 <!-- ``` -->
+
 <!-- Similar conclusion: increasing $N$ helps, but the improvement  -->
+
 <!-- becomes smaller, while the computational cost keeps increasing.  -->
+
 <!-- ### Bagging a regression spline -->
+
 <!-- Bagging does not provide much of an advantage when applied to linear -->
+
 <!-- predictors (can you explain why?) Nevertheless, let us try it on the `lidar` data,  -->
+
 <!-- which, as we did before, we randomly split into a training and test set: -->
+
 <!-- ```{r bagsplines, fig.width=5, fig.height=5, message=FALSE, warning=FALSE} -->
+
 <!-- data(lidar, package='SemiPar') -->
+
 <!-- set.seed(123456) -->
+
 <!-- n <- nrow(lidar) -->
+
 <!-- ii <- sample(n, floor(n/5)) -->
+
 <!-- lid.te <- lidar[ ii, ] -->
+
 <!-- lid.tr <- lidar[ -ii, ] -->
+
 <!-- ``` -->
+
 <!-- Now fit a cubic spline, and estimate the MSPE using the test set: -->
+
 <!-- ```{r bagsplines2, fig.width=5, fig.height=5, message=FALSE, warning=FALSE} -->
+
 <!-- library(splines) -->
+
 <!-- a <- lm(logratio ~ bs(x=range, df=10, degree=3), data=lid.tr)  -->
+
 <!-- oo <- order(lid.tr$range) -->
+
 <!-- pr.of <- predict(a, newdata=lid.te) -->
+
 <!-- mean( (lid.te$logratio - pr.of)^2 ) -->
+
 <!-- ``` -->
+
 <!-- We build an ensemble of 10 fits and estimate the corresponding -->
+
 <!-- MSPE using the test set: -->
+
 <!-- ```{r bagsplines3, fig.width=5, fig.height=5, message=FALSE, warning=FALSE} -->
+
 <!-- N <- 10 # 5 500 1500 -->
+
 <!-- myps <- matrix(NA, nrow(lid.te), N) -->
+
 <!-- set.seed(123456) -->
+
 <!-- n.tr <- nrow(lid.tr) -->
+
 <!-- for(i in 1:N) { -->
+
 <!--   ii <- sample(n.tr, replace=TRUE) -->
+
 <!--   a.b <- lm(logratio ~ bs(x=range, df=10, degree=3), data=lid.tr[ii,])  -->
+
 <!--   myps[,i] <- predict(a.b, newdata=lid.te) -->
+
 <!-- } -->
+
 <!-- pr.ba <- rowMeans(myps)# , na.rm=TRUE) -->
+
 <!-- mean( (lid.te$logratio - pr.ba)^2 ) -->
+
 <!-- ``` -->
+
 <!-- Using smoothing splines? -->
+
 <!-- ```{r bagsmooth, fig.width=5, fig.height=5, message=FALSE, warning=FALSE} -->
+
 <!-- a <- smooth.spline(x = lid.tr$range, y = lid.tr$logratio, cv = TRUE, all.knots = TRUE) -->
+
 <!-- pr.of <- predict(a, x=lid.te$range)$y -->
+
 <!-- mean( (lid.te$logratio - pr.of)^2 ) -->
+
 <!-- ``` -->
+
 <!-- Using ensemble of 10: -->
+
 <!-- ```{r bagsmooth2, fig.width=5, fig.height=5, message=FALSE, warning=FALSE, echo=FALSE} -->
+
 <!-- N <- 10 # 5 500 1500 -->
+
 <!-- myps <- matrix(NA, nrow(lid.te), N) -->
+
 <!-- set.seed(123456) -->
+
 <!-- n.tr <- nrow(lid.tr) -->
+
 <!-- for(i in 1:N) { -->
+
 <!--   ii <- sample(n.tr, replace=TRUE) -->
+
 <!--   a.b <- smooth.spline(x = lid.tr$range[ii], y = lid.tr$logratio[ii], cv = TRUE, all.knots = TRUE) -->
+
 <!--   myps[,i] <- predict(a.b, x=lid.te$range)$y -->
+
 <!-- } -->
+
 <!-- pr.ba <- rowMeans(myps)# , na.rm=TRUE) -->
+
 <!-- mean( (lid.te$logratio - pr.ba)^2 ) -->
+
 <!-- ``` -->

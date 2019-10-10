@@ -123,38 +123,38 @@ of the alternative methods we have seen in class so far,
 **without using a training / test split**. 
 
 
-#### Why is the pruned tree not a subtree of the "default" one?
+<!-- #### Why is the pruned tree not a subtree of the "default" one? -->
 
-Note that the pruned tree above is not a subtree of the one
-constructed using the default stopping criteria. 
+<!-- Note that the pruned tree above is not a subtree of the one -->
+<!-- constructed using the default stopping criteria.  -->
 
-> This description is outdated. Will be updated soon. In particular, note 
-> that the node to the right of the cut "lstat >= 14.4" is split 
-> with the cut "dis >= 1.385", whereas in the original tree, 
-> the corresponding node was split using "lstat >= 4.91":
-> ```{r prune6, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
-> set.seed(123)
-> bos.t <- rpart(medv ~ ., data=dat.tr, method='anova')
-> plot(bos.t, uniform=FALSE, margin=0.01)
-> text(bos.t, pretty=TRUE)
-> ```
-> 
-> Although "intuitively" one may say that building an overfitting tree
-> means "running the tree algorithm longer" (in other words, relaxing the 
-> stopping rules will just make the splitting algorithm run longer), this 
-> is not the case. The reason for this difference is that one 
-> of the default "stopping" criteria is to set a limit on the minimum 
-> size of a child node. This default limit in `rpart` is 7
-> (`round(20/3)`). When we relaxed the tree building criteria this limit was reduced 
-> (to 1) and thus the "default" tree is not in fact a subtree of the large tree
-> (that is later pruned). In particular, note that 
-> the split "dis >= 1.38485" leaves a node with only 4 observations, 
-> which means that this split would not have been considered
-> when building the "default" tree. You can verify this by inspecting the 
-> pruned tree
-> ```{r prunecheck, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
-> bos.t3
-> ```
+<!-- This description is outdated. Will be updated soon. In particular, note  -->
+<!-- that the node to the right of the cut "lstat >= 14.4" is split  -->
+<!-- with the cut "dis >= 1.385", whereas in the original tree,  -->
+<!-- the corresponding node was split using "lstat >= 4.91": -->
+<!-- ```{r prune6, fig.width=6, fig.height=6, message=FALSE, warning=FALSE} -->
+<!-- set.seed(123) -->
+<!-- bos.t <- rpart(medv ~ ., data=dat.tr, method='anova') -->
+<!-- plot(bos.t, uniform=FALSE, margin=0.01) -->
+<!-- text(bos.t, pretty=TRUE) -->
+<!-- ``` -->
+
+<!-- Although "intuitively" one may say that building an overfitting tree -->
+<!-- means "running the tree algorithm longer" (in other words, relaxing the  -->
+<!-- stopping rules will just make the splitting algorithm run longer), this  -->
+<!-- is not the case. The reason for this difference is that one  -->
+<!-- of the default "stopping" criteria is to set a limit on the minimum  -->
+<!-- size of a child node. This default limit in `rpart` is 7 -->
+<!-- (`round(20/3)`). When we relaxed the tree building criteria this limit was reduced  -->
+<!-- (to 1) and thus the "default" tree is not in fact a subtree of the large tree -->
+<!-- (that is later pruned). In particular, note that  -->
+<!-- the split "dis >= 1.38485" leaves a node with only 4 observations,  -->
+<!-- which means that this split would not have been considered -->
+<!-- when building the "default" tree. You can verify this by inspecting the  -->
+<!-- pruned tree -->
+<!-- ```{r prunecheck, fig.width=6, fig.height=6, message=FALSE, warning=FALSE} -->
+<!-- bos.t3 -->
+<!-- ``` -->
 
 <!-- Note that pruning doesn't always improve a tree. For example,  -->
 <!-- if we prune the first tree we fit in this example: -->
@@ -237,7 +237,25 @@ plot(bos.pr2); text(bos.pr2)
 ```
 
 Compare this pruned tree with the one obtained with the regression trees
-implementation in `rpart`. 
+implementation in `rpart`. In particular, we can compare the
+predictions of this other pruned 
+tree on the test set:
+```{r prune.tree.pred, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+# predictions are worse than the rpart-pruned tree
+pr.tree <- predict(bos.pr2, newdata=dat.te, type='vector')
+with(dat.te, mean((medv - pr.tree)^2) )
+```
+Note that the predictions of the tree pruned with the `tree` 
+package seem to be worse than those of the tree pruned with 
+the `rpart` package. **Does this mean that `rpart` gives
+trees with better predictions than `tree` for data coming
+from the process than generated our training set?** 
+**Or could it all be an artifact of the specific test set we used?**
+**Can you think of an experiment to verify this claim?**
+Again, it would be a **very good exercise** for you to 
+check which fit (`tree` or `rpart`) gives pruned 
+trees with better prediction properties in this case. 
+
 
 
 ## Instability of regression trees 
