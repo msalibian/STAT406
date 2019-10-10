@@ -1,7 +1,7 @@
 STAT406 - Lecture 13 notes
 ================
 Matias Salibian-Barrera
-2018-10-25
+2019-10-10
 
 LICENSE
 -------
@@ -11,7 +11,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-The lecture slides are [here](STAT406-18-lecture-13.pdf).
+The lecture slides will be here. <!-- [here](STAT406-18-lecture-13.pdf). -->
 
 Classification
 ==============
