@@ -51,14 +51,14 @@ library(rpart)
 data(Boston, package='MASS')
 # split data into a training and
 # a test set
-set.seed(123) 
+set.seed(123456) 
 n <- nrow(Boston)
 ii <- sample(n, floor(n/4))
 dat.te <- Boston[ ii, ]
 dat.tr <- Boston[ -ii, ]
 
-myc <- rpart.control(minsplit=2, cp=1e-5, xval=5)
-set.seed(123)
+myc <- rpart.control(minsplit=2, cp=1e-5, xval=10)
+set.seed(123456)
 bos.to <- rpart(medv ~ ., data=dat.tr, method='anova',
                 control=myc)
 plot(bos.to, compress=TRUE) # type='proportional')
@@ -109,8 +109,8 @@ plot(bos.t3, uniform=FALSE, margin=0.01)
 text(bos.t3, pretty=FALSE)
 ```
 
-Finally, we can verify that the predictions of the pruned 
-tree on the test set are better than before:
+Finally, we can check the predictions of the pruned 
+tree on the test set:
 ```{r prune5, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
 # predictions are better
 pr.t3 <- predict(bos.t3, newdata=dat.te, type='vector')
