@@ -1,7 +1,7 @@
 STAT406 - Lecture 12 notes
 ================
 Matias Salibian-Barrera
-2018-10-24
+2019-10-10
 
 #### LICENSE
 
@@ -10,7 +10,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-The lecture slides are [here](STAT406-18-lecture-12.pdf).
+The lecture slides will be here. <!-- are [here](STAT406-18-lecture-12.pdf). -->
 
 Bagging
 -------
@@ -28,7 +28,7 @@ Again, to simplify the discussion and presentation, in order to evaluate predict
 ``` r
 library(rpart)
 data(Boston, package='MASS')
-set.seed(123)
+set.seed(123456)
 n <- nrow(Boston)
 ii <- sample(n, floor(n/4))
 dat.te <- Boston[ ii, ]
@@ -76,13 +76,13 @@ Finally, the estimated MSPE of the bagged ensemble of trees obtained with our sp
 with(dat.te, mean( (medv - pr.bagg)^2 ) )
 ```
 
-    ## [1] 22.50854
+    ## [1] 14.54751
 
 We can now compare this with the similarly estimated MSPE of the pruned tree:
 
 ``` r
-myc <- rpart.control(minsplit=3, cp=1e-8, xval=10)
-set.seed(123)
+myc <- rpart.control(minsplit=2, cp=1e-5, xval=10)
+set.seed(123456)
 bos.to <- rpart(medv ~ ., data=dat.tr, method='anova',
                 control=myc)
 b <- bos.to$cptable[which.min(bos.to$cptable[,"xerror"]),"CP"]
@@ -91,24 +91,24 @@ pr.t3 <- predict(bos.t3, newdata=dat.te, type='vector')
 with(dat.te, mean((medv - pr.t3)^2) )
 ```
 
-    ## [1] 21.22249
+    ## [1] 16.59113
 
 Would the quality of the bagged predictions improve if we use a larger ensemble? For example, what happens if we **bagg** *N* = 10 trees?
 
-    ## [1] 22.78935
+    ## [1] 13.97641
 
 or *N* = 100 trees?
 
-    ## [1] 18.42413
+    ## [1] 12.10982
 
 or *N* = 1000 trees?
 
-    ## [1] 17.70385
+    ## [1] 11.48381
 
 Note that, at least for this test set, increasing the number of bagged trees seems to improve the MSPE. However, the gain appears to decrease, so it may not be worth the computational effort to use a larger **bag** / ensemble. Furthermore, one may also want to investigate whether this is an artifact of this specific training / test partition, or if similar patterns of MSPE are observed for other random training / test splits. Below we try a different test/training split and repeat the bagging experiment above:
 
 ``` r
-set.seed(123456)
+set.seed(1234)
 n <- nrow(Boston)
 ii <- sample(n, floor(n/4))
 dat.te <- Boston[ ii, ]
@@ -133,19 +133,19 @@ print(all.results)
 ```
 
     ##         N     MSPE
-    ## [1,]    5 16.82573
-    ## [2,]   10 14.29633
-    ## [3,]  100 12.98647
-    ## [4,] 1000 12.68876
+    ## [1,]    5 18.27651
+    ## [2,]   10 17.50426
+    ## [3,]  100 14.52966
+    ## [4,] 1000 14.27511
 
-The pattern is in fact similar to the one we observed before: increasing the size of the ensemble *N* helps, but the improvement becomes smaller as *N* increases. A **very good exercise** is to explore what happens with the MSPE of the bagged ensemble (for different values of *N*) when the MSPE is estimated using cross-validation (instead of using this specific test set). Do it!
+The pattern is in fact similar to the one we observed before: increasing the size of the ensemble *N* helps, but the improvements become smaller after a certain value of *N*. You are **strongly encouraged** to verify this by repeating the above experiment with different train/test splits. Furthermore, a **very good exercise** is to explore what happens with the MSPE of the bagged ensembles (for different values of *N*) when the MSPE is estimated using cross-validation (instead of using a specific test set). Do it!
 
 #### More efficient, useful and elegant implementation
 
 I will now illustrate a possibly more efficient way to implement bagging, namely storing the *N* trees (rather than their predictions on a given data set). In this way one can re-use the ensemble (on any future data set) without having to re-train the elements of the **bag**. Since the idea is the same, I will just do it for ensemble of *N* = 100 trees. To simplify the comparison between this implementation of bagging and the one used above, we first re-create the original training / test split
 
 ``` r
-set.seed(123)
+set.seed(123456)
 n <- nrow(Boston)
 ii <- sample(n, floor(n/4))
 dat.te <- Boston[ ii, ]
@@ -183,7 +183,7 @@ for(j in 1:N)
 with(dat.te, mean( (medv - pr.bagg2)^2 ) )
 ```
 
-    ## [1] 18.42413
+    ## [1] 12.10982
 
 (compare it with the results we obtained before). Using the **second approach (sapply)**:
 
@@ -192,7 +192,7 @@ pr.bagg3 <- rowMeans(sapply(mybag, predict, newdata=dat.te))
 with(dat.te, mean( (medv - pr.bagg3)^2 ) )
 ```
 
-    ## [1] 18.42413
+    ## [1] 12.10982
 
 Both results are of course identical.
 
@@ -202,7 +202,7 @@ Bagging does not provide much of an advantage when applied to linear predictors 
 
 ``` r
 data(lidar, package='SemiPar')
-set.seed(123)
+set.seed(123456)
 n <- nrow(lidar)
 ii <- sample(n, floor(n/5))
 lid.te <- lidar[ ii, ]
@@ -219,12 +219,12 @@ pr.of <- predict(a, newdata=lid.te)
 mean( (lid.te$logratio - pr.of)^2 )
 ```
 
-    ## [1] 0.008453251
+    ## [1] 0.007427559
 
 We build an ensemble of 10 fits and estimate the corresponding MSPE using the test set:
 
 ``` r
-N <- 10 # 5 500 1500
+N <- 10 
 myps <- matrix(NA, nrow(lid.te), N)
 set.seed(123)
 n.tr <- nrow(lid.tr)
@@ -237,4 +237,22 @@ pr.ba <- rowMeans(myps)# , na.rm=TRUE)
 mean( (lid.te$logratio - pr.ba)^2 )
 ```
 
-    ## [1] 0.008531253
+    ## [1] 0.007552562
+
+Note that the estimated MSPE is almost the same as the one of the original single spline. Furthermore, adding more elements to the ensemble does not seem to improve the estimated MSPEs:
+
+``` r
+N <- 100
+myps <- matrix(NA, nrow(lid.te), N)
+set.seed(123)
+n.tr <- nrow(lid.tr)
+for(i in 1:N) {
+  ii <- sample(n.tr, replace=TRUE)
+  a.b <- lm(logratio ~ bs(x=range, df=10, degree=3), data=lid.tr[ii,]) 
+  myps[,i] <- predict(a.b, newdata=lid.te)
+}
+pr.ba <- rowMeans(myps)# , na.rm=TRUE)
+mean( (lid.te$logratio - pr.ba)^2 )
+```
+
+    ## [1] 0.0075887

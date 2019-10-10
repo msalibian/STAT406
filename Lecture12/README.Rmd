@@ -17,7 +17,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-The lecture slides are [here](STAT406-18-lecture-12.pdf).
+The lecture slides will be here. <!-- are [here](STAT406-18-lecture-12.pdf). -->
 
 
 ## Bagging
@@ -47,7 +47,7 @@ data (`Boston`) into a training and a test set. We do this now:
 ```{r bag1, fig.width=5, fig.height=5, message=FALSE, warning=TRUE}
 library(rpart)
 data(Boston, package='MASS')
-set.seed(123)
+set.seed(123456)
 n <- nrow(Boston)
 ii <- sample(n, floor(n/4))
 dat.te <- Boston[ ii, ]
@@ -112,8 +112,8 @@ with(dat.te, mean( (medv - pr.bagg)^2 ) )
 We can now compare this with the similarly estimated
 MSPE of the pruned tree: 
 ```{r bag4, fig.width=5, fig.height=5, message=FALSE, warning=TRUE}
-myc <- rpart.control(minsplit=3, cp=1e-8, xval=10)
-set.seed(123)
+myc <- rpart.control(minsplit=2, cp=1e-5, xval=10)
+set.seed(123456)
 bos.to <- rpart(medv ~ ., data=dat.tr, method='anova',
                 control=myc)
 b <- bos.to$cptable[which.min(bos.to$cptable[,"xerror"]),"CP"]
@@ -174,7 +174,7 @@ patterns of MSPE are observed for other random training / test splits.
 Below we try a different test/training split and repeat the 
 bagging experiment above: 
 ```{r anothersplit, fig.width=5, fig.height=5, message=FALSE, warning=TRUE, echo=TRUE}
-set.seed(123456)
+set.seed(1234)
 n <- nrow(Boston)
 ii <- sample(n, floor(n/4))
 dat.te <- Boston[ ii, ]
@@ -198,11 +198,13 @@ for(hh in 1:length(Ns)) {
 print(all.results)
 ```
 The pattern is in fact similar to the one we observed before: 
-increasing the size of the ensemble $N$ helps, but the improvement 
-becomes smaller as $N$ increases. A **very good exercise** is to explore what happens 
-with the MSPE of
-the bagged ensemble (for different values of $N$) when the MSPE is estimated using cross-validation
-(instead of using this specific test set). Do it!
+increasing the size of the ensemble $N$ helps, but the improvements 
+become smaller after a certain value of $N$. 
+You are **strongly encouraged** to verify this by repeating the above experiment 
+with different train/test splits. Furthermore, a **very good exercise** is to explore 
+what happens with the MSPE of the bagged ensembles (for different values of $N$) 
+when the MSPE is estimated using cross-validation
+(instead of using a specific test set). Do it!
 
 
 #### More efficient, useful and elegant implementation  
@@ -216,7 +218,7 @@ To simplify the comparison between this implementation of
 bagging and the one used above, we first re-create
 the original training / test split
 ```{r bag1000.alt0, fig.width=5, fig.height=5, message=FALSE, warning=TRUE}
-set.seed(123)
+set.seed(123456)
 n <- nrow(Boston)
 ii <- sample(n, floor(n/4))
 dat.te <- Boston[ ii, ]
@@ -269,7 +271,7 @@ predictors (can you explain why?) Nevertheless, let us try it on the `lidar` dat
 which, as we did before, we randomly split into a training and test set:
 ```{r bagsplines, fig.width=5, fig.height=5, message=FALSE, warning=TRUE}
 data(lidar, package='SemiPar')
-set.seed(123)
+set.seed(123456)
 n <- nrow(lidar)
 ii <- sample(n, floor(n/5))
 lid.te <- lidar[ ii, ]
@@ -286,7 +288,24 @@ mean( (lid.te$logratio - pr.of)^2 )
 We build an ensemble of 10 fits and estimate the corresponding
 MSPE using the test set:
 ```{r bagsplines3, fig.width=5, fig.height=5, message=FALSE, warning=FALSE}
-N <- 10 # 5 500 1500
+N <- 10 
+myps <- matrix(NA, nrow(lid.te), N)
+set.seed(123)
+n.tr <- nrow(lid.tr)
+for(i in 1:N) {
+  ii <- sample(n.tr, replace=TRUE)
+  a.b <- lm(logratio ~ bs(x=range, df=10, degree=3), data=lid.tr[ii,]) 
+  myps[,i] <- predict(a.b, newdata=lid.te)
+}
+pr.ba <- rowMeans(myps)# , na.rm=TRUE)
+mean( (lid.te$logratio - pr.ba)^2 )
+```
+Note that the estimated MSPE is almost the same as the one of the 
+original single spline. 
+Furthermore, adding more elements to the ensemble does not seem to improve the 
+estimated MSPEs:
+```{r bagsplines4, fig.width=5, fig.height=5, message=FALSE, warning=FALSE}
+N <- 100
 myps <- matrix(NA, nrow(lid.te), N)
 set.seed(123)
 n.tr <- nrow(lid.tr)
