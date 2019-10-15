@@ -1,7 +1,7 @@
 STAT406 - Lecture 9 notes
 ================
 Matias Salibian-Barrera
-2019-10-02
+2019-10-15
 
 #### LICENSE
 
@@ -175,6 +175,15 @@ The range of sensible or acceptable values of the argument `span` in `loess` is 
 
 -   are kernel regression estimators *linear* in the sense of there being a matrix **S** such that the fitted values equal **S y**, where **y** is the vector of responses in the training set, and **S** does not depend on **y**?
 -   use K-fold cross-validation to choose an "optimal" value of `span`.
+
+The problem of outliers and other model departures
+--------------------------------------------------
+
+When the data may contain outliers and/or other atypical observations, the estimation methods discussed above may be seriously affected, even if there are only a few such aberrant data points in the training set (possible outliers in the test / validation set are also a concern, but we don't have time to discuss it here). Some robust estimation methods based on kernel smoothers exist. See for example:
+
+> Boente G, Martínez A, Salibian-Barrera M. Robust estimators for additive models using backfitting. Journal of Nonparametric Statistics. (2017); 29:744-767. <https://doi.org/10.1080/10485252.2017.1369077>.
+
+and references therein. This paper deals with a slightly more complex model (additive model), but when only component exists, it is the same model discussed in class. The [RBF](https://cran.r-project.org/package=RBF) package implementing this method is available from [CRAN](https://cran.r-project.org/package=RBF) and also [here](https://github.com/msalibian/RBF).
 
 <!-- Effect of the degree, now quadratic: -->
 <!-- ```{r kernel3, fig.width=5, fig.height=5, message=FALSE, warning=FALSE} -->

@@ -1,7 +1,7 @@
 STAT406 - Lecture 8 notes
 ================
 Matias Salibian-Barrera
-2019-10-08
+2019-10-15
 
 #### LICENSE
 
@@ -11,7 +11,7 @@ Lecture slides
 --------------
 
 -   Lecture slides are [here](STAT406-18-lecture-8.pdf).
--   [Notes regarding natural cubic splines as a regularized L^2 problem](Natural-cubic-splines-as-regularized-linear-regression.pdf).
+-   [Handwritten notes regarding natural cubic splines as a regularized L^2 problem](Natural-cubic-splines-as-regularized-linear-regression.pdf).
 
 Non-parametric regression
 =========================
@@ -332,3 +332,12 @@ lines(tmp$y ~ tmp$x, lwd = 3, col = "red")
 ```
 
 ![](README_files/figure-markdown_github/smoothing.cv2-1.png)
+
+The problem of outliers and other model departures
+--------------------------------------------------
+
+When the data may contain outliers and/or other atypical observations, the estimation methods discussed above may be seriously affected, even if there are only a few such aberrant data points in the training set (possible outliers in the test / validation set are also a concern, but we don't have time to discuss it here). Some robust estimation methods based on splines exist. See for example:
+
+> Tharmaratnam K, Claeskens G, Croux C, Salibian-Barrera M. S-Estimation for Penalized Regression Splines. Journal of Computational and Graphical Statistics (2010); 19:609-625. <http://dx.doi.org/10.1198/jcgs.2010.08149>
+
+and references therein. Software in `R` implementing this method is available [here](https://github.com/msalibian/PenalizedS).
