@@ -185,13 +185,15 @@ The implementation of trees in the `R` package `tree` follows
 the original CV-based pruning strategy, as discussed in 
 Section 3.4 of the book
 
-> Breiman, Leo. (1984). Classification and regression trees. Wadsworth International Group
+> Breiman, L., Friedman, J.H., Olshen, R.A. and Stone, C.J. (1984). Classification and regression trees. Chapman & Hall.
 
 or Section 7.2 of:
 
 > Ripley, Brian D. (1996). Pattern recognition and neural networks. Cambridge University Press
 
-Both books are available in electronic form from the UBC Library. 
+Both books are available in electronic form from the UBC Library:
+[Breiman et al.](http://tinyurl.com/y3g2femt) and 
+[Ripley, B.D.](http://tinyurl.com/yylchlys).
 
 We now use the function `tree::tree()` to fit the same regression
 tree as above. Note that the default stopping criteria in this
@@ -213,9 +215,10 @@ plot(bos.t2); text(bos.t2)
 As discussed before, we now fit a very large tree, which will be 
 pruned later:
 
-```{r prunetree2, fig.width=6, fig.height=6, message=FALSE, warning=FALSE}
+```{r prunetree2, fig.width=6, fig.height=6, message=FALSE, warning=FALSE, pretty=TRUE}
 set.seed(123)
-bos.to2 <- tree(medv ~ ., data=dat.tr, control=tree.control(nobs=nrow(dat.tr), mincut=1, minsize=2, mindev=1e-5))
+bos.to2 <- tree(medv ~ ., data=dat.tr, 
+                control=tree.control(nobs=nrow(dat.tr), mincut=1, minsize=2, mindev=1e-5))
 plot(bos.to2)
 ```
 
