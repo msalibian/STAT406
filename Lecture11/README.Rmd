@@ -17,7 +17,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-Lecture slides are [here](STAT406-18-lecture-11.pdf). 
+Lecture slides are [here](STAT406-19-lecture-11.pdf). 
 
 ## Pruning regression trees with `rpart`
 
@@ -246,16 +246,15 @@ pr.tree <- predict(bos.pr2, newdata=dat.te, type='vector')
 with(dat.te, mean((medv - pr.tree)^2) )
 ```
 Note that the predictions of the tree pruned with the `tree` 
-package seem to be worse than those of the tree pruned with 
+package seem to be better than those of the tree pruned with 
 the `rpart` package. **Does this mean that `rpart` gives
-trees with better predictions than `tree` for data coming
+trees with worse predictions than `tree` for data coming
 from the process than generated our training set?** 
 **Or could it all be an artifact of the specific test set we used?**
-**Can you think of an experiment to verify this claim?**
+**Can you think of an experiment to check this?**
 Again, it would be a **very good exercise** for you to 
 check which fit (`tree` or `rpart`) gives pruned 
 trees with better prediction properties in this case. 
-
 
 
 ## Instability of regression trees 
