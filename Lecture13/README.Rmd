@@ -17,7 +17,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-The lecture slides will be here. <!-- [here](STAT406-18-lecture-13.pdf). -->
+The lecture slides are [here](STAT406-19-lecture-13.pdf). 
 
 # Classification
 
@@ -36,15 +36,15 @@ value of the observed explanatory variables.
 Most (if not all) classification methods we will cover in this course can be
 simply thought of as different approaches to estimate the conditional probability of
 each class, conditional on the value of the explanatory variables. In 
-symbols: $P( \mathbf{G} = \mathbf{g} \, | \, \mathbf{X} = \mathbf{x}_0)$.
+symbols: `P( G = g | X = x_0)`.
 The obvious parallel with what we have done before in this class,
 is that many (all?) regression methods we discussed in class are 
 different ways of estimating the conditional mean of the response 
 variable (conditional on the value of the explanatory
 variables). Here we are
-in fact estimating the whole conditional distribution of $\mathbf{G}$
-given $\mathbf{X} = \mathbf{x}_0$; 
-in symbols: $\left. \mathbf{G} \, \right| \, \mathbf{X} = \mathbf{x}_0$.
+in fact estimating the whole conditional distribution of `G`
+given `X = x_0`; 
+in symbols: `G | X = x_0`.
 
 As in the regression case, there are different ways to estimate this
 optimal predictor / classifier. Some will be model-based, some will
@@ -65,12 +65,12 @@ classification trees) will be discussed later.
 Probably the "second easiest approach"to estimate the above probability 
 (what would be the easiest one?) is to model the distribution of 
 the explanatory variables **within** each class (that is, to 
-model the distribution of $\mathbf{X} \, | \, \mathbf{G} = \mathbf{g}$
-for each possible class $\mathbf{g}$). 
+model the distribution of `X | G = g`
+for each possible class `g`). 
 These conditional distributions will then uniquely determine the 
 probabilities we need to estimate, as discussed above and in class. 
 In particular, one the simplest models we can use 
-for $\mathbf{X} \, | \, \mathbf{G} = \mathbf{g}$
+for `X | G = g`
 is a Normal (Gaussian) multivariate distribution. 
 As we saw in class, if we assume that the distribution of the features
 for each class is Gaussian with a common covariance matrix across clases, then
@@ -79,7 +79,7 @@ classifier (using the 0-1 loss function mentioned above) is a linear
 function of the explanatory variables. The coefficients of this linear
 function depend on the parameters of the assumed Gaussian distributions, 
 which can be estimated using MLE on the training set. Plugging these
-parameter estimates in $P( \mathbf{G} = \mathbf{g} \, | \, \mathbf{X})$ 
+parameter estimates in `P( G = g | X)` 
 provides a natural estimator of each of these conditional probabilities, 
 and thus we can compute an approximation to the optimal classifier. 
 
@@ -143,16 +143,16 @@ On the plot above higher numbers are shown with lighther colors
 This model-based approach to classification (LDA) is optimal
 if the model is correct. The strongest assumption of this model
 is, of course, the Gaussian conditional distribution of the vector of 
-explanatory variables: $\mathbf{X} \, | \, \mathbf{G} = \mathbf{g} \, \sim \, N( \mathbf{\mu}, \mathbf{\Sigma})$. 
+explanatory variables: `X | G = g` has a `N( mu, Sigma)` distribution. 
 The second strongest assumption is
 that of equal "shape" (in other words, that the covariance matrix
-$\mathbf{\Sigma}$ above does not depend on $\mathbf{g}$). This latter assumption 
+`Sigma` above does not depend on `g`). This latter assumption 
 can be relaxed slightly if
 we assume instead that the features have a Gaussian distribution within each
 class, but that the covariance matrix may be different across 
 classes. 
 In symbols, if we assume that 
-$\mathbf{X} \, | \, \mathbf{G} = \mathbf{g} \, \sim \, N( \mathbf{\mu}, \mathbf{\Sigma}_{\mathbf{g}})$.
+`X | G = g` has a `N( mu, Sigma_g)` distribution.
 The corresponding optimal classifier is now a quadratic
 function of the predictors (**prove it!**). The function `qda` 
 in the `MASS` library implements this classifier, and it
