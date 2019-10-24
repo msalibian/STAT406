@@ -1,7 +1,7 @@
 STAT406 - Lecture 15 notes
 ================
 Matias Salibian-Barrera
-2018-11-01
+2019-10-24
 
 LICENSE
 -------
@@ -11,7 +11,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-Lecture slides are [here](STAT406-18-lecture-15.pdf).
+Lecture slides are [here](STAT406-19-lecture-15.pdf).
 
 #### Instability of trees
 
@@ -182,7 +182,7 @@ for(j in 1:NB) {
 ```
 
     ##   1   2   3 
-    ## 900   0 100
+    ## 909   0  91
 
 And we see that the class most voted is 1.
 
@@ -195,7 +195,7 @@ table(votes2)
 
     ## votes2
     ##   1   2   3 
-    ## 900   0 100
+    ## 909   0  91
 
 #### Average probabilities (over the ensemble)
 
@@ -206,7 +206,7 @@ votes2 <- sapply(ts, FUN=function(a, newx) predict(a, newdata=newx, type='prob')
 ( rowMeans(votes2) )
 ```
 
-    ## [1] 0.9007797587 0.0001445378 0.0990757034
+    ## [1] 0.90881555 0.00000000 0.09118445
 
 And again, we see that class `1` has a much higher probability of occuring for this point.
 

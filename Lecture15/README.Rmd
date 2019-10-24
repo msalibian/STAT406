@@ -17,7 +17,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-Lecture slides are [here](STAT406-18-lecture-15.pdf).
+Lecture slides are [here](STAT406-19-lecture-15.pdf).
 
 
 #### Instability of trees
