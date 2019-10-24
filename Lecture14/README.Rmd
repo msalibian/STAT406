@@ -17,7 +17,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-The lecture slides are [here](STAT406-18-lecture-14.pdf). Additional notes about
+The lecture slides are [here](STAT406-19-lecture-14.pdf). Additional notes about
 model-based classification are [here](model-based-classification.pdf).
 
 ## QDA

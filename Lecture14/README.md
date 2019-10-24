@@ -1,7 +1,7 @@
 STAT406 - Lecture 14 notes
 ================
 Matias Salibian-Barrera
-2018-10-30
+2019-10-24
 
 LICENSE
 -------
@@ -11,7 +11,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-The lecture slides are [here](STAT406-18-lecture-14.pdf). Additional notes about model-based classification are [here](model-based-classification.pdf).
+The lecture slides are [here](STAT406-19-lecture-14.pdf). Additional notes about model-based classification are [here](model-based-classification.pdf).
 
 QDA
 ---
@@ -385,14 +385,14 @@ table(u10, x.te$V1)
     ##    
     ## u10   1   3   8
     ##   1 261   1   3
-    ##   3   3 162   9
-    ##   8   0   3 154
+    ##   3   3 163  12
+    ##   8   0   2 151
 
 ``` r
 mean( u10 != x.te$V1 )
 ```
 
-    ## [1] 0.03187919
+    ## [1] 0.0352349
 
 ``` r
 u50 <- knn(train=x.tr[,-1], cl=x.tr[,1], test=x.te[, -1], k=50)
@@ -401,15 +401,15 @@ table(u50, x.te$V1)
 
     ##    
     ## u50   1   3   8
-    ##   1 261   2   6
-    ##   3   3 160  18
-    ##   8   0   4 142
+    ##   1 261   2   7
+    ##   3   3 159  18
+    ##   8   0   5 141
 
 ``` r
 mean( u50 != x.te$V1 )
 ```
 
-    ## [1] 0.05536913
+    ## [1] 0.05872483
 
 Note how the performance of the K-NN classifier in this case stops improving when K is larger than 5. Since the number *K* of nearest neighbours is in fact a tuning constant that needs to be chosen by the user, how would do it in an objective way? What would you do if you didn't have a test set available?
 
