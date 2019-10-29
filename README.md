@@ -49,7 +49,7 @@ in advance, as it may have changed.
 * Week 12 (L19/20): Unsupervised learning, K-means, model-based clustering
 	* Sections 10.3 from [JWHT13]
 	* Sections 13.2, 14.3 from [HTF09]
-* Week 13 (L21/L22): Hierarchical clustering, Principal Components, Multidimensional Scaling
+* Week 13 (L21/MT4): Hierarchical clustering, Principal Components, Multidimensional Scaling
 	* Sections 10.2, 10.3 from [JWHT13]
 	* Sections 8.5, 14.3, 14.5.1, 14.8, 14.9 from [HTF09]
 
