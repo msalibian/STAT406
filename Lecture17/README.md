@@ -1,7 +1,7 @@
 STAT406 - Lecture 17 notes
 ================
 Matias Salibian-Barrera
-2018-11-13
+2019-10-31
 
 LICENSE
 -------
@@ -11,7 +11,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-Lecture slides are [here](STAT406-18-lecture-17.pdf).
+Lecture slides are [here](STAT406-19-lecture-17.pdf).
 
 Boosting (a Statistical Learning perspective)
 =============================================
