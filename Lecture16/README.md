@@ -11,7 +11,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-The lecture slides are [here](STAT406-18-lecture-16.pdf).
+The lecture slides are [here](STAT406-19-lecture-16.pdf).
 
 #### Instability of trees
 
