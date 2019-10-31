@@ -1,7 +1,7 @@
 STAT406 - Lecture 15 notes
 ================
 Matias Salibian-Barrera
-2019-10-24
+2019-10-31
 
 LICENSE
 -------
@@ -13,262 +13,115 @@ Lecture slides
 
 Lecture slides are [here](STAT406-19-lecture-15.pdf).
 
-#### Instability of trees
+Classification Trees
+--------------------
 
-Just like in the regression case, classification trees can be highly unstable (specifically: relatively small changes in the training set may result in comparably large changes in the corresponding tree). We illustrate the problem on the very simple graduate school admissions example (3-class 2-dimensional covariates) we used in class. First read the data:
+Just as in the continuous regression case, when the number of available explanatory variables is moderate or large, methods like nearest neighbours quickly become unfeasible, or their performance is not satisfactory. Classification trees provide a good alternative: they are still model-free (we do not need to assume anything about the true conditional probabilities of each class for a given vector of features **X**), but they are constrained to have a fairly specifc form. Intuitively (and informally) we could say (if nobody was listening) that this restriction provides some form of regularization or penalization.
+
+Classification trees are constructed in much the same was as regression trees. We will construct a partition of the feature space (in "rectangular" areas), and within each region we will predict the class to be the most common class among the training points that are in that region. It is reasonable then to try to find a partition of the feature space so that in each area there is only one class (or at least, such that one class clearly dominates the others in that region). Hence, to build a classification tree we need a quantitative measure of the homogeneity of the classes present in a node. Given such a numerical measure, we can build the tree by selecting, at each step, the optimal split in the sense of yielding the most homogeneous child leaves possible (i.e. by maximizing at each step the chosen homogeneity measure). The two most common homogeneity measures are the Gini Index and the deviance (refer to the discussion in class). Although the resulting trees are generally different depending on which loss function is used, we will later see that this difference is not critical in practice.
+
+As usual, in order to be able to visualize what is going on, we will illustrate the training and use of classification trees on a simple toy example. This example contains data on admissions to graduate school. There are 2 explanatory variables (GPA and GMAT scores), and the response has 3 levels: Admitted, No decision, Not admitted. The purpose here is to build a classifier to decide if a student will be admitted to graduate school based on her/his GMAT and GPA scores.
+
+We first read the data, convert the response into a proper `factor` variable, and visualize the training set:
 
 ``` r
-mm <- read.table('../Lecture14/T11-6.DAT', header=FALSE)
-```
-
-We transform the response variable `V3` into a factor (which is how class labels are represented in `R`, and what `rpart()` expects as the values in the response variable to build a classifier):
-
-``` r
+mm <- read.table('T11-6.DAT', header=FALSE)
 mm$V3 <- as.factor(mm$V3)
-```
-
-To obtain better looking plots later, we now re-scale one of the features (so both explanatory variables have similar ranges):
-
-``` r
+# re-scale one feature, for better plots
 mm[,2] <- mm[,2] / 150
+plot(mm[,1:2], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]], 
+xlab='GPA', 'GMAT', xlim=c(2,5), ylim=c(2,5))
 ```
 
-We use the function `rpart` to train a classification tree on these data, using deviance-based (`information`) splits:
+![](README_files/figure-markdown_github/trees1-1.png)
+
+Next we build a classification tree using the Gini index as splitting criterion.
 
 ``` r
 library(rpart)
+a.t <- rpart(V3~V1+V2, data=mm, method='class', parms=list(split='gini'))
+plot(a.t, margin=0.05)
+text(a.t, use.n=TRUE)
+```
+
+![](README_files/figure-markdown_github/trees2-1.png)
+
+If we use the deviance as splitting criterion instead, we obtain the following classification tree (also using the default stopping criteria):
+
+``` r
 a.t <- rpart(V3~V1+V2, data=mm, method='class', parms=list(split='information'))
+plot(a.t, margin=0.05)
+text(a.t, use.n=TRUE)
 ```
 
-To illustrate the instability of this tree (i.e. how the tree changes when the data are perturbed slightly), we create a new training set (`mm2`) that is identical to the original one (in `mm`), except for two observations where we change their responses from class `1` to class `2`:
+![](README_files/figure-markdown_github/trees3-1.png)
 
-``` r
-mm2 <- mm
-mm2[1,3] <- 2
-mm2[7,3] <- 2
-```
-
-The following plot contains the new training set, with the two changed observations (you can find them around the point `(GPA, GMAT) = (3, 4)`) highlighted with a blue dot (their new class) and a red ring around them (their old class was "red"):
-
-``` r
-plot(mm2[,1:2], pch=19, cex=1.5, col=c("red", "blue", "green")[mm2[,3]],
-     xlab='GPA', 'GMAT', xlim=c(2,5), ylim=c(2,5))
-points(mm[c(1,7),-3], pch='O', cex=1.1, col=c("red", "blue", "green")[mm[c(1,7),3]])
-```
-
-![](README_files/figure-markdown_github/inst2-1.png)
-
-As we did above, we now train a classification tree on the perturbed data in `mm2`:
-
-``` r
-a2.t <- rpart(V3~V1+V2, data=mm2, method='class', parms=list(split='information'))
-```
-
-To visualize the differences between the two trees we build a fine grid of points and compare the predicted probabilities of each class on each point on the grid. First, construct the grid:
+The predicted conditional probabilities for each class on the range of values of the explanatory variables present on the training set can be visualized exactly as before:
 
 ``` r
 aa <- seq(2, 5, length=200)
 bb <- seq(2, 5, length=200)
 dd <- expand.grid(aa, bb)
 names(dd) <- names(mm)[1:2]
-```
-
-Now, compute the estimated conditional probabilities of each of the 3 classes on each of the 40,000 points on the grid `dd`:
-
-``` r
 p.t <- predict(a.t, newdata=dd, type='prob')
-p2.t <- predict(a2.t, newdata=dd, type='prob')
 ```
 
-The next figures show the estimated probabilities of class "red" with each of the two trees:
+We display the estimated conditional probabilities for each class:
 
 ``` r
 filled.contour(aa, bb, matrix(p.t[,1], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
-plot.axes={axis(1); axis(2)}, 
-panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])})
-```
-
-![](README_files/figure-markdown_github/inst2.2-1.png)
-
-``` r
-filled.contour(aa, bb, matrix(p2.t[,1], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
-plot.axes={axis(1); axis(2)},
-panel.last={points(mm2[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm2[,3]]);
-points(mm[c(1,7),-3], pch='O', cex=1.1, col=c("red", "blue", "green")[mm[c(1,7),3]])
-})
-```
-
-![](README_files/figure-markdown_github/inst2.2-2.png)
-
-Similarly, the estimated conditional probabilities for class "blue" at each point of the grid are:
-
-``` r
-# blues
-filled.contour(aa, bb, matrix(p.t[,2], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
-plot.axes={axis(1); axis(2)}, 
-panel.last={ points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])})
-```
-
-![](README_files/figure-markdown_github/kk-1.png)
-
-``` r
-filled.contour(aa, bb, matrix(p2.t[,2], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
-plot.axes={axis(1); axis(2)},
-pane.last={points(mm2[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm2[,3]]);
-points(mm[c(1,7),-3], pch='O', cex=1.1, col=c("red", "blue", "green")[mm[c(1,7),3]])
-})
-```
-
-![](README_files/figure-markdown_github/kk-2.png)
-
-And finally, for class "green":
-
-``` r
-# greens
-filled.contour(aa, bb, matrix(p.t[,3], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
-plot.axes={axis(1); axis(2)}, panel.last={ points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])})
-```
-
-![](README_files/figure-markdown_github/kk2-1.png)
-
-``` r
-filled.contour(aa, bb, matrix(p2.t[,3], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
-plot.axes={axis(1); axis(2)},
-pane.last={points(mm2[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm2[,3]]);
-points(mm[c(1,7),-3], pch='O', cex=1.1, col=c("red", "blue", "green")[mm[c(1,7),3]])
-})
-```
-
-![](README_files/figure-markdown_github/kk2-2.png)
-
-Note that, for example, the regions of the feature space (the explanatory variables) that would be classified as "red" or "green" for the trees trained with the original and the slightly changed training sets change quite noticeably, even though the difference in the training sets is relatively small. Below we show how an ensemble of classifiers constructed via bagging can provide a more stable classifier.
-
-Bagging
-=======
-
-Just as we did for regression, bagging consists of building an ensemble of predictors (in this case, classifiers) using bootstrap samples. If we using *B* bootstrap samples, we will construct *B* classifiers, and given a point **x**, we now have *B* estimated conditional probabilities for each of the possible *K* classes. Unlike what happens with regression problems, we now have a choice to make when deciding how to combine the *B* outputs for each point. We can take either: a majority vote over the *B* separate decisions, or we can average the *B* estimated probabilities for the *K* classes, to obtain bagged estimated conditional probabilities. As discussed and illustrated in class, the latter approach is usually preferred.
-
-To illustrate the increased stability of bagged classification trees, we repeat the experiment above: we build an ensemble of 1000 classification trees trained on the original data, and a second ensemble (also of 1000 trees) using the slightly modified data. Each ensemble is constructed in exactly the same way we did in the regression case. For the first ensemble we train `NB = 1000` trees and store them in a list (called `ts`) for future use:
-
-``` r
-my.c <- rpart.control(minsplit=3, cp=1e-6, xval=10)
-NB <- 1000
-ts <- vector('list', NB)
-set.seed(123)
-n <- nrow(mm)
-for(j in 1:NB) {
-  ii <- sample(1:n, replace=TRUE)
-  ts[[j]] <- rpart(V3~V1+V2, data=mm[ii,], method='class', parms=list(split='information'), control=my.c)
-}
-```
-
-### Using the ensemble
-
-As discussed in class, there are two possible ways to use this ensemble given a new observation: we can classify it to the class with most votes among the *B* bagged classifiers, or we can compute the average conditional probabilities over the *B* classifiers, and use this average as our esimated conditional probability. We illustrate both of these with the point `(GPA, GMAT) = (3.3, 3.0)`.
-
-#### Majority vote
-
-The simplest, but less elegant way to compute the votes for each class across the *B* trees in the ensemble is to loop over them and count:
-
-``` r
-x0 <- t( c(V1=3.3, V2=3.0) )
-votes <- vector('numeric', 3)
-names(votes) <- 1:3
-for(j in 1:NB) {
-  k <- predict(ts[[j]], newdata=data.frame(x0), type='class')
-  votes[k] <- votes[k] + 1
-}
-(votes)
-```
-
-    ##   1   2   3 
-    ## 909   0  91
-
-And we see that the class most voted is 1.
-
-The above calculation can be made more elegantly with the function `sapply` (or `lapply`):
-
-``` r
-votes2 <- sapply(ts, FUN=function(a, newx) predict(a, newdata=newx, type='class'), newx=data.frame(x0) )
-table(votes2)
-```
-
-    ## votes2
-    ##   1   2   3 
-    ## 909   0  91
-
-#### Average probabilities (over the ensemble)
-
-If we wanted to compute the average of the conditional probabilities across the *B* different estimates, we could do it in a very similar way. Here I show how to do it using `sapply`. You are strongly encouraged to verify these calculations by computing the average of the conditional probabilities using a for-loop.
-
-``` r
-votes2 <- sapply(ts, FUN=function(a, newx) predict(a, newdata=newx, type='prob'), newx=data.frame(x0) )
-( rowMeans(votes2) )
-```
-
-    ## [1] 0.90881555 0.00000000 0.09118445
-
-And again, we see that class `1` has a much higher probability of occuring for this point.
-
-### Increased stability of ensembles
-
-To illustrate that ensembles of tree-based classifiers tend to be more stable than a single tree, we construct another example, but this time using the slightly modified data. The ensemble is stored in the list `ts2`:
-
-``` r
-mm2 <- mm
-mm2[1,3] <- 2
-mm2[7,3] <- 2
-NB <- 1000
-ts2 <- vector('list', NB)
-set.seed(123)
-n <- nrow(mm)
-for(j in 1:NB) {
-  ii <- sample(1:n, replace=TRUE)
-  ts2[[j]] <- rpart(V3~V1+V2, data=mm2[ii,], method='class', parms=list(split='information'), control=my.c)
-}
-```
-
-We use the same fine grid as before to show the estimated conditional probabilities, this time obtained with the two ensembles.
-
-``` r
-aa <- seq(2, 5, length=200)
-bb <- seq(2, 5, length=200)
-dd <- expand.grid(aa, bb)
-names(dd) <- names(mm)[1:2]
-```
-
-To combine (average) the `NB = 1000` estimated probabilities of each of the 3 classes for each of the 40,000 points in the grid `dd` I use the function `vapply` and store the result in a 3-dimensional array. The averaged probabilities over the 1000 bagged trees can then obtained by averaging across the 3rd dimension. This approach may not be intuitively very clear at first sight. *You are strongly encouraged to ignore my code below and compute the bagged conditional probabilites for the 3 classes for each point in the grid in a way that is clear to you*. The main goal is to understand the method and be able to do it on your own. Efficient and / or elegant code can be written later, but it is not the focus of this course. The ensemble of trees trained with the original data:
-
-``` r
-pp0 <- vapply(ts, FUN=predict, FUN.VALUE=matrix(0, 200*200, 3), newdata=dd, type='prob')
-pp <- apply(pp0, c(1, 2), mean)
-```
-
-And the ensemble of trees trained with the slightly modified data:
-
-``` r
-pp02 <- vapply(ts2, FUN=predict, FUN.VALUE=matrix(0, 200*200, 3), newdata=dd, type='prob')
-pp2 <- apply(pp02, c(1, 2), mean)
-```
-
-The plots below show the estimated conditional probabilities for class "red" in each point of the grid, with each of the two ensembles. Note how similar they are (and contrast this with the results obtained before without bagging):
-
-``` r
-filled.contour(aa, bb, matrix(pp[,3], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
-               plot.axes={axis(1); axis(2)},
-                 panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])})
-```
-
-![](README_files/figure-markdown_github/bag1.plot-1.png)
-
-``` r
-filled.contour(aa, bb, matrix(pp2[,3], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
-               plot.axes={axis(1); axis(2)},
-                 panel.last={points(mm2[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm2[,3]]);
-                 points(mm[c(1,7),-3], pch='O', cex=1.2, col=c("red", "blue", "green")[mm[c(1,7),3]])
+               panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])
                })
 ```
 
-![](README_files/figure-markdown_github/bag1.plot-2.png)
+![](README_files/figure-markdown_github/trees5-1.png)
 
-You are strongly encouraged to obtain the corresponding plots comparing the estimated conditional probabilities with both ensembles for each of the other 2 classes ("blue" and "green").
+``` r
+filled.contour(aa, bb, matrix(p.t[,2], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
+               panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])
+               })
+```
+
+![](README_files/figure-markdown_github/trees5-2.png)
+
+``` r
+filled.contour(aa, bb, matrix(p.t[,3], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
+               panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])
+               })
+```
+
+![](README_files/figure-markdown_github/trees5-3.png)
+
+#### Pruning
+
+Just like regression trees, classification trees generally perform better if they are built by pruning an overfitting one. This is done in the same way as it is done for classification trees. When we do it on the graduate school admissions data we indeed obtain estimated conditional probabilities that appear to be more sensible (less "simple"):
+
+``` r
+set.seed(123)
+a.t <- rpart(V3~V1+V2, data=mm, method='class', control=rpart.control(minsplit=3, cp=1e-8, xval=10),
+             parms=list(split='information'))
+b <- a.t$cptable[which.min(a.t$cptable[,"xerror"]),"CP"]
+a.t <- prune(a.t, cp=b)
+p.t <- predict(a.t, newdata=dd, type='prob')
+filled.contour(aa, bb, matrix(p.t[,1], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
+               panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])
+               })
+```
+
+![](README_files/figure-markdown_github/trees7-1.png)
+
+``` r
+filled.contour(aa, bb, matrix(p.t[,2], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
+               panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])
+               })
+```
+
+![](README_files/figure-markdown_github/trees7-2.png)
+
+``` r
+filled.contour(aa, bb, matrix(p.t[,3], 200, 200), col=terrain.colors(20), xlab='GPA', ylab='GMAT',
+               panel.last={points(mm[,-3], pch=19, cex=1.5, col=c("red", "blue", "green")[mm[,3]])
+               })
+```
+
+![](README_files/figure-markdown_github/trees7-3.png)
