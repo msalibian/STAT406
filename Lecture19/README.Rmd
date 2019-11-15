@@ -17,7 +17,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-Lecture slides are [here](STAT406-18-lecture-19.pdf).
+Lecture slides are [here](STAT406-19-lecture-19.pdf).
 
 # Unsupervised learning
 
@@ -271,10 +271,10 @@ have been grouped together in each of the 8 clusters:
 ```{r nci2, fig.width=6, fig.height=6, message=FALSE, warning=FALSE, tidy=TRUE}
 sapply(split(colnames(nci), a$cluster), table)
 ```
-Note that clusters 2, 3, 5, 6 and 7 are dominated by one type of cancer. 
-Similarly, almost all melanoma and renal samples are in clusters 7 and 6, 
-respectively, while all CNS samples are in cluster 2. Cluster 4 is
-harder to interpret. Although all ovarian cancer samples are in this
+Note that clusters 3, 4, 6 and 7 are dominated by one type of cancer. 
+Similarly, almost all melanoma and renal samples are in clusters 7 and 8, 
+respectively, while all CNS samples are in cluster 4. Cluster 5 is
+harder to interpret. Although all but one ovarian cancer samples are in this
 cluster, it also contains 2/3 of the NSCLC samples. It may be of interest
 to compare these results with those using different numbers of clusters. 
 

@@ -1,7 +1,7 @@
 STAT406 - Lecture 19 notes
 ================
 Matias Salibian-Barrera
-2018-11-20
+2019-11-15
 
 LICENSE
 -------
@@ -11,7 +11,7 @@ These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 
 Lecture slides
 --------------
 
-Lecture slides are [here](STAT406-18-lecture-19.pdf).
+Lecture slides are [here](STAT406-19-lecture-19.pdf).
 
 Unsupervised learning
 =====================
@@ -56,7 +56,7 @@ table(b$cluster)
 
     ## 
     ##  1  2  3  4  5 
-    ## 18  2  7 19 31
+    ## 26  2 15  9 25
 
 If we run `kmeans` again, we might get a different partition:
 
@@ -67,7 +67,7 @@ table(b$cluster)
 
     ## 
     ##  1  2  3  4  5 
-    ## 27 12 13  7 18
+    ## 27 13 12  5 20
 
 It is better to consider a large number of random starts and take the **best** found solution (what does *best* mean in this context? in other words, how does the algorithm decide which one is the solution it should return?)
 
@@ -78,14 +78,6 @@ split(colnames(X2), b$cluster)
 ```
 
     ## $`1`
-    ##  [1] "Argentina"  "Bahamas"    "Brazil"     "Chile"      "Colombia"  
-    ##  [6] "Costa.Rica" "Mexico"     "Panama"     "Paraguay"   "Peru"      
-    ## [11] "Uruguay"   
-    ## 
-    ## $`2`
-    ## [1] "Israel" "USA"   
-    ## 
-    ## $`3`
     ##  [1] "Bolivia"             "Botswana"            "Burkina.Faso"       
     ##  [4] "Ecuador"             "Ethiopia"            "Ghana"              
     ##  [7] "Guyana"              "Jamaica"             "Jordan"             
@@ -94,21 +86,29 @@ split(colnames(X2), b$cluster)
     ## [16] "Sri.Lanka"           "Tanzania"            "Thailand"           
     ## [19] "Togo"                "Trinidad.and.Tobago" "Zambia"             
     ## 
-    ## $`4`
-    ##  [1] "Algeria"              "Bangladesh"           "Belarus"             
-    ##  [4] "Brunei.Darussalam"    "China"                "Cuba"                
-    ##  [7] "Egypt"                "India"                "Indonesia"           
-    ## [10] "Kuwait"               "Libya"                "Malaysia"            
-    ## [13] "Pakistan"             "Russian.Federation"   "Sudan"               
-    ## [16] "Syrian.Arab.Republic" "Venezuela"           
+    ## $`2`
+    ##  [1] "Argentina"  "Bahamas"    "Brazil"     "Chile"      "Colombia"  
+    ##  [6] "Costa.Rica" "Mexico"     "Panama"     "Paraguay"   "Peru"      
+    ## [11] "Uruguay"   
     ## 
-    ## $`5`
+    ## $`3`
     ##  [1] "Australia"   "Austria"     "Belgium"     "Bulgaria"    "Canada"     
     ##  [6] "Cyprus"      "Denmark"     "Finland"     "France"      "Greece"     
     ## [11] "Hungary"     "Iceland"     "Ireland"     "Italy"       "Japan"      
     ## [16] "Luxembourg"  "Malta"       "Netherlands" "New.Zealand" "Norway"     
     ## [21] "Poland"      "Portugal"    "Spain"       "Sweden"      "UK"         
-    ## [26] "Ukraine"
+    ## [26] "Ukraine"    
+    ## 
+    ## $`4`
+    ## [1] "Israel" "USA"   
+    ## 
+    ## $`5`
+    ##  [1] "Algeria"              "Bangladesh"           "Belarus"             
+    ##  [4] "Brunei.Darussalam"    "China"                "Cuba"                
+    ##  [7] "Egypt"                "India"                "Indonesia"           
+    ## [10] "Kuwait"               "Libya"                "Malaysia"            
+    ## [13] "Pakistan"             "Russian.Federation"   "Sudan"               
+    ## [16] "Syrian.Arab.Republic" "Venezuela"
 
 It may be better to look at the groups on a map:
 
@@ -166,7 +166,7 @@ table(b$cluster)
 
     ## 
     ##  1  2  3 
-    ## 16 33 28
+    ## 16 28 33
 
 An better visualization is done using the map. interesting We plot the 3 groups found by `pam` on the map, followed by those found by K-means:
 
@@ -282,7 +282,7 @@ table(a$cluster)
 
     ## 
     ##  1  2  3  4  5  6  7  8 
-    ##  3  8  5 14  6 15  9  4
+    ##  3  4  5  8 14  6  9 15
 
 Note that in this application we do know the group to which each observation belongs (its cancer type). We can look at the cancer types that have been grouped together in each of the 8 clusters:
 
@@ -297,8 +297,8 @@ sapply(split(colnames(nci), a$cluster), table)
     ## 
     ## $`2`
     ## 
-    ## BREAST    CNS  RENAL 
-    ##      2      5      1 
+    ##      BREAST MCF7A-repro MCF7D-repro 
+    ##           2           1           1 
     ## 
     ## $`3`
     ## 
@@ -307,18 +307,18 @@ sapply(split(colnames(nci), a$cluster), table)
     ## 
     ## $`4`
     ## 
-    ##    COLON    NSCLC  OVARIAN PROSTATE 
-    ##        1        6        5        2 
+    ## BREAST    CNS  RENAL 
+    ##      2      5      1 
     ## 
     ## $`5`
     ## 
-    ## COLON 
-    ##     6 
+    ##    COLON    NSCLC  OVARIAN PROSTATE 
+    ##        1        6        5        2 
     ## 
     ## $`6`
     ## 
-    ##   BREAST MELANOMA    NSCLC  OVARIAN    RENAL  UNKNOWN 
-    ##        1        1        3        1        8        1 
+    ## COLON 
+    ##     6 
     ## 
     ## $`7`
     ## 
@@ -327,10 +327,10 @@ sapply(split(colnames(nci), a$cluster), table)
     ## 
     ## $`8`
     ## 
-    ##      BREAST MCF7A-repro MCF7D-repro 
-    ##           2           1           1
+    ##   BREAST MELANOMA    NSCLC  OVARIAN    RENAL  UNKNOWN 
+    ##        1        1        3        1        8        1
 
-Note that clusters 2, 3, 5, 6 and 7 are dominated by one type of cancer. Similarly, almost all melanoma and renal samples are in clusters 7 and 6, respectively, while all CNS samples are in cluster 2. Cluster 4 is harder to interpret. Although all ovarian cancer samples are in this cluster, it also contains 2/3 of the NSCLC samples. It may be of interest to compare these results with those using different numbers of clusters.
+Note that clusters 3, 4, 6 and 7 are dominated by one type of cancer. Similarly, almost all melanoma and renal samples are in clusters 7 and 8, respectively, while all CNS samples are in cluster 4. Cluster 5 is harder to interpret. Although all but one ovarian cancer samples are in this cluster, it also contains 2/3 of the NSCLC samples. It may be of interest to compare these results with those using different numbers of clusters.
 
 Finally, we will compare this partition (obtained with the usual K-means algorithm started from `100` random initial configurations) with the one found by K++ as implemented in `flexclust::kcca`:
 
@@ -343,7 +343,7 @@ table(kpp@cluster)
 
     ## 
     ##  1  2  3  4  5  6  7  8 
-    ##  2  3  1 18 13  3 16  8
+    ## 23  6  3  2  1  3  4 22
 
 while the one obtained with `kmeans` was
 
@@ -353,7 +353,7 @@ table(a$cluster)
 
     ## 
     ##  1  2  3  4  5  6  7  8 
-    ##  3  8  5 14  6 15  9  4
+    ##  3  4  5  8 14  6  9 15
 
 Note that the two partitions are quite different. Furthermore, note that there is still a lot of randomness in the solution returned by K++. If we run it again with a different pseudo-random number generating seed we obtain a very different partition:
 
@@ -364,6 +364,6 @@ table(kcca(ncit, k = 8, family = kccaFamily("kmeans"), control = list(initcent =
 
     ## 
     ##  1  2  3  4  5  6  7  8 
-    ## 28 14  2  9  6  2  2  1
+    ##  1  7 16 10  4  9  4 13
 
 A very good exercise would be to determine which of these different partitions (the ones found with K++ and the one returned by 100 random starts of K-means) is better in terms of the objective function being optimized to find the clusters.
