@@ -1,7 +1,7 @@
 STAT406 - Lecture 18 notes
 ================
 Matias Salibian-Barrera
-2019-11-07
+2019-11-18
 
 ## LICENSE
 
@@ -228,7 +228,7 @@ plot(errorevol(sim2, newdata=sim.te))
 
 Note that the error rate improves noticeably to 0.16. Interestingly,
 note as well that increasing the number of splits of the base
-classifiers does not seem to help. With 3-split trees:
+classifiers does not seem to help much. With 3-split trees:
 
 ``` r
 threesplit <- rpart.control(cp=-1,maxdepth=3,minsplit=0,xval=0)
@@ -239,7 +239,21 @@ plot(errorevol(sim3, newdata=sim.te))
 
 ![](README_files/figure-gfm/boston00.more-1.png)<!-- -->
 
-the error rate is 0.12, while with 4-split trees the error rate is 0.12.
+the error rate on the test set is
+
+``` r
+round(predict(sim3, newdata=sim.te)$error, 4)
+```
+
+    ## [1] 0.12
+
+while with 4-split trees the error rate is
+
+``` r
+round(predict(sim4, newdata=sim.te)$error, 4)
+```
+
+    ## [1] 0.12
 
 <!-- Note the large improvement in performance over the test set. -->
 
@@ -799,9 +813,12 @@ You are strongly encouraged to study what happens with other
 combinations of decay, number of weights and number of units on the
 hidden layer, using a proper CV setting to evaluate the results.
 
-#### Additional resources for discussion (refer to the lecture for context)
+<!-- #### Additional resources for discussion (refer to the lecture for context) -->
 
-  - <https://arxiv.org/abs/1412.6572>
-  - <https://arxiv.org/abs/1312.6199>
-  - <https://www.axios.com/ai-pioneer-advocates-starting-over-2485537027.html>
-  - <https://medium.com/intuitionmachine/the-deeply-suspicious-nature-of-backpropagation-9bed5e2b085e>
+<!-- * [https://arxiv.org/abs/1412.6572](https://arxiv.org/abs/1412.6572) -->
+
+<!-- * [https://arxiv.org/abs/1312.6199](https://arxiv.org/abs/1312.6199) -->
+
+<!-- * [https://www.axios.com/ai-pioneer-advocates-starting-over-2485537027.html](https://www.axios.com/ai-pioneer-advocates-starting-over-2485537027.html) -->
+
+<!-- * [https://medium.com/intuitionmachine/the-deeply-suspicious-nature-of-backpropagation-9bed5e2b085e](https://medium.com/intuitionmachine/the-deeply-suspicious-nature-of-backpropagation-9bed5e2b085e) -->
