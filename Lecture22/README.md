@@ -1,47 +1,73 @@
 STAT406 - Lecture 22 notes
 ================
 Matias Salibian-Barrera
-2018-12-05
+2019-11-25
 
-LICENSE
--------
+## LICENSE
 
-These notes are released under the "Creative Commons Attribution-ShareAlike 4.0 International" license. See the **human-readable version** [here](https://creativecommons.org/licenses/by-sa/4.0/) and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/legalcode).
+These notes are released under the “Creative Commons
+Attribution-ShareAlike 4.0 International” license. See the
+**human-readable version**
+[here](https://creativecommons.org/licenses/by-sa/4.0/) and the **real
+thing**
+[here](https://creativecommons.org/licenses/by-sa/4.0/legalcode).
 
-Lecture slides
---------------
+## Lecture slides
 
-Lecture slides are [here](STAT406-18-lecture-22.pdf).
+Lecture slides are [here](STAT406-19-lecture-22.pdf).
 
-Principal Components Analysis
------------------------------
+## Principal Components Analysis
 
-Although principal components can be easily computed with the spectral decomposition of the covariance matrix of the data (using the function `svd` in `R`, for example), there are a few dedicated implementations in `R`, among them `prcomp` and `princomp`). The main difference between these two is which internal function is used to compute eigenvalues and eigenvectors: `prcomp` uses `svd` and `princomp` uses the less preferred function `eigen`. Both `princomp` and `prcomp` return the matrix of loadings (eigenvectors), the scores (projections of the data on the basis of eigenvectors), and other auxiliary objects. They also include plot and summary methods.
+Although principal components can be easily computed with the spectral
+decomposition of the covariance matrix of the data (using the function
+`svd` in `R`, for example), there are a few dedicated implementations in
+`R`, among them `prcomp` and `princomp`). The main difference between
+these two is which internal function is used to compute eigenvalues and
+eigenvectors: `prcomp` uses `svd` and `princomp` uses the less preferred
+function `eigen`. Both `princomp` and `prcomp` return the matrix of
+loadings (eigenvectors), the scores (projections of the data on the
+basis of eigenvectors), and other auxiliary objects. They also include
+plot and summary methods.
 
-Instead of reviewing those (which can be easily done individually), in these notes I will reproduce two of the examples used in class (the simple 2-dimensional one used to motivate the topic, and the more interesting 256-dimensional one using the digits data). Finally, I will also show that principal components can be computed using an iterative algorithm (alternate regression), which may be faster than factorizing the covariance matrix, particularly when one is only interested in a few principal components and the dimension of the data is large.
+Instead of reviewing those (which can be easily done individually), in
+these notes I will reproduce two of the examples used in class (the
+simple 2-dimensional one used to motivate the topic, and the more
+interesting 256-dimensional one using the digits data).
+
+Finally, I will also show that principal components can be computed
+using an iterative algorithm (alternate regression), which may be faster
+than factorizing the covariance matrix, particularly when one is only
+interested in a few principal components and the dimension of the data
+is large (but also look at the arguments `nu` and `nv` for the function
+`svd` in `R`).
 
 #### Simple 2-dimensional example
 
-We first read the data for the simple illustration of PC's as best lower dimensional approximations.
+We first read the data for the simple illustration of PC’s as best lower
+dimensional approximations.
 
 ``` r
 x <- read.table("t8-5.dat", header = FALSE)
 ```
 
-Note that the data has 5 explanatory variables. Here we only use two of them in order to be able to visualize the analysis more easily:
+Note that the data has 5 explanatory variables. Here we only use two of
+them in order to be able to visualize the analysis more easily:
 
 ``` r
 xx <- x[, c(2, 5)]
 colnames(xx) <- c("Prof degree", "Median home value")
 ```
 
-As discussed in class, we standardize the data to avoid a large difference in scales "hijacking" the principal components:
+As discussed in class, we standardize the data to avoid a large
+difference in scales “hijacking” the principal components:
 
 ``` r
 xx <- scale(xx, center = colMeans(xx), scale = TRUE)
 ```
 
-We now define two auxiliary functions to compute Euclidean norms and squared Euclidean norms (less general by probably faster than `R`'s `base::norm`):
+We now define two auxiliary functions to compute Euclidean norms and
+squared Euclidean norms (less general by probably faster than `R`’s
+`base::norm`):
 
 ``` r
 norm2 <- function(a) sum(a^2)
@@ -57,9 +83,21 @@ abline(h = 0, lwd = 2, col = "grey", lty = 2)
 abline(v = 0, lwd = 2, col = "grey", lty = 2)
 ```
 
-![](README_files/figure-markdown_github/data-1.png)
+![](README_files/figure-gfm/data-1.png)<!-- -->
 
-We now compute projections along the direction of the vector **v** ∝ (1, 0.05)<sup>⊤</sup>. Recall from your linear algebra courses that the orthogonal projection of a point **x** on the linear subspace spanned by **v** (where ∥**v**∥=1) is given by *π*<sub>**v**</sub>(**x**)=⟨**x**, **v**⟩ **v** which can also be written as *π*<sub>**v**</sub>(**x**)=(**v** **v**<sup>⊤</sup>)**x**. We first find the coordinates of the orthogonal projects of each observation along the subspace generated by **v** = (1, 0.05)<sup>⊤</sup> (these are the scalars ⟨**x**<sub>*i*</sub>, **v**⟩=**x**<sub>*i*</sub><sup>⊤</sup>**v** for each point **x**<sub>*i*</sub>:
+We now compute projections along the direction of the vector
+\(\mathbf{v} \propto (1, 0.05)^\top\). Recall from your linear algebra
+courses that the orthogonal projection of a point \(\mathbf{x}\) on the
+linear subspace spanned by \(\mathbf{v}\) (where
+\(\| \mathbf{v} \| = 1\)) is given by
+\(\pi_{\mathbf{v}} ( \mathbf{x} ) = \langle \mathbf{x}, \mathbf{v} \rangle \, \mathbf{v}\)
+which can also be written as
+\(\pi_{\mathbf{v}} ( \mathbf{x} ) = ( \mathbf{v} \, \mathbf{v}^\top) \mathbf{x}\).
+We first find the coordinates of the orthogonal projects of each
+observation along the subspace generated by
+\(\mathbf{v} = (1, 0.05)^\top\) (these are the scalars
+\(\langle \mathbf{x}_i, \mathbf{v} \rangle = \mathbf{x}_i^\top \mathbf{v}\)
+for each point \(\mathbf{x}_i\):
 
 ``` r
 a <- c(1, 0.05)
@@ -69,13 +107,16 @@ a <- a/norm(a)
 prs <- (xx %*% a)
 ```
 
-We now compute the projections *π*<sub>**v**</sub>(**x**<sub>*i*</sub>)=⟨**x**<sub>*i*</sub>, **v**⟩ **v**:
+We now compute the projections
+\(\pi_{\mathbf{v}} ( \mathbf{x}_i ) = \langle \mathbf{x}_i, \mathbf{v} \rangle \, \mathbf{v}\):
 
 ``` r
 pr <- prs %*% a
 ```
 
-and add them to the plot, with a few observations highlighted. The subspace is shown in red, and the orthogonal projections as solid red dots on that line:
+and add them to the plot, with a few observations highlighted. The
+subspace is shown in red, and the orthogonal projections as solid red
+dots on that line:
 
 ``` r
 # Plot the data
@@ -94,30 +135,47 @@ for (j in 1:length(ind)) lines(c(xx[ind[j], 1], pr2[j, 1]), c(xx[ind[j], 2],
     pr2[j, 2]), col = "blue", lwd = 3.5, lty = 2)
 ```
 
-![](README_files/figure-markdown_github/proj1.2-1.png)
+![](README_files/figure-gfm/proj1.2-1.png)<!-- -->
 
-We repeat the above but projecting on a different direction **v** ∝ ( − 1, 3)<sup>⊤</sup>:
+We repeat the above but projecting on a different direction
+\(\mathbf{v} \propto (-1, 3)^\top\):
 
-![](README_files/figure-markdown_github/proj2-1.png)
+![](README_files/figure-gfm/proj2-1.png)<!-- -->
 
-We saw in class that the direction **v** that results in orthogonal projections closest to the original data (in the sense of minimizing the mean (or sum) of the residuals Euclidean norm squared) is given by the "first" eigenvector of the covariance matrix of the data. This is the first principal component. Refer to the class slides and discussion for more details and the definition and properties of the other principal components.
+We saw in class that the direction \(\mathbf{v}\) that results in
+orthogonal projections closest to the original data (in the sense of
+minimizing the mean (or sum) of the residuals Euclidean norm squared) is
+given by the “first” eigenvector of the covariance matrix of the data.
+This is the first principal component. Refer to the class slides and
+discussion for more details and the definition and properties of the
+other principal components.
 
 #### Digits example
 
-In this example we use principal components to explore the zip code data. In particular, we focus on images from a single digit (we use 3, but the reader is strongly encouraged to re-do this analysis for other digits to explore whether similar conclusions hold for them). We load the training data from the `ElemStatLearn` package in R, and extract the images that correspond to the digit 3. For more information use `help(zip.train, package='ElemStatLearn')`.
+In this example we use principal components to explore the zip code
+data. In particular, we focus on images from a single digit (we use 3,
+but the reader is strongly encouraged to re-do this analysis for other
+digits to explore whether similar conclusions hold for them). We load
+the training data from the `ElemStatLearn` package in R, and extract the
+images that correspond to the digit 3. For more information use
+`help(zip.train, package='ElemStatLearn')`.
 
 ``` r
 data(zip.train, package = "ElemStatLearn")
 a <- zip.train[zip.train[, 1] == 3, -1]
 ```
 
-Define an auxiliary function to compute the squared Euclidean distance between two vectors (recall that we have already defined the function `norm2` above):
+Define an auxiliary function to compute the squared Euclidean distance
+between two vectors (recall that we have already defined the function
+`norm2` above):
 
 ``` r
 dist <- function(a, b) norm2(a - b)
 ```
 
-To display the images we adapt the following function for plotting a matrix, which was originally available at <http://www.phaget4.org/R/image_matrix.html>:
+To display the images we adapt the following function for plotting a
+matrix, which was originally available at
+<http://www.phaget4.org/R/image_matrix.html>:
 
 ``` r
 myImagePlot <- function(x) {
@@ -143,13 +201,20 @@ par(mfrow = c(3, 3))
 for (j in 1:9) myImagePlot(t(matrix(unlist(a[sa[j], ]), 16, 16)))
 ```
 
-![](README_files/figure-markdown_github/digitsplot-1.png)
+![](README_files/figure-gfm/digitsplot-1.png)<!-- -->
 
 <!-- # plot the average 3 -->
+
 <!-- myImagePlot(t(matrix(colMeans(a), 16, 16))) -->
+
 <!-- # Plot the first 3 on the data set -->
+
 <!-- myImagePlot(t(matrix(unlist(a[1,]), 16, 16))) -->
-Next, we centre the observations in order to compute the eigenvectors and eigenvalues of the covariance matrix more efficiently. In fact, note that we do not need to even compute the covariance matrix and can use the SVD of the centred data.
+
+Next, we centre the observations in order to compute the eigenvectors
+and eigenvalues of the covariance matrix more efficiently. In fact, note
+that we do not need to even compute the covariance matrix and can use
+the SVD of the centred data.
 
 ``` r
 ac <- scale(a, center = TRUE, scale = FALSE)
@@ -157,31 +222,50 @@ si.svd <- svd(ac)
 ```
 
 <!-- Using that the eigenvalues of the covariance matrix are the squares of the -->
+
 <!-- singular values of the $n \times p$ data matrix, we  -->
+
 <!-- compute the proportion of the "total variance" that is accounted by  -->
+
 <!-- the first 20 ppal components individually -->
+
 <!-- ```{r digits4} -->
+
 <!-- si.svd$d[1:20]^2 / sum(si.svd$d^2) -->
+
 <!-- ``` -->
+
 <!-- and cumulatively: -->
+
 <!-- ```{r digits4.1} -->
+
 <!-- cumsum(si.svd$d^2)[1:20] / sum(si.svd$d^2) -->
+
 <!-- ``` -->
-Using the relationship between the eigenvectors of the covariance matrix and the SVD of the *n* × *p* data matrix, we compute the coordinates of the centered data on their orthogonal projections along each of the first and 2nd and 3rd principal directions (eigenvectors of the covariance matrix). Recall that the data are stored as rows of the matrix `a`:
+
+Using the relationship between the eigenvectors of the covariance matrix
+and the SVD of the \(n \times p\) data matrix, we compute the
+coordinates of the centered data on their orthogonal projections along
+each of the first and 2nd and 3rd principal directions (eigenvectors of
+the covariance matrix). Recall that the data are stored as rows of the
+matrix `a`:
 
 ``` r
 v1 <- as.vector(ac %*% si.svd$v[, 1])
 v2 <- as.vector(ac %*% si.svd$v[, 2])
 ```
 
-As discussed in class, we identify 5 quantiles of each of these coordinates to use as our 2-dimensional grid:
+As discussed in class, we identify 5 quantiles of each of these
+coordinates to use as our 2-dimensional grid:
 
 ``` r
 qv1 <- quantile(v1, c(0.05, 0.25, 0.5, 0.75, 0.95))
 qv2 <- quantile(v2, c(0.05, 0.25, 0.5, 0.75, 0.95))
 ```
 
-We can visualize the grid of these 5 x 5 = 25 points over the scatter plot of all the 2-dimensional projections of the data (their coordinates on the principal components basis):
+We can visualize the grid of these 5 x 5 = 25 points over the scatter
+plot of all the 2-dimensional projections of the data (their coordinates
+on the principal components basis):
 
 ``` r
 qv <- expand.grid(qv1, qv2)
@@ -189,9 +273,13 @@ plot(v1, v2, pch = 19, cex = 1, col = "grey")
 points(qv[, 1], qv[, 2], pch = 19, cex = 1.5, col = "red")
 ```
 
-![](README_files/figure-markdown_github/digits.p3-1.png)
+![](README_files/figure-gfm/digits.p3-1.png)<!-- -->
 
-We now find the points in our data set (images) with projections closest to each of the 5 x 5 = 25 points in the grid (note that these distances between points in the principal-subspace, which is in the 256 dimensional space) can be computed in terms of their coordinates on the principal-basis only (which are 2-dimensional points):
+We now find the points in our data set (images) with projections closest
+to each of the 5 x 5 = 25 points in the grid (note that these distances
+between points in the principal-subspace, which is in the 256
+dimensional space) can be computed in terms of their coordinates on the
+principal-basis only (which are 2-dimensional points):
 
 ``` r
 vs <- cbind(v1, v2)
@@ -208,9 +296,10 @@ points(qv[, 1], qv[, 2], pch = 19, cex = 1.5, col = "red")
 for (j in 1:dim(qv)[1]) points(cvs[j, 1], cvs[j, 2], pch = 19, col = "blue")
 ```
 
-![](README_files/figure-markdown_github/digits.p5-1.png)
+![](README_files/figure-gfm/digits.p5-1.png)<!-- -->
 
-Using these "blue" coordinates, we construct the corresponding points in the 256-dimensional space:
+Using these “blue” coordinates, we construct the corresponding points in
+the 256-dimensional space:
 
 ``` r
 app <- t(si.svd$v[, 1:2] %*% t(cvs))
@@ -224,7 +313,9 @@ for (j in 1:dim(qv)[1]) repre[j, ] <- ac[which.min(apply(ac, 1, dist, b = app[j,
     ])), ]
 ```
 
-These are the actual images that are closest to the points in the array `app` above. Now add the column means and display these 25 images according to the points they represent in the red grid:
+These are the actual images that are closest to the points in the array
+`app` above. Now add the column means and display these 25 images
+according to the points they represent in the red grid:
 
 ``` r
 repre <- scale(repre, center = -colMeans(a), scale = FALSE)
@@ -235,43 +326,69 @@ for (j in 1:dim(repre)[1]) {
 }
 ```
 
-![](README_files/figure-markdown_github/digits.p8-1.png)
+![](README_files/figure-gfm/digits.p8-1.png)<!-- -->
 
 ``` r
 # par(mfrow=c(1,1))
 ```
 
-Note how these images change when we "traverse" the 256-dimensional space along each of these 2 principal directions.
+Note how these images change when we “traverse” the 256-dimensional
+space along each of these 2 principal directions.
 
 <!-- Repeat with 3 ppal components now!: -->
+
 <!-- ```{r digits.3pca} -->
+
 <!-- qv1 <- quantile(v1, c(.05, .25, .5, .75, .95)) -->
+
 <!-- qv2 <- quantile(v2, c(.05, .25, .5, .75, .95)) -->
+
 <!-- qv3 <- quantile(v3, c(.05, .5, .95)) -->
+
 <!-- qv <- expand.grid(qv1, qv2, qv3) -->
+
 <!-- vs <- cbind(v1, v2, v3) -->
+
 <!-- # closest v's -->
+
 <!-- cvs <- array(0, dim=dim(qv)) -->
+
 <!-- for(j in 1:dim(qv)[1]) { -->
+
 <!-- cvs[j,] <- vs[ which.min( apply(vs, 1, dist, b=qv[j,]) ), ] -->
+
 <!-- } -->
+
 <!-- app <- t( si.svd$v[,1:3] %*% t( cvs ) ) -->
+
 <!-- repre <- matrix(0, dim(qv)[1], dim(app)[2]) -->
+
 <!-- for(j in 1:dim(qv)[1]) { -->
+
 <!-- repre[j,] <- ac[ which.min( apply(ac, 1, dist, b=app[j,]) ), ] -->
+
 <!-- } -->
+
 <!-- repre <- scale(repre, center = -colMeans(a), scale=FALSE) -->
+
 <!-- par(mai = c(1, 1, 1, 1)/5, xaxs = "i", yaxs = "i") -->
+
 <!-- par(mfrow=c(5,5)) -->
+
 <!-- for(j in 1:dim(repre)[1]) { -->
+
 <!-- myImagePlot(t(matrix(unlist(repre[j,]), 16, 16))) -->
+
 <!-- } -->
+
 <!-- ``` -->
+
 #### Alternating regression to compute principal components
 
 For details see [this document](pca-alternating-regression.pdf).
 
-A function implementing this method to compute the first principal component is:
+A function implementing this method to compute the first principal
+component is:
 
 ``` r
 alter.pca.k1 <- function(x, max.it = 500, eps = 1e-10) {
@@ -293,13 +410,16 @@ alter.pca.k1 <- function(x, max.it = 500, eps = 1e-10) {
 }
 ```
 
-We use it on the digits data above to compute the first principal component:
+We use it on the digits data above to compute the first principal
+component:
 
 ``` r
 tmp <- alter.pca.k1(ac)$a
 ```
 
-and compare it with the one given by `svd` (note that the sign of the eigenvectors is arbitrary, so we adjust these vectors in order to have first elements with the same sign):
+and compare it with the one given by `svd` (note that the sign of the
+eigenvectors is arbitrary, so we adjust these vectors in order to have
+first elements with the same sign):
 
 ``` r
 tmp2 <- svd(ac)$v[, 1]
@@ -310,9 +430,14 @@ summary(abs(tmp - tmp2))
     ##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
     ## 4.200e-16 1.195e-12 4.012e-12 7.272e-12 1.169e-11 3.524e-11
 
-Note that both eigenvectors are essentially identical, and that the alternating regression method was approximately 3 times faster than a full SVD decomposition of the covariance matrix.
+Note that both eigenvectors are essentially identical, and that the
+alternating regression method was approximately 3 times faster than a
+full SVD decomposition of the covariance matrix.
 
-To further illustrate the potential gain in speed for larger dimensions, consider the following synthetic data set with n = 2000 observation and p = 1000, and compare the timing and the results:
+To further illustrate the potential gain in speed for larger dimensions,
+consider the following synthetic data set with n = 2000 observation and
+p = 1000, and compare the timing and the results (even when forcing
+`svd` to only compute a single component):
 
 ``` r
 n <- 2000
@@ -322,7 +447,7 @@ system.time(tmp <- alter.pca.k1(x))
 ```
 
     ##    user  system elapsed 
-    ##   0.747   0.933   0.268
+    ##    0.39    0.11    0.56
 
 ``` r
 a1 <- tmp$a
@@ -330,7 +455,21 @@ system.time(e1 <- svd(cov(x))$u[, 1])
 ```
 
     ##    user  system elapsed 
-    ##   3.069   1.360   1.431
+    ##    6.99    0.09    7.73
+
+``` r
+system.time(e1.1 <- svd(cov(x), nu = 1, nv = 1)$u[, 1])
+```
+
+    ##    user  system elapsed 
+    ##    8.66    0.05    9.06
+
+``` r
+summary(abs(e1 - e1.1))
+```
+
+    ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+    ##       0       0       0       0       0       0
 
 ``` r
 a1 <- a1 * sign(e1[1] * a1[1])
@@ -338,4 +477,4 @@ summary(abs(e1 - a1))
 ```
 
     ##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-    ## 0.000e+00 9.324e-18 2.114e-17 5.996e-17 4.312e-17 2.342e-14
+    ## 0.000e+00 9.401e-18 2.072e-17 5.858e-17 4.025e-17 2.232e-14

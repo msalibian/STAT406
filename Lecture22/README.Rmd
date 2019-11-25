@@ -19,7 +19,7 @@ and the **real thing** [here](https://creativecommons.org/licenses/by-sa/4.0/leg
 
 ## Lecture slides
 
-Lecture slides are [here](STAT406-18-lecture-22.pdf).
+Lecture slides are [here](STAT406-19-lecture-22.pdf).
 
 ## Principal Components Analysis
 
@@ -37,11 +37,14 @@ plot and summary methods.
 Instead of reviewing those (which can be easily done individually), in
 these notes I will reproduce two of the examples used in class (the simple
 2-dimensional one used to motivate the topic, and the more interesting
-256-dimensional one using the digits data). Finally, I will also 
+256-dimensional one using the digits data). 
+
+Finally, I will also 
 show that principal components can be computed using an iterative
 algorithm (alternate regression), which may be faster than factorizing
 the covariance matrix, particularly when one is only interested in a
-few principal components and the dimension of the data is large. 
+few principal components and the dimension of the data is large (but 
+also look at the arguments `nu` and `nv` for the function `svd` in `R`).
 
 
 #### Simple 2-dimensional example 
@@ -382,7 +385,8 @@ a full SVD decomposition of the covariance matrix.
 
 To further illustrate the potential gain in speed for larger dimensions, 
 consider the following synthetic data set with n = 2000 observation
-and p = 1000, and compare the timing and the results:
+and p = 1000, and compare the timing and the results
+(even when forcing `svd` to only compute a single component):
 ```{r alt4}
 n <- 2000
 p <- 1000
@@ -390,6 +394,11 @@ x <- matrix(rt(n*p, df=2), n, p)
 system.time( tmp <- alter.pca.k1(x) )
 a1 <- tmp$a
 system.time( e1 <- svd(cov(x))$u[,1] )
+system.time( e1.1 <- svd(cov(x), nu=1, nv=1)$u[,1] )
+summary( abs(e1 - e1.1) )
 a1 <- a1 * sign(e1[1]*a1[1])
 summary( abs(e1 - a1) )
 ```
+
+
+
