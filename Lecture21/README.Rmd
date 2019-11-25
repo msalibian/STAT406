@@ -90,7 +90,7 @@ computes the height at which one shuld *cut* the dendogram to
 obtain a desired number *k* of clusters. Below we show 
 the result for *K = 3* clusters:
 
-```{r breweries.2}
+```{r breweries.2, fig.width=7, fig.height=6}
 # hierarchical
 library(cluster)
 # show the dendogram
@@ -102,7 +102,7 @@ rect.hclust(cl, k=3, border='red')
 Now we repeat the analysis but using Euclidean distances and *single linkage*, 
 and show *K = 3* clusters:
 
-```{r breweries2}
+```{r breweries2, fig.width=7, fig.height=6}
 br.dis <- dist(x) # L2
 br.hc <- hclust(br.dis, method='single')
 plot(br.hc)
