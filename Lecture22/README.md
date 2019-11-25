@@ -411,18 +411,27 @@ alter.pca.k1 <- function(x, max.it = 500, eps = 1e-10) {
 ```
 
 We use it on the digits data above to compute the first principal
-component:
+component (we also time it):
 
 ``` r
-tmp <- alter.pca.k1(ac)$a
+system.time(tmp <- alter.pca.k1(ac)$a)
 ```
 
-and compare it with the one given by `svd` (note that the sign of the
-eigenvectors is arbitrary, so we adjust these vectors in order to have
-first elements with the same sign):
+    ##    user  system elapsed 
+    ##    0.12    0.05    0.18
+
+and compare it with the one given by `svd`, which we also time. Note
+that the sign of the eigenvectors is arbitrary, so we adjust these
+vectors in order to have first elements with the same sign.
 
 ``` r
-tmp2 <- svd(ac)$v[, 1]
+system.time(tmp2 <- svd(ac)$v[, 1])
+```
+
+    ##    user  system elapsed 
+    ##    0.23    0.00    0.24
+
+``` r
 tmp <- tmp * sign(tmp2[1] * tmp[1])
 summary(abs(tmp - tmp2))
 ```
@@ -431,38 +440,56 @@ summary(abs(tmp - tmp2))
     ## 4.200e-16 1.195e-12 4.012e-12 7.272e-12 1.169e-11 3.524e-11
 
 Note that both eigenvectors are essentially identical, and that the
-alternating regression method was approximately 3 times faster than a
-full SVD decomposition of the covariance matrix.
+alternating regression method is typically faster than a full SVD
+decomposition of the covariance matrix.
+
+This difference in speed is more striking for problems in higer
+dimensions.
 
 To further illustrate the potential gain in speed for larger dimensions,
 consider the following synthetic data set with n = 2000 observation and
 p = 1000, and compare the timing and the results (even when forcing
-`svd` to only compute a single component):
+`svd` to only compute a single component).
+
+First generate the data set
 
 ``` r
 n <- 2000
 p <- 1000
 x <- matrix(rt(n * p, df = 2), n, p)
+```
+
+Compute the first eigenvector using alternating regression, and time it:
+
+``` r
 system.time(tmp <- alter.pca.k1(x))
 ```
 
     ##    user  system elapsed 
-    ##    0.39    0.11    0.56
+    ##    0.27    0.01    0.33
 
 ``` r
 a1 <- tmp$a
+```
+
+Compute the first eigenvector using `svd`, and time it:
+
+``` r
 system.time(e1 <- svd(cov(x))$u[, 1])
 ```
 
     ##    user  system elapsed 
-    ##    6.99    0.09    7.73
+    ##    6.69    0.07    7.24
+
+Asking `svd` to only compute one component does not seem to make the
+algorithm faster (the results are identical):
 
 ``` r
 system.time(e1.1 <- svd(cov(x), nu = 1, nv = 1)$u[, 1])
 ```
 
     ##    user  system elapsed 
-    ##    8.66    0.05    9.06
+    ##    6.41    0.03    7.02
 
 ``` r
 summary(abs(e1 - e1.1))
@@ -470,6 +497,9 @@ summary(abs(e1 - e1.1))
 
     ##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
     ##       0       0       0       0       0       0
+
+Finally, check that the first eigenvector computed with `svd` and with
+the alternating regression approach are practially identical:
 
 ``` r
 a1 <- a1 * sign(e1[1] * a1[1])
